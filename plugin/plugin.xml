@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?eclipse version="3.0"?><plugin>
+<?eclipse version="3.0"?>
+<plugin>
                             	
    <extension id="pm-categories" name="Process Mining Categories" point="org.knime.workbench.repository.categories">
 		<category level-id="processmining" name="Process Mining" path="/community" icon="icon/category-processmining.png" />
@@ -46,7 +47,8 @@
 		<node category-path="/community/processmining/io/ioWrite" factory-class="org.pm4knime.node.io.processtree.writer.ProcessTreeWriterNodeFactory" />
 		<node category-path="/community/processmining/io/ioRead" factory-class="org.pm4knime.node.io.log.reader.XesImporter.XesImporterNodeFactory" />
 		<node category-path="/community/processmining/io/ioRead" factory-class="org.pm4knime.node.io.log.reader.MXMLImporter.MXMLImporterNodeFactory"  />
-		
+		<node category-path="/community/processmining/io/ioRead" factory-class="org.pm4knime.node.io.bpmn.reader.BpmnReaderNodeFactory" />
+		<node category-path="/community/processmining/io/ioWrite" factory-class="org.pm4knime.node.io.bpmn.writer.BpmnWriterNodeFactory" />
 		<!-- nodes in log manipulation-->
 		<node category-path="/community/processmining/manipulation" factory-class="org.pm4knime.node.logmanipulation.sample.SampleLogNodeFactory" deprecated="true"/>
 		<node category-path="/community/processmining/manipulation" factory-class="org.pm4knime.node.logmanipulation.merge.MergeLogNodeFactory" deprecated="true"/>
@@ -115,43 +117,19 @@
   
     <extension point="org.knime.core.PortType">
                                         		
-        
-        
-        
-        
         <portType hidden="false" name="Event Log" objectClass="org.pm4knime.portobject.XLogPortObject" objectSerializer="org.pm4knime.portobject.XLogPortObject$XLogPortObjectSerializer" specClass="org.pm4knime.portobject.XLogPortObjectSpec" specSerializer="org.pm4knime.portobject.XLogPortObjectSpec$XLogPortObjectSpecSerializer"/>
-                                        		
-        
-        
-        
         
         <portType hidden="false" name="Petri Net" objectClass="org.pm4knime.portobject.PetriNetPortObject" objectSerializer="org.pm4knime.portobject.PetriNetPortObject$PetriNetPortObjectSerializer" specClass="org.pm4knime.portobject.PetriNetPortObjectSpec" specSerializer="org.pm4knime.portobject.PetriNetPortObjectSpec$PetriNetPortObjectSpecSerializer" color="#3789D0"/>
         <portType hidden="false" name="Causal Graph" objectClass="org.pm4knime.portobject.CausalGraphPortObject" objectSerializer="org.pm4knime.portobject.CausalGraphPortObject$CausalGraphPortObjectSerializer" specClass="org.pm4knime.portobject.CausalGraphPortObjectSpec" specSerializer="org.pm4knime.portobject.CausalGraphPortObjectSpec$CausalGraphPortObjectSpecSerializer" color="#7EE1DA"/>
         <portType hidden="false" name="Hybrid Petri Net" objectClass="org.pm4knime.portobject.HybridPetriNetPortObject" objectSerializer="org.pm4knime.portobject.HybridPetriNetPortObject$HybridPetriNetPortObjectSerializer" specClass="org.pm4knime.portobject.HybridPetriNetPortObjectSpec" specSerializer="org.pm4knime.portobject.HybridPetriNetPortObjectSpec$HybridPetriNetPortObjectSpecSerializer" color="#E5B941"/>
-               		
-        
         <portType hidden="false" name="Process Tree" objectClass="org.pm4knime.portobject.ProcessTreePortObject" objectSerializer="org.pm4knime.portobject.ProcessTreePortObject$ProcessTreePortObjectSerializer" specClass="org.pm4knime.portobject.ProcessTreePortObjectSpec" specSerializer="org.pm4knime.portobject.ProcessTreePortObjectSpec$ProcessTreePortObjectSpecSerializer" color="#C1876B"/>
-                                        		
-        
-        
-        
-        
-        <portType hidden="false" name="Replay Result in Alignment" objectClass="org.pm4knime.portobject.RepResultPortObject" objectSerializer="org.pm4knime.portobject.RepResultPortObject$RepResultPortObjectSerializer" specClass="org.pm4knime.portobject.RepResultPortObjectSpec" specSerializer="org.pm4knime.portobject.RepResultPortObjectSpec$RepResultPortObjectSpecSerializer" color="#E04DF0"/>
-                                        		
+        <portType hidden="false" name="BPMN Model" objectClass="org.pm4knime.portobject.BpmnPortObject" objectSerializer="org.pm4knime.portobject.BpmnPortObject$BpmnPortObjectSerializer" specClass="org.pm4knime.portobject.BpmnPortObjectSpec" specSerializer="org.pm4knime.portobject.BpmnPortObjectSpec$BpmnPortObjectSpecSerializer" color="#C1876B"/>
+         
+        <portType hidden="false" name="Replay Result in Alignment" objectClass="org.pm4knime.portobject.RepResultPortObject" objectSerializer="org.pm4knime.portobject.RepResultPortObject$RepResultPortObjectSerializer" specClass="org.pm4knime.portobject.RepResultPortObjectSpec" specSerializer="org.pm4knime.portobject.RepResultPortObjectSpec$RepResultPortObjectSpecSerializer" color="#E04DF0"/>                                		
         <portType hidden="false" name="Replay Result in Alignment" objectClass="org.pm4knime.portobject.RepResultPortObjectTable" objectSerializer="org.pm4knime.portobject.RepResultPortObjectTable$RepResultPortObjectSerializerTable" specClass="org.pm4knime.portobject.RepResultPortObjectSpecTable" specSerializer="org.pm4knime.portobject.RepResultPortObjectSpecTable$RepResultPortObjectSpecSerializerTable" color="#FF0000"/>
         
-        
-        
-        
-        <portType hidden="false" name="Directly Follows Model" objectClass="org.pm4knime.portobject.DFMPortObject" objectSerializer="org.pm4knime.portobject.DFMPortObject$DFMPortObjectSerializer" specClass="org.pm4knime.portobject.DFMPortObjectSpec" specSerializer="org.pm4knime.portobject.DFMPortObjectSpec$DFMPortObjectSpecSerializer"/>
-                                
-        
-        <portType hidden="false" name="Directly Follows Msd" objectClass="org.pm4knime.portobject.DfgMsdPortObject" objectSerializer="org.pm4knime.portobject.DfgMsdPortObject$DfgMsdPortObjectSerializer" specClass="org.pm4knime.portobject.DfgMsdPortObjectSpec" specSerializer="org.pm4knime.portobject.DfgMsdPortObjectSpec$DfgMsdPortObjectSpecSerializer" color="#C5F04D"/>
-                
-                                	
-    
-    
-    
+        <portType hidden="false" name="Directly Follows Model" objectClass="org.pm4knime.portobject.DFMPortObject" objectSerializer="org.pm4knime.portobject.DFMPortObject$DFMPortObjectSerializer" specClass="org.pm4knime.portobject.DFMPortObjectSpec" specSerializer="org.pm4knime.portobject.DFMPortObjectSpec$DFMPortObjectSpecSerializer"/>   
+        <portType hidden="false" name="Directly Follows Msd" objectClass="org.pm4knime.portobject.DfgMsdPortObject" objectSerializer="org.pm4knime.portobject.DfgMsdPortObject$DfgMsdPortObjectSerializer" specClass="org.pm4knime.portobject.DfgMsdPortObjectSpec" specSerializer="org.pm4knime.portobject.DfgMsdPortObjectSpec$DfgMsdPortObjectSpecSerializer" color="#C5F04D"/> 
     
     </extension>
     
