@@ -29,7 +29,7 @@
     	<dependency org="prom" name="IncorporateNegativeInformation" rev="latest" changing="true" transitive="true" />
     	<dependency org="prom" name="XESStandard" rev="latest" changing="true" transitive="true"/>
     	 <dependency org="prom" name="XESStandardConnector" rev="latest" changing="true" transitive="true"/>
-    	
+    	<dependency org="prom" name="BPMNConversions" rev="latest" changing="true" transitive="true" />
     	
     	<!-- category: conformance and performance -->
     	<dependency org="prom" name="PNetReplayer" rev="latest" changing="true" transitive="true" />
