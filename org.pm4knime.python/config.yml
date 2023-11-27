@@ -1,4 +1,4 @@
 org.pm4knime.python: # {group_id}.{name} from the knime.yml
-  src: C:\Users\kourani\git\pm4knime-core\org.pm4knime.python
+  src: C:\Users\kourani\git\pm4knime-python\org.pm4knime.python
   conda_env_path: C:\Users\kourani\miniconda3\envs\my_python_env
   debug_mode: true
