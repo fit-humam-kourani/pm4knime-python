@@ -1,14 +1,8 @@
 package org.pm4knime.node.visualizations.jsgraphviz;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.base.node.mine.decisiontree2.image.DecTreeToImageNodeFactory;
@@ -16,8 +10,10 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
+import org.pm4knime.node.visualizations.jsgraphviz.util.DotStringParser;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.google.gson.Gson;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class JSGraphVizViewRepresentation extends JSONViewContent {
@@ -26,12 +22,15 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 	DecTreeToImageNodeFactory f;
 	
 	private static final String DOT_DATA = "dotstr";
+	private static final String PAR_DOT_DATA = "parsed_dot";
 	private String m_dotstr;
+	private String parsed_dot;
 
 	@Override
 	public void saveToNodeSettings(NodeSettingsWO settings) {
 		try {
 			settings.addString(DOT_DATA, m_dotstr);
+			settings.addString(PAR_DOT_DATA, parsed_dot);
 	    } catch (Exception ex) {
 	        // do nothing
 	    }   
@@ -41,6 +40,7 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 	public void loadFromNodeSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		try {
 			m_dotstr = settings.getString(DOT_DATA);
+			parsed_dot = settings.getString(PAR_DOT_DATA);
 	    } catch (Exception ex) {
 	        // do nothing
 	    }   
@@ -158,6 +158,12 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 
 //		this.m_dotstr = finalDotString;
 		this.m_dotstr = dotstr;
-		
+		Map<String, List<?>> parsedData = DotStringParser.parseDotString(dotstr);	
+		Gson gson = new Gson();
+        String jsonData = gson.toJson(parsedData);
+		this.parsed_dot = jsonData;
+		System.out.println("parsed_dot: ");
+		System.out.println(this.parsed_dot);
 	}
 }
+

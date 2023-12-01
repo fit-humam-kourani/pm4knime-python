@@ -12,8 +12,7 @@
         _representation = representation;
         _value = value;
 
-        console.log(representation.dotstr);
-        console.log(representation);
+        console.error('representation.dotstr: ', representation.dotstr);
         vis = visu(representation.dotstr);
         
     };
