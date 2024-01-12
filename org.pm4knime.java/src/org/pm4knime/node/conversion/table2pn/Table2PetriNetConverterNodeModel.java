@@ -7,7 +7,7 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowIterator;
 import org.pm4knime.node.conversion.pn2table.PetriNetCell;
-
+import org.pm4knime.node.conversion.pn2table.PetriNetValue;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -101,7 +101,7 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
             DataRow row = it.next();
             DataCell cell = row.getCell(columnIndex);
             if (!cell.isMissing()) {
-                String stringPN = ((PetriNetCell)cell).getStringValue();
+                String stringPN = ((PetriNetValue)cell).getPetriNetString();
 
                 AcceptingPetriNet pn = PetriNetUtil.stringToPetriNet(stringPN);
                 pnPO = new PetriNetPortObject(pn);

@@ -1,35 +1,17 @@
 package org.pm4knime.node.conversion.pn2table;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
-//import org.knime.base.data.xml.Element;
-//import org.knime.base.data.xml.Node;
-//import org.knime.base.data.xml.PetriNetCell;
-//import org.knime.base.data.xml.PetriNetCellFactory;
-//import org.knime.base.data.xml.SvgImageContent;
-//import org.knime.base.data.xml.PetriNetValue;
-//import org.knime.base.data.xml.PetriNetCell.SvgSerializer;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataCellDataInput;
 import org.knime.core.data.DataCellDataOutput;
 import org.knime.core.data.DataCellSerializer;
-import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
-import org.knime.core.data.StringValue;
-import org.knime.core.data.convert.DataCellFactoryMethod;
-import org.knime.core.data.image.png.PNGImageCellFactory;
 import org.knime.core.node.CanceledExecutionException;
-import org.pm4knime.util.PetriNetUtil;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetEdge;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetNode;
@@ -38,7 +20,7 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Transition
 import org.processmining.models.semantics.petrinet.Marking;
 
 @SuppressWarnings("serial")
-public class PetriNetCell extends DataCell {
+public class PetriNetCell extends DataCell implements PetriNetValue {
 	
 	
     String pnString;
@@ -47,7 +29,6 @@ public class PetriNetCell extends DataCell {
     List<String> edges;
 	String iMarking;
 	List<String> fMarking;
-    public static final DataType TYPE = DataType.getType(PetriNetCell.class);
 
     public static final class PetriNetSerializer implements DataCellSerializer<PetriNetCell> {
         /**
@@ -111,41 +92,8 @@ public class PetriNetCell extends DataCell {
             return new PetriNetCell(pnString, places, transitions, edges, iM, fM);
         }
     }
-    
-//    PNGImageCell ic;
+
 	
-
-    private static final Collection<String> SVG_TEXT_CONTENT_NOT_IGNORED_TAGS =
-            Arrays.asList("text", "tspan", "textPath");
-
-//    static final XmlDomComparerCustomizer SVG_XML_CUSTOMIZER = new XmlDomComparerCustomizer(
-//        ChildrenCompareStrategy.ORDERED) {
-//
-//        @Override
-//        public boolean include(final Node node) {
-//            switch (node.getNodeType()) {
-//                case Node.TEXT_NODE:
-//                    //ignore all text nodes, except the ones in the defined set
-//                    return SVG_TEXT_CONTENT_NOT_IGNORED_TAGS.contains(node.getParentNode().getLocalName());
-//                case Node.ELEMENT_NODE:
-//                    //ignore metadata elements
-//                    Element element = (Element)node;
-//                    return !"metadata".equals(element.getLocalName());
-//                case Node.COMMENT_NODE:
-//                    //ignore comments
-//                    return false;
-//                default:
-//                    return true;
-//            }
-//        }
-//    };
-
-//    private SoftReference<String> m_xmlString;
-
-//    private final ReentrantLock m_lock = new ReentrantLock();
-
-//    private final SvgImageContent m_content;
-
 
     public static DataCellSerializer<PetriNetCell> getCellSerializer() {
         return new PetriNetSerializer();
@@ -202,27 +150,6 @@ public class PetriNetCell extends DataCell {
 	}
 
 	public String toString() {
-//		StringBuilder sb = new StringBuilder();
-//	    sb.append("Petri Net: \n");
-//	    sb.append("Places: ").append(places.size()).append(" elements \n");
-//        for (int i = 0; i < places.size(); i++) {
-//            sb.append("  ").append(places.get(i)).append(" \n");
-//        }
-//        sb.append("Initial Marking:").append(" \n");
-//        sb.append("  ").append(iMarking).append(" \n");
-//        sb.append("Final Markings:").append(" \n");
-//        for (int i = 0; i < fMarking.size(); i++) {
-//            sb.append("  ").append(fMarking.get(i)).append(" \n");
-//        }
-//        sb.append("Transitions: ").append(transitions.size()).append(" elements \n");
-//        for (int i = 0; i < transitions.size(); i++) {
-//            sb.append("  ").append(transitions.get(i)).append(" \n");
-//        }
-//        sb.append("Arcs: ").append(edges.size()).append(" elements \n");
-//        for (int i = 0; i < edges.size(); i++) {
-//            sb.append("  ").append(edges.get(i)).append(" \n");
-//        }          
-//        return sb.toString();
 		return pnString;
     }
 
@@ -237,14 +164,17 @@ public class PetriNetCell extends DataCell {
     /**
      * {@inheritDoc}
      */
-    @Override
     protected boolean equalContent(final DataValue otherValue) {
-    	if (otherValue instanceof PetriNetCell) {
-    		PetriNetCell cell = (PetriNetCell) otherValue;
-    		return places.equals(cell.places) && transitions.equals(cell.transitions) && edges.equals(cell.edges) && iMarking.equals(cell.iMarking) && fMarking.equals(cell.fMarking);
-    	} else {
-    		return false;
-    	}
+        if (otherValue instanceof PetriNetValue) {
+            PetriNetValue petriNetValue = (PetriNetValue) otherValue;
+            return places.equals(petriNetValue.getPlaces()) && 
+                   transitions.equals(petriNetValue.getTransitions()) && 
+                   edges.equals(petriNetValue.getEdges()) && 
+                   iMarking.equals(petriNetValue.getInitialMarking()) && 
+                   fMarking.equals(petriNetValue.getFinalMarking());
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -255,10 +185,47 @@ public class PetriNetCell extends DataCell {
     	return places.hashCode() + transitions.hashCode() + edges.hashCode() + iMarking.hashCode() + fMarking.hashCode();
     }
 
-	public String getStringValue() {
-		// TODO Auto-generated method stub
-		return this.pnString;
+	
+	@Override
+	public String getPetriNetString() {
+	    return this.pnString;
 	}
+
+
+	@Override
+	public List<String> getPlaces() {
+		// TODO Auto-generated method stub
+		return this.places;
+	}
+
+
+	@Override
+	public List<String> getTransitions() {
+		// TODO Auto-generated method stub
+		return this.transitions;
+	}
+
+
+	@Override
+	public List<String> getEdges() {
+		// TODO Auto-generated method stub
+		return this.edges;
+	}
+
+
+	@Override
+	public String getInitialMarking() {
+		// TODO Auto-generated method stub
+		return this.iMarking;
+	}
+
+
+	@Override
+	public List<String> getFinalMarking() {
+		// TODO Auto-generated method stub
+		return this.fMarking;
+	}
+
 	
 
     
