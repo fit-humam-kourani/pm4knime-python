@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.pm4knime.java;singleton:=true
 Bundle-Version: 3.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Fraunhofer Institute for Applied Information Technology
-Require-Bundle: org.eclipse.ui, 
+Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.knime.workbench.core;bundle-version="[5.0.0,6.0.0)",
  org.knime.workbench.repository;bundle-version="[5.0.0,6.0.0)",
@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.ui,
  org.knime.python3;bundle-version="[5.0.0,6.0.0)",
  org.knime.conda;bundle-version="[5.0.0,6.0.0)",
  org.knime.ext.svg,
- org.knime.core.table
+ org.knime.core.table,
+ org.knime.core.ui
 Export-Package: src
 Bundle-Activator: org.pm4knime.node.io.petrinet.reader.PetrinetReaderNodePlugin
 Bundle-ActivationPolicy: lazy
