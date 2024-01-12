@@ -1,7 +1,6 @@
 package org.pm4knime.node.conversion.pn2table;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.knime.core.data.DataCell;
@@ -13,19 +12,10 @@ import org.pm4knime.util.PetriNetUtil;
 import org.knime.core.data.v2.ReadValue;
 import org.knime.core.data.v2.ValueFactory;
 import org.knime.core.data.v2.WriteValue;
-import org.knime.core.data.v2.value.StringValueFactory;
-import org.knime.core.table.access.ReadAccess;
 import org.knime.core.table.access.StringAccess.StringReadAccess;
 import org.knime.core.table.access.StringAccess.StringWriteAccess;
-import org.knime.core.table.access.VarBinaryAccess.VarBinaryReadAccess;
-import org.knime.core.table.access.WriteAccess;
 import org.knime.core.table.schema.DataSpec;
-import org.knime.core.table.schema.StructDataSpec;
-import org.knime.core.table.schema.VarBinaryDataSpec.ObjectDeserializer;
-import org.knime.core.table.schema.VarBinaryDataSpec.ObjectSerializer;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
-import org.knime.core.columnar.access.ColumnarReadAccess;
-import org.knime.core.columnar.access.ColumnarWriteAccess;
 
 public final class PetriNetCellFactory implements ValueFactory<StringReadAccess, StringWriteAccess>, FromComplexString, FromInputStream {
 
@@ -58,11 +48,11 @@ public final class PetriNetCellFactory implements ValueFactory<StringReadAccess,
 	@Override
 	public ReadValue createReadValue(StringReadAccess access) {
 		// TODO Auto-generated method stub
-		return new PetriNetReadValue<PetriNetCell>(access);
+		return new PetriNetReadValue(access);
 	}
 
 	@Override
-	public WriteValue createWriteValue(StringWriteAccess access) {
+	public WriteValue<PetriNetValue> createWriteValue(StringWriteAccess access) {
 		// TODO Auto-generated method stub
 		return new PetriNetWriteValue(access);
 	}
@@ -73,21 +63,7 @@ public final class PetriNetCellFactory implements ValueFactory<StringReadAccess,
 		return DataSpec.stringSpec();
 	}
 	
-	public static class PetriNetReadValue<PetriNetCell> implements ReadValue {
-		private static final ObjectDeserializer<byte[]> DESERIALIZER = in -> {
-			//TODO: Optimize (see AP-17643)
-			try (final ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-				final byte[] cache = new byte[1024];
-				int n;
-				while ((n = in.read(cache, 0, cache.length)) != -1) {
-					buffer.write(cache, 0, n);
-					if (n < cache.length) {
-						break;
-					}
-				}
-				return buffer.toByteArray();
-			}
-		};
+	public static class PetriNetReadValue implements ReadValue {
 
 		private String string_value;
 
@@ -97,17 +73,12 @@ public final class PetriNetCellFactory implements ValueFactory<StringReadAccess,
 
         @Override
 		public DataCell getDataCell() {
-			//				return m_factory.createGeoCell(getWKB(), getReferenceSystem());
 			PetriNetCellFactory f = new PetriNetCellFactory();
 			return f.createCell(string_value);
 		}
 	}
 	
-	public static final class PetriNetWriteValue implements WriteValue<PetriNetCell> {
-		private static final ObjectSerializer<byte[]> SERIALIZER = (out, data) -> {
-			out.write(data);
-		};
-
+	public static final class PetriNetWriteValue implements WriteValue<PetriNetValue> {
 		private StringWriteAccess string_access;
 
 		PetriNetWriteValue(final StringWriteAccess structAccess) {
@@ -115,8 +86,8 @@ public final class PetriNetCellFactory implements ValueFactory<StringReadAccess,
 		}
 
 		@Override
-		public void setValue(final PetriNetCell value) {
-			string_access.setStringValue(value.getStringValue());
+		public void setValue(final PetriNetValue value) {
+			string_access.setStringValue(value.getPetriNetString());
 		}
 	}
 	

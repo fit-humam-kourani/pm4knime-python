@@ -80,8 +80,7 @@ public class PetriNet2TableConverterNodeModel extends NodeModel {
         }
     	
     	
-    	DataRow eventRow = new DefaultRow(rowKey, new PetriNetCell(anet));
-//    	DataRow eventRow = new DefaultRow(rowKey, StringCellFactory.create(imageText));
+    	DataRow eventRow = new DefaultRow(rowKey, new PetriNetCell(anet));;
     	
     	bufCon.addRowToTable(eventRow);
   
@@ -93,12 +92,12 @@ public class PetriNet2TableConverterNodeModel extends NodeModel {
 
 	private DataTableSpec createSpec() {
 		
-		List<String> attrNames = new ArrayList();
-		List<DataType> attrTypes = new ArrayList();
+		List<String> attrNames = new ArrayList<String>();
+		List<DataType> attrTypes = new ArrayList<DataType>();
 		
 		attrNames.add(m_columnNameModel.getStringValue());
 	
-		attrTypes.add(PetriNetCell.TYPE);
+		attrTypes.add(DataType.getType(PetriNetCell.class));
 		
 		DataTableSpec outSpec = new DataTableSpec(CFG_TABLE_NAME, 
 				attrNames.toArray(new String[0]), attrTypes.toArray(new DataType[0]));

@@ -7,7 +7,7 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowIterator;
 import org.pm4knime.node.conversion.hpn2table.HybridPetriNetCell;
-
+import org.pm4knime.node.conversion.hpn2table.HybridPetriNetValue;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -101,7 +101,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
             DataRow row = it.next();
             DataCell cell = row.getCell(columnIndex);
             if (!cell.isMissing()) {
-                String stringPN = ((HybridPetriNetCell)cell).getStringValue();
+                String stringPN = ((HybridPetriNetValue)cell).getHybridPetriNetString();
 
                 ExtendedHybridPetrinet pn = HybridPetriNetUtil.stringToHybridPetriNet(stringPN);
                 pnPO = new HybridPetriNetPortObject(pn);
