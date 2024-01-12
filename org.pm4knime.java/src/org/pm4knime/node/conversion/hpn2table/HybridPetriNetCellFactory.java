@@ -1,7 +1,6 @@
 package org.pm4knime.node.conversion.hpn2table;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.knime.core.data.DataCell;
@@ -16,8 +15,6 @@ import org.knime.core.data.v2.WriteValue;
 import org.knime.core.table.access.StringAccess.StringReadAccess;
 import org.knime.core.table.access.StringAccess.StringWriteAccess;
 import org.knime.core.table.schema.DataSpec;
-import org.knime.core.table.schema.VarBinaryDataSpec.ObjectDeserializer;
-import org.knime.core.table.schema.VarBinaryDataSpec.ObjectSerializer;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
 
 public final class HybridPetriNetCellFactory implements ValueFactory<StringReadAccess, StringWriteAccess>, FromComplexString, FromInputStream {
@@ -57,11 +54,11 @@ public final class HybridPetriNetCellFactory implements ValueFactory<StringReadA
 	@Override
 	public ReadValue createReadValue(StringReadAccess access) {
 		// TODO Auto-generated method stub
-		return new HybridPetriNetReadValue<HybridPetriNetCell>(access);
+		return new HybridPetriNetReadValue(access);
 	}
 
 	@Override
-	public WriteValue createWriteValue(StringWriteAccess access) {
+	public WriteValue<HybridPetriNetValue> createWriteValue(StringWriteAccess access) {
 		// TODO Auto-generated method stub
 		return new HybridPetriNetWriteValue(access);
 	}
@@ -72,21 +69,7 @@ public final class HybridPetriNetCellFactory implements ValueFactory<StringReadA
 		return DataSpec.stringSpec();
 	}
 	
-	public static class HybridPetriNetReadValue<HybridPetriNetCell> implements ReadValue {
-		private static final ObjectDeserializer<byte[]> DESERIALIZER = in -> {
-			//TODO: Optimize (see AP-17643)
-			try (final ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-				final byte[] cache = new byte[1024];
-				int n;
-				while ((n = in.read(cache, 0, cache.length)) != -1) {
-					buffer.write(cache, 0, n);
-					if (n < cache.length) {
-						break;
-					}
-				}
-				return buffer.toByteArray();
-			}
-		};
+	public static class HybridPetriNetReadValue implements ReadValue {
 
 		private String string_value;
 
@@ -102,11 +85,8 @@ public final class HybridPetriNetCellFactory implements ValueFactory<StringReadA
 		}
 	}
 	
-	public static final class HybridPetriNetWriteValue implements WriteValue<HybridPetriNetCell> {
-		private static final ObjectSerializer<byte[]> SERIALIZER = (out, data) -> {
-			out.write(data);
-		};
-
+	public static final class HybridPetriNetWriteValue implements WriteValue<HybridPetriNetValue> {
+		
 		private StringWriteAccess string_access;
 
 		HybridPetriNetWriteValue(final StringWriteAccess structAccess) {
@@ -114,8 +94,8 @@ public final class HybridPetriNetCellFactory implements ValueFactory<StringReadA
 		}
 
 		@Override
-		public void setValue(final HybridPetriNetCell value) {
-			string_access.setStringValue(value.getStringValue());
+		public void setValue(final HybridPetriNetValue value) {
+			string_access.setStringValue(value.getHybridPetriNetString());
 		}
 	}
 	

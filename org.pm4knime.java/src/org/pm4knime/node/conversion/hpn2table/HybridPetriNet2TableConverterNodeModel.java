@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
@@ -46,8 +45,6 @@ public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
 	
 	
 	private HybridPetriNetPortObjectSpec m_inSpec;
-//	ImageToTableNodeFactory ifac;
-//	ImageToTableNodeModel iMod;
 
 	protected HybridPetriNet2TableConverterNodeModel() {
 		super( new PortType[]{HybridPetriNetPortObject.TYPE}, new PortType[]{BufferedDataTable.TYPE});
@@ -81,7 +78,6 @@ public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
     	
     	
     	DataRow eventRow = new DefaultRow(rowKey, new HybridPetriNetCell(anet));
-//    	DataRow eventRow = new DefaultRow(rowKey, StringCellFactory.create(imageText));
     	
     	bufCon.addRowToTable(eventRow);
   
@@ -93,12 +89,12 @@ public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
 
 	private DataTableSpec createSpec() {
 		
-		List<String> attrNames = new ArrayList();
-		List<DataType> attrTypes = new ArrayList();
+		List<String> attrNames = new ArrayList<String>();
+		List<DataType> attrTypes = new ArrayList<DataType>();
 		
 		attrNames.add(m_columnNameModel.getStringValue());
 	
-		attrTypes.add(HybridPetriNetCell.TYPE);
+		attrTypes.add(DataType.getType(HybridPetriNetCell.class));
 		
 		DataTableSpec outSpec = new DataTableSpec(CFG_TABLE_NAME, 
 				attrNames.toArray(new String[0]), attrTypes.toArray(new DataType[0]));
@@ -117,9 +113,6 @@ public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
     	if(!spec.getClass().equals(HybridPetriNetPortObjectSpec.class)) 
     		throw new InvalidSettingsException("Input is not a valid Hybrid Petri Net!");
     	
-//    	if( spec.getGTraceAttrMap().isEmpty()|| spec.getClassifiersMap().isEmpty()) {
-//    		throw new InvalidSettingsException("Log Spec Object is Empty. Probably because the reader node got reset");
-//    	}
    	
     	m_inSpec = spec;
     	

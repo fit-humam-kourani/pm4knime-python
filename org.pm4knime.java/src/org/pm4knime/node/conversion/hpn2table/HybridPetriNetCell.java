@@ -2,8 +2,6 @@ package org.pm4knime.node.conversion.hpn2table;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +9,6 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataCellDataInput;
 import org.knime.core.data.DataCellDataOutput;
 import org.knime.core.data.DataCellSerializer;
-import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
 import org.knime.core.node.CanceledExecutionException;
 import org.pm4knime.util.HybridPetriNetUtil;
@@ -26,7 +23,7 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Transition
 import org.processmining.models.semantics.petrinet.Marking;
 
 @SuppressWarnings("serial")
-public class HybridPetriNetCell extends DataCell {
+public class HybridPetriNetCell extends DataCell implements HybridPetriNetValue {
 	
 	
     String pnString;
@@ -42,7 +39,6 @@ public class HybridPetriNetCell extends DataCell {
 	List<String> sure_edges;
 	List<String> unsure_edges;
 	List<String> place_edges;
-    public static final DataType TYPE = DataType.getType(HybridPetriNetCell.class);
 
     public static final class HybridPetriNetSerializer implements DataCellSerializer<HybridPetriNetCell> {
         /**
@@ -145,40 +141,6 @@ public class HybridPetriNetCell extends DataCell {
             return new HybridPetriNetCell(pnString, places, transitions, edges_places, edges_sure, edges_unsure, edges_longDep, iM, fM);
         }
     }
-    
-//    PNGImageCell ic;
-	
-
-    private static final Collection<String> SVG_TEXT_CONTENT_NOT_IGNORED_TAGS =
-            Arrays.asList("text", "tspan", "textPath");
-
-//    static final XmlDomComparerCustomizer SVG_XML_CUSTOMIZER = new XmlDomComparerCustomizer(
-//        ChildrenCompareStrategy.ORDERED) {
-//
-//        @Override
-//        public boolean include(final Node node) {
-//            switch (node.getNodeType()) {
-//                case Node.TEXT_NODE:
-//                    //ignore all text nodes, except the ones in the defined set
-//                    return SVG_TEXT_CONTENT_NOT_IGNORED_TAGS.contains(node.getParentNode().getLocalName());
-//                case Node.ELEMENT_NODE:
-//                    //ignore metadata elements
-//                    Element element = (Element)node;
-//                    return !"metadata".equals(element.getLocalName());
-//                case Node.COMMENT_NODE:
-//                    //ignore comments
-//                    return false;
-//                default:
-//                    return true;
-//            }
-//        }
-//    };
-
-//    private SoftReference<String> m_xmlString;
-
-//    private final ReentrantLock m_lock = new ReentrantLock();
-
-//    private final SvgImageContent m_content;
 
 
     public static DataCellSerializer<HybridPetriNetCell> getCellSerializer() {
@@ -268,27 +230,6 @@ public class HybridPetriNetCell extends DataCell {
 	}
 
 	public String toString() {
-//		StringBuilder sb = new StringBuilder();
-//	    sb.append("Petri Net: \n");
-//	    sb.append("Places: ").append(places.size()).append(" elements \n");
-//        for (int i = 0; i < places.size(); i++) {
-//            sb.append("  ").append(places.get(i)).append(" \n");
-//        }
-//        sb.append("Initial Marking:").append(" \n");
-//        sb.append("  ").append(iMarking).append(" \n");
-//        sb.append("Final Markings:").append(" \n");
-//        for (int i = 0; i < fMarking.size(); i++) {
-//            sb.append("  ").append(fMarking.get(i)).append(" \n");
-//        }
-//        sb.append("Transitions: ").append(transitions.size()).append(" elements \n");
-//        for (int i = 0; i < transitions.size(); i++) {
-//            sb.append("  ").append(transitions.get(i)).append(" \n");
-//        }
-//        sb.append("Arcs: ").append(edges.size()).append(" elements \n");
-//        for (int i = 0; i < edges.size(); i++) {
-//            sb.append("  ").append(edges.get(i)).append(" \n");
-//        }          
-//        return sb.toString();
 		return pnString;
     }
 
@@ -305,9 +246,16 @@ public class HybridPetriNetCell extends DataCell {
      */
     @Override
     protected boolean equalContent(final DataValue otherValue) {
-    	if (otherValue instanceof HybridPetriNetCell) {
-    		HybridPetriNetCell cell = (HybridPetriNetCell) otherValue;
-    		return places.equals(cell.places) && transitions.equals(cell.transitions) && place_edges.equals(cell.place_edges) && sure_edges.equals(cell.sure_edges) && unsure_edges.equals(cell.unsure_edges) && long_dep_edges.equals(cell.long_dep_edges) && iMarking.equals(cell.iMarking) && fMarking.equals(cell.fMarking);
+    	if (otherValue instanceof HybridPetriNetValue) {
+    		HybridPetriNetValue cell = (HybridPetriNetValue) otherValue;
+    		return places.equals(cell.getPlaces()) && 
+    				transitions.equals(cell.getTransitions()) && 
+    				place_edges.equals(cell.getPlaceEdges()) && 
+    				sure_edges.equals(cell.getCertainEdges()) && 
+    				unsure_edges.equals(cell.getUncertainEdges()) && 
+    				long_dep_edges.equals(cell.getLongDepEdges()) && 
+    				iMarking.equals(cell.getInitialMarking()) && 
+    				fMarking.equals(cell.getFinalMarking());
     	} else {
     		return false;
     	}
@@ -321,9 +269,67 @@ public class HybridPetriNetCell extends DataCell {
     	return places.hashCode() + transitions.hashCode() + place_edges.hashCode() + sure_edges.hashCode() + unsure_edges.hashCode() + long_dep_edges.hashCode() + iMarking.hashCode() + fMarking.hashCode();
     }
 
-	public String getStringValue() {
+
+	@Override
+	public String getHybridPetriNetString() {
 		// TODO Auto-generated method stub
 		return this.pnString;
+	}
+
+
+	@Override
+	public List<String> getPlaces() {
+		// TODO Auto-generated method stub
+		return this.places;
+	}
+
+
+	@Override
+	public List<String> getTransitions() {
+		// TODO Auto-generated method stub
+		return this.transitions;
+	}
+
+
+	@Override
+	public List<String> getCertainEdges() {
+		// TODO Auto-generated method stub
+		return this.sure_edges;
+	}
+
+
+	@Override
+	public List<String> getUncertainEdges() {
+		// TODO Auto-generated method stub
+		return this.unsure_edges;
+	}
+
+
+	@Override
+	public List<String> getPlaceEdges() {
+		// TODO Auto-generated method stub
+		return this.place_edges;
+	}
+
+
+	@Override
+	public List<String> getLongDepEdges() {
+		// TODO Auto-generated method stub
+		return this.getLongDepEdges();
+	}
+
+
+	@Override
+	public String getInitialMarking() {
+		// TODO Auto-generated method stub
+		return this.iMarking;
+	}
+
+
+	@Override
+	public List<String> getFinalMarking() {
+		// TODO Auto-generated method stub
+		return this.fMarking;
 	}
 	
 
