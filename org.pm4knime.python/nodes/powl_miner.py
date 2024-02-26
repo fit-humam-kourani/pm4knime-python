@@ -1,19 +1,15 @@
-import io
-
-import pm4py
-
 import knime.extension as knext
-from pm4py.visualization.powl.variants.basic import Parameters
-from utils import knime_util
-from utils.petri_net_type import petri_net_to_df
 import pandas as pd
 import os
 import logging
 import pytz
-from pm4py.algo.discovery.powl.inductive.variants.powl_discovery_variants import POWLDiscoveryVariant
+from pm4py.algo.discovery.powl.inductive.variants.powl_discovery_varaints import POWLDiscoveryVariant
 from pm4py.visualization.powl.visualizer import apply as visualize_powl
 from pm4py.algo.discovery.powl import algorithm as powl_disc
 from pm4py.objects.conversion.powl.converter import apply as powl_to_pn
+from utils import knime_util
+from utils.petri_net_type import petri_net_to_df
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -61,7 +57,7 @@ class POWL_Miner:
             inplace=True)
 
         event_log = event_log.sort_values(by=["case:concept:name", "time:timestamp"])
-        powl = powl_disc.apply(event_log, variant=POWLDiscoveryVariant.CLUSTER)
+        powl = powl_disc.apply(event_log, variant=POWLDiscoveryVariant.MAXIMAL)
         pn_1, init_1, final_1 = powl_to_pn(powl)
         pn_df = petri_net_to_df(pn_1, init_1, final_1)
 
@@ -69,3 +65,4 @@ class POWL_Miner:
         svg_string = powl_vis.pipe(encoding='utf-8')
 
         return knext.Table.from_pandas(pn_df), knext.view_svg(svg_string)
+

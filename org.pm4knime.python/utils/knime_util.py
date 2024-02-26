@@ -4,7 +4,7 @@ import knime.extension as knext
 LOGGER = logging.getLogger(__name__)
 
 
-def create_node_description(short_description: str, description: str, references: dict=None):
+def create_node_description(short_description: str, description: str, references: dict = None):
     """Generates a standardized node description."""
 
     def set_description(node_factory):
@@ -50,7 +50,7 @@ def is_boolean(column: knext.Column) -> bool:
     Checks if column is boolean
     @return: True if Column is boolean
     """
-    return column.ktype == knext.boolean()
+    return column.ktype == knext.bool_()
 
 
 def is_binary(column: knext.Column) -> bool:
@@ -64,12 +64,13 @@ def is_binary(column: knext.Column) -> bool:
 def is_local_date(column: knext.Column) -> bool:
     return __is_type_x(column, "org.knime.core.data.v2.time.LocalDateTimeValueFactory")
 
+
 def is_petri_net(column: knext.Column) -> bool:
     return __is_type_x(column, "org.pm4knime.node.conversion.pn2table.PetriNetCell")
 
 
-def __is_type_x(column: knext.Column, type: str) -> bool:
+def __is_type_x(column: knext.Column, t: str) -> bool:
     return (
-        isinstance(column.ktype, knext.LogicalType)
-        and type in column.ktype.logical_type
+            isinstance(column.ktype, knext.LogicalType)
+            and t in column.ktype.logical_type
     )

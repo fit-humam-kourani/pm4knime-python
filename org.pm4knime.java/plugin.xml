@@ -199,13 +199,13 @@
         
         
         
-        <!-- <node category-path="/community/processmining/io/ioRead" factory-class="org.pm4knime.node.io.bpmn.reader.BpmnReaderNodeFactory"/>
+        <node category-path="/community/processmining/io/ioRead" factory-class="org.pm4knime.node.io.bpmn.reader.BpmnReaderNodeFactory"/>
                                         		
         
         
         
         
-        <node category-path="/community/processmining/io/ioWrite" factory-class="org.pm4knime.node.io.bpmn.writer.BpmnWriterNodeFactory"/>-->
+        <node category-path="/community/processmining/io/ioWrite" factory-class="org.pm4knime.node.io.bpmn.writer.BpmnWriterNodeFactory"/>
                                         		
         
         
@@ -930,25 +930,10 @@
             
             <PythonValueFactory PythonClassName="PetriNetPythonFactory" ValueFactory="org.pm4knime.node.conversion.pn2table.PetriNetCellFactory" ValueTypeName="utils.petri_net_type.PetriNetPythonCell">
          </PythonValueFactory>
-         
-                     
-         <FromPandasColumnConverter PythonClassName="FromPetriNetPandasColumnConverter" ValueTypeName="org.pm4knime.node.conversion.pn2table.PetriNetCellFactory">
-         </FromPandasColumnConverter>
-                                                                     
-            
-            
-            
-            
-         <ToPandasColumnConverter PythonClassName="ToPetriNetPandasColumnConverter" ValueFactory="org.pm4knime.node.conversion.pn2table.PetriNetCellFactory">
-         </ToPandasColumnConverter>
-                                                                     
+                                                        
                                           
         </Module>
-                                            
-    
-    
-    
-    
+     
     </extension>
                                                         
 
