@@ -1,7 +1,5 @@
 ### Running the Extension in Development Mode (Eclipse)
 
-### Running the Extension in Development Mode (Eclipse)
-
 #### Prerequisites
 - Java 11 or higher
 - Eclipse for RCP and RAP developers
