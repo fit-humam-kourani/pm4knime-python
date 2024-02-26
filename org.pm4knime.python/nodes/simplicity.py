@@ -5,7 +5,6 @@ import pandas as pd
 import logging
 import os
 
-
 LOGGER = logging.getLogger(__name__)
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -31,10 +30,9 @@ class SimplicityChecker:
         return None
 
     def execute(self, exec_context, input_2):
-        net_table = input_2.to_pandas()
-        # exec_context.set_warning("This is a warning")
+        pn_net_table = input_2.to_pandas()
         # exec_context.set_warning(net_table['Petri Net'].iloc[0].stringPN)
-        pnCell = net_table.iloc[0,0]
-        simplicity = pm4py.algo.evaluation.simplicity.algorithm.apply(petri_net=pnCell.net)
+        pn_cell = pn_net_table.iloc[0, 0]
+        simplicity = pm4py.algo.evaluation.simplicity.algorithm.apply(petri_net=pn_cell.net)
         res = pd.DataFrame.from_dict({"simplicity": simplicity}, orient='index', columns=['Value'])
         return knext.Table.from_pandas(res)
