@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../category-manipulation.png" type="Manipulator" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Filter Event Log by Length</name>
+    
+    <shortDescription>
+        This node filters the traces based on their length.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro> This node filters the traces based on their length.</intro>
+        
+         <option name="Keep">The filtering strategy. If "keep"" is chosen, the traces that meet the filtering threshold will be kept.
+        Otherwise, the traces that meet the filtering threshold will removed.</option>
+        <option name="Minimum Length">The minimum length of trace. It is a positive integer. 
+        When a negative value is given, the default value 1 is used instead. 
+        When a double value is given, it is casted down. 
+        It should be greater or equal than the minimum length. Otherwise, 
+        a configuration exception is thrown.</option>
+        <option name="Maximum Length">The maximum length of trace. It is a positive integer.
+        When a negative value is given, the default value 1 is automatically set. 
+        When a double value is given, it is casted down. 
+        It should be greater or equal than the minimum length. Otherwise, 
+        a configuration exception is thrown. </option>
+        
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Event Log">the event log to be filtered</inPort>
+        <outPort index="0" name="Event Log">the filtered event log</outPort>
+       
+    </ports>   
+</knimeNode>

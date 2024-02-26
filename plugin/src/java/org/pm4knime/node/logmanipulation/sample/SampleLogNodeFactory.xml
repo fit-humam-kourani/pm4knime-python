@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../category-manipulation.png" type="Manipulator" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Event Log Partitioning</name>
+    
+    <shortDescription>
+        This node is used to randomly sample a percentage of traces from the event log. 
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+        This node is used to randomly sample a percentage of traces from the event log. 
+        After sampling, it outputs two event logs: the sampled event log and the event log that contains the removed traces.</intro>
+        
+        <option name="Use Percentage">If checked, the sampling number is used as the percentage of traces to be kept. 
+        Otherwise, the sampling number is used as the number of traces to be kept.</option>
+        <option name="Sampling Number">
+         <br/>If "Use Percentage" is checked, the sampling number must be between 0 and 1.0 to set the percentage of traces to be kept.
+         <br/>Otherwise, the sampling number must be a non-negative integer to set the number of traces to be kept.</option>
+        
+    </fullDescription>
+    
+    <ports>
+       <inPort index="0" name="Event Log">the event log to be sampled</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Event Log">the sampled event log</outPort>
+		 <outPort index="1" name="Event Log">the event log that contains the removed traces</outPort>
+        
+    </ports>    
+    
+</knimeNode>
