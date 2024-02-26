@@ -24,10 +24,9 @@ path_to_icon = os.path.abspath(os.path.join(script_dir, "..", "icon", "category-
 @knime_util.create_node_description(
     short_description="Discover a Partially Ordered Workflow Model (POWL) from an event table.",
     description="Discover a Partially Ordered Workflow Model (POWL) from an event log.")
-# Change the input annotation to specify an Event Log Table
 @knext.input_table(name="Event Table", description="An Event Table.")
-# Change the output annotation to indicate an SVG image
 @knext.output_table(name="Petri Net Table", description="A Petri net Table")
+@knext.output_image(name="POWL Model", description="An SVG image of a POWL model.")
 @knext.output_view(name="POWL Model", description="A POWL model.")
 class POWL_Miner:
     column_param_case = knext.ColumnParameter(label="Case Column",
@@ -64,5 +63,5 @@ class POWL_Miner:
         powl_vis = visualize_powl(powl, parameters={"format": "svg"})
         svg_string = powl_vis.pipe(encoding='utf-8')
 
-        return knext.Table.from_pandas(pn_df), knext.view_svg(svg_string)
+        return knext.Table.from_pandas(pn_df), svg_string, knext.view_svg(svg_string)
 
