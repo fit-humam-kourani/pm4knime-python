@@ -1,7 +1,5 @@
 package org.pm4knime.node.conformance.performance;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import org.deckfour.xes.classification.XEventClassifier;
@@ -13,7 +11,6 @@ import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
@@ -21,7 +18,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.pm4knime.portobject.ManifestWithSerializer;
 import org.pm4knime.portobject.RepResultPortObject;
 import org.pm4knime.portobject.RepResultPortObjectSpec;
 import org.pm4knime.settingsmodel.SMAlignmentReplayParameter;
@@ -37,7 +33,6 @@ import org.processmining.plugins.manifestanalysis.visualization.performance.Perf
 import org.processmining.plugins.manifestanalysis.visualization.performance.ReliablePerfCounter;
 import org.processmining.plugins.petrinet.manifestreplayer.PNManifestReplayerParameter;
 import org.processmining.plugins.petrinet.manifestreplayresult.Manifest;
-import org.processmining.plugins.petrinet.manifestreplayresult.ManifestEvClassPattern;
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
 
@@ -68,9 +63,6 @@ import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
  */
 public class PerformanceCheckerNodeModel extends DefaultNodeModel{
 	private static final NodeLogger logger = NodeLogger.getLogger(PerformanceCheckerNodeModel.class);
-
-	private static final String CFG_MC_MANIFEST = "Model Content for Manifest";
-
 
 	// we create a similar nodeSetting like Conformance Checking?
 	SMPerformanceParameter m_parameter;
@@ -263,32 +255,6 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel{
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
 		// TODO: generated method stub
 		m_parameter.loadSettingsFrom(settings);
-	}
-
-	@Override
-	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-		// TODO deserialize the manifest and other related data for view
-		try {
-			File manifestDir = new File(nodeInternDir, CFG_MC_MANIFEST);
-			mResult = ManifestWithSerializer.loadFrom(manifestDir, exec);
-		} catch (InvalidSettingsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-
-	@Override
-	protected void saveInternals(File nodeInternDir, ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-		// TODO serialise the manifest and other related data for view
-		// manifest, reliableResultSymbol, timeAttribute, if with Synmove to generate counter.[pure one is ok]
-		// to serialize manifest with a dir
-		File manifestDir = new File(nodeInternDir, CFG_MC_MANIFEST);
-		manifestDir.mkdirs();
-		ManifestWithSerializer.saveTo((ManifestEvClassPattern) mResult, manifestDir , exec);
-		
 	}
 	
 
