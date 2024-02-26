@@ -137,8 +137,7 @@
                                         		
         
         
-        
-        
+         
         <node category-path="/community/processmining/io/ioWrite" factory-class="org.pm4knime.node.io.log.writer.xes.XESWriterNodeFactory"/>
                                         		
         
