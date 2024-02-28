@@ -1,25 +1,14 @@
 package org.pm4knime.node.discovery.alpha.table;
 
-import java.awt.Composite;
-
-import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings;
 import org.processmining.alphaminer.parameters.AlphaVersion;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.DialogComponentStringSelection; // Updated import
-import org.knime.core.webui.node.dialog.defaultdialog.widget.DialogComponentString; // Updated import
-import org.knime.core.webui.node.dialog.defaultdialog.widget.DialogComponentStringSelection;
 
 
 @SuppressWarnings("restriction")

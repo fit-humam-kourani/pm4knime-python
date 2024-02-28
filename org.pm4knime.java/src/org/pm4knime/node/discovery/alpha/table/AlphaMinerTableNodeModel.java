@@ -11,7 +11,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 import org.pm4knime.node.discovery.defaultminer.TraceVariantRep;
-import org.pm4knime.portobject.CausalGraphPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.PetriNetUtil;
@@ -32,11 +31,6 @@ import org.processmining.models.semantics.petrinet.Marking;
 public class AlphaMinerTableNodeModel extends DefaultTableMinerNodeModel<AlphaMinerTableNodeSettings> {
 
 	private static final NodeLogger logger = NodeLogger.getLogger(AlphaMinerTableNodeModel.class);
-	
-	protected PortObject pnPO;
-	protected CausalGraphPortObject cgPO;
-	
-	
 	
 	protected AlphaMinerTableNodeModel(final Class<AlphaMinerTableNodeSettings> modelSettingsClass) {
 		super( new PortType[]{BufferedDataTable.TYPE } ,
@@ -88,7 +82,5 @@ public class AlphaMinerTableNodeModel extends DefaultTableMinerNodeModel<AlphaMi
 		return new PortObjectSpec[] { ptSpec };
 	}
 
-
-	
 }
 

@@ -1,7 +1,5 @@
 package org.pm4knime.node.discovery.defaultminer;
 
-import java.awt.Composite;
-
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.StringValue;
