@@ -25,7 +25,6 @@ public final class AlphaMinerTableNodeSettings extends DefaultTableMinerSettings
 	        interface Variants {
 		    	
 	        }   
-		    void updateVisibility();
 		    
 		    @Section(title = "Parameters for AlphaR")
 	        @After(Variants.class)
