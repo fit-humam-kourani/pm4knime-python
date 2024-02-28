@@ -11,7 +11,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 import org.pm4knime.node.discovery.defaultminer.TraceVariantRep;
-import org.pm4knime.portobject.CausalGraphPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.PetriNetUtil;
@@ -33,20 +32,10 @@ public class AlphaMinerTableNodeModel extends DefaultTableMinerNodeModel<AlphaMi
 
 	private static final NodeLogger logger = NodeLogger.getLogger(AlphaMinerTableNodeModel.class);
 	
-	protected PortObject pnPO;
-	protected CausalGraphPortObject cgPO;
-	
-	
-	
 	protected AlphaMinerTableNodeModel(final Class<AlphaMinerTableNodeSettings> modelSettingsClass) {
 		super( new PortType[]{BufferedDataTable.TYPE } ,
 				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View", modelSettingsClass);
 	}
-
-	
-	
-	
-
 
 
 	protected PortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception {
@@ -72,8 +61,8 @@ public class AlphaMinerTableNodeModel extends DefaultTableMinerNodeModel<AlphaMi
 		PluginContext context = PM4KNIMEGlobalContext.instance().getFutureResultAwarePluginContext(AlphaMinerPlugin.class);
 		
 		
-		TraceVariantRep variants = new TraceVariantRep(table, m_settings.getTraceClassifier(), m_settings.getEventClassifier());
-		Object[] result = AlphaAbstraction.apply(context, variants, m_settings.getEventClassifier(), alphaParams);
+		TraceVariantRep variants = new TraceVariantRep(table, m_settings.t_classifier, m_settings.e_classifier);
+		Object[] result = AlphaAbstraction.apply(context, variants, m_settings.e_classifier, alphaParams);
 
 		// when there is no finalMarking available, we set the finalMarking automatically
 		Set<Marking> fmSet = PetriNetUtil.guessFinalMarking((Petrinet) result[0]); // new HashMap();
@@ -93,7 +82,5 @@ public class AlphaMinerTableNodeModel extends DefaultTableMinerNodeModel<AlphaMi
 		return new PortObjectSpec[] { ptSpec };
 	}
 
-
-	
 }
 
