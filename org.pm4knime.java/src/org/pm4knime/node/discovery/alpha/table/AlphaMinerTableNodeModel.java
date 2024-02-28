@@ -43,11 +43,6 @@ public class AlphaMinerTableNodeModel extends DefaultTableMinerNodeModel<AlphaMi
 				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View", modelSettingsClass);
 	}
 
-	
-	
-	
-
-
 
 	protected PortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception {
 		// TODO Auto-generated method stub
@@ -72,8 +67,8 @@ public class AlphaMinerTableNodeModel extends DefaultTableMinerNodeModel<AlphaMi
 		PluginContext context = PM4KNIMEGlobalContext.instance().getFutureResultAwarePluginContext(AlphaMinerPlugin.class);
 		
 		
-		TraceVariantRep variants = new TraceVariantRep(table, m_settings.getTraceClassifier(), m_settings.getEventClassifier());
-		Object[] result = AlphaAbstraction.apply(context, variants, m_settings.getEventClassifier(), alphaParams);
+		TraceVariantRep variants = new TraceVariantRep(table, m_settings.t_classifier, m_settings.e_classifier);
+		Object[] result = AlphaAbstraction.apply(context, variants, m_settings.e_classifier, alphaParams);
 
 		// when there is no finalMarking available, we set the finalMarking automatically
 		Set<Marking> fmSet = PetriNetUtil.guessFinalMarking((Petrinet) result[0]); // new HashMap();

@@ -27,20 +27,12 @@ public class DefaultTableMinerSettings implements DefaultNodeSettings {
 	@Widget(title = "Trace Classifier", description = "The column to be used as a trace classifier.")
 	@Layout(DialogLayout.MainDropdownSection.class)
     @ChoicesWidget(choices = StringColumnChoices.class)
-	String t_classifier;
+	public String t_classifier;
 	
 	@Widget(title = "Event Classifier", description = "The column to be used as an event classifier.")
 	@Layout(DialogLayout.MainDropdownSection.class)
     @ChoicesWidget(choices = StringColumnChoices.class)
-	String e_classifier;
-	
-	public String getTraceClassifier() {
-		return t_classifier;
-	}
-	
-	public String getEventClassifier() {
-		return e_classifier;
-	}
+	public String e_classifier;
 	
 	
 	public static final class StringColumnChoices implements ChoicesProvider {
