@@ -21,6 +21,7 @@ import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
+import org.pm4knime.node.visualizations.jsgraphviz.util.WebUIJSViewNodeModel;
 import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.DfgMsdPortObject;
 import org.pm4knime.portobject.DfgMsdPortObjectSpec;
@@ -41,25 +42,19 @@ import org.processmining.processtree.ProcessTree;
  *
  * @author
  */
-public class InductiveMinerDFGTableNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
+public class InductiveMinerDFGTableNodeModel extends WebUIJSViewNodeModel<InductiveMinerDFGTableNodeSettings, JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 
 	private static final NodeLogger logger = NodeLogger.getLogger(InductiveMinerDFGTableNodeModel.class);
-	public static final String[] CFG_VARIANT_VALUES = { "Inductive Miner - directly follows (IMd)",
-			"Inductive Miner - infrequent - directly follows (IMfd)",
-			"Inductive Miner - incompleteness - directly follows (IMcd)" };
 
-	public static final String CFGKEY_NOISE_THRESHOLD = "Noise Threshold";
-
-	SettingsModelDoubleBounded m_noiseThreshold = new SettingsModelDoubleBounded(CFGKEY_NOISE_THRESHOLD, 0.8, 0, 1.0);
 	protected ProcessTreePortObject ptpo;
 	protected DfgMsdPortObject dfgMsdPO;
+	
+	private InductiveMinerDFGTableNodeSettings m_settings;
 
-	/**
-	 * Constructor for the node model.
-	 */
-	protected InductiveMinerDFGTableNodeModel() {
 
-		super(new PortType[] { DfgMsdPortObject.TYPE }, new PortType[] { ProcessTreePortObject.TYPE }, "Process Tree JS View");
+	protected InductiveMinerDFGTableNodeModel(Class<InductiveMinerDFGTableNodeSettings> class1) {
+
+		super(new PortType[] { DfgMsdPortObject.TYPE }, new PortType[] { ProcessTreePortObject.TYPE }, "Process Tree JS View", class1);
 	}
 
 	
@@ -79,7 +74,7 @@ public class InductiveMinerDFGTableNodeModel extends AbstractSVGWizardNodeModel<
 		DfgMsd dfmMsd = dfgMsdPO.getDfgMsd();
 
 		MiningParametersIMWithoutLog params = new MiningParametersIMWithoutLog();
-		params.setNoiseThreshold((float) m_noiseThreshold.getDoubleValue());
+		params.setNoiseThreshold((float) m_settings.m_noiseThreshold);
 
 		EfficientTree ptEff = InductiveMinerWithoutLogPlugin.mineTree(dfmMsd, new MiningParametersIMWithoutLog(),
 				new Canceller() {
@@ -116,38 +111,15 @@ public class InductiveMinerDFGTableNodeModel extends AbstractSVGWizardNodeModel<
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs, InductiveMinerDFGTableNodeSettings modelSettings) throws InvalidSettingsException {
 
+		m_settings = modelSettings;
 		if (!inSpecs[0].getClass().equals(DfgMsdPortObjectSpec.class))
 			throw new InvalidSettingsException("Input is not a valid DFG model!");
 
 		DfgMsdPortObjectSpec dfgSpec = new DfgMsdPortObjectSpec();
 
 		return new PortObjectSpec[]{new ProcessTreePortObjectSpec()};
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		m_noiseThreshold.saveSettingsTo(settings);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-		m_noiseThreshold.loadSettingsFrom(settings);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-		// TODO: generated method stub
 	}
 	
 	@Override

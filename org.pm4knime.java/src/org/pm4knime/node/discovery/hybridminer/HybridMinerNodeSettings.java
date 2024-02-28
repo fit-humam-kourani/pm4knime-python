@@ -10,12 +10,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 @SuppressWarnings({"restriction"}) 
 public final class HybridMinerNodeSettings implements DefaultNodeSettings {
 
-	 @Widget(title = "Threshold for Cancellation of Place Iterator", description = "Threshold for early cancellation of place iterator: after x consecutive rejected places, the place iterator is canceled")
+	 @Widget(title = "Threshold for Cancellation of Place Iterator", description = "Threshold for early cancellation of place iterator: after x consecutive rejected places, the place iterator is canceled.")
 	 @NumberInputWidget(min = 1)
 	 int t_cancel = 1000;
 	
 	 
-	 @Widget(title = "Fitness Threshold", description = "Fitness threshold for the place evaluation method")
+	 @Widget(title = "Fitness Threshold", description = "Fitness threshold for the place evaluation method.")
 	 @NumberInputWidget(min = 0.0, max = 1.0)
 	 double t_fitness = 0.8;	 
 	 
@@ -26,7 +26,7 @@ public final class HybridMinerNodeSettings implements DefaultNodeSettings {
          @Label("local evaluation with global fitness guarantee")
          GLOBAL;
      }
-     @Widget(title = "Place evaluation method", description = "Place evaluation method")
+     @Widget(title = "Place evaluation method", description = "Place evaluation method.")
      @ValueSwitchWidget
 	 FitnessType type_fitness = FitnessType.GLOBAL;
 
