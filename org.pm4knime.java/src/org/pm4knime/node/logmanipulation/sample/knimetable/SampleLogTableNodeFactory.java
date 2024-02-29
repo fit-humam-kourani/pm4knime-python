@@ -1,58 +1,47 @@
 package org.pm4knime.node.logmanipulation.sample.knimetable;
 
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+import org.knime.core.node.NodeFactory.NodeType;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
-/**
- * <code>NodeFactory</code> for the "SampleLog" Node.
- * Sample the event log by giving number or a precentage of whole size
- *
- * @author Kefang
- */
-public class SampleLogTableNodeFactory 
-        extends NodeFactory<SampleLogTableNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SampleLogTableNodeModel createNodeModel() {
-        return new SampleLogTableNodeModel();
-    }
+@SuppressWarnings("restriction")
+public final class SampleLogTableNodeFactory extends WebUINodeFactory<SampleLogTableNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-        return 0;
-    }
+	SampleLogTableNodeModel node;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<SampleLogTableNodeModel> createNodeView(final int viewIndex,
-            final SampleLogTableNodeModel nodeModel) {
-        return null;
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Event Table Partitioning")
+			.icon("../../category-manipulation.png")
+			.shortDescription("This node is used to randomly sample a percentage of traces from the event table.")
+			.fullDescription("This node is used to randomly sample a percentage of traces from the event table. After sampling, it outputs two event tables: the sampled event table and the event table that contains the removed traces.")
+			.modelSettingsClass(SampleLogTableNodeSettings.class)//
+			.addInputPort("Table", BufferedDataTable.TYPE ,"The event table to be sampled.")//
+			.addOutputPort("Table", BufferedDataTable.TYPE, "The sampled event table.")//
+			.addOutputPort("Table", BufferedDataTable.TYPE, "The event table that contains the removed traces.")//
+			.nodeType(NodeType.Manipulator)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-        return true;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-        return new SampleLogTableNodeDialog();
-    }
+	public SampleLogTableNodeFactory() {
+		super(CONFIG);
+	}
+
+
+	protected SampleLogTableNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public SampleLogTableNodeModel createNodeModel() {
+		node = new SampleLogTableNodeModel(SampleLogTableNodeSettings.class);
+		return node;
+	}
 
 }
 

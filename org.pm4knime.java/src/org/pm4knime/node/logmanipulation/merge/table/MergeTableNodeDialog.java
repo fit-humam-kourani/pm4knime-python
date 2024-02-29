@@ -9,8 +9,6 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
-import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerDialog;
-import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerModel;
 import org.knime.core.data.DataTableSpec;
 
 
