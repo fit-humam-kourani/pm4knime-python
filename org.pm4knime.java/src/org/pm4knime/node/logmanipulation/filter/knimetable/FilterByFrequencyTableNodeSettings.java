@@ -24,17 +24,17 @@ public final class FilterByFrequencyTableNodeSettings extends DefaultTableNodeSe
 	 }
 	
 	
-	@Widget(title = "Use Percentage", description = "If checked, the sampling number is used as the percentage of traces to be kept. \r\n"
-			+ "        Otherwise, the sampling number is used as the number of traces to be kept.")
+	@Widget(title = "Keep", description = "If checked, the traces/trace variants that meet the filtering threshold will be kept.\r\n"
+			+ "        Otherwise, the traces/trace variants that meet the filtering threshold will removed.")
 	@Layout(ExtendedDialogLayout.Settings.class)
 	boolean m_isKeep = true;
 	
-	@Widget(title = "Use Percentage", description = "If checked, the sampling number is used as the percentage of traces to be kept. \r\n"
-			+ "        Otherwise, the sampling number is used as the number of traces to be kept.")
+	@Widget(title = "Trace Variant Filtering", description = "If checked, the filtering will be applied on the trace variant level; i.e., trace variants that meet the filtering threshold will be kept/removed.\r\n"
+			+ "        If this option is disabled, the filtering threshold is used to set the percentage of traces to be kept/removed.")
 	@Layout(ExtendedDialogLayout.Settings.class)
 	boolean m_isForSingleTV = true;
 	
-	@Widget(title = "Sampling Number", description = "If 'Use Percentage' is checked, the sampling number must be between 0.0 and 1.0 to set the percentage of traces to be kept. Otherwise, the sampling number must be a non-negative integer to set the number of traces to be kept.")
+	@Widget(title = "Filtering Threshold", description = "The filtering threshold. It accepts both relative and absolute values (relative values between 0 and 1.0 and absolute integers greater than 1).")
 	@Layout(ExtendedDialogLayout.Settings.class)
 	@NumberInputWidget(min = 0.0)
 	double m_threshold = 0.2;

@@ -27,8 +27,8 @@ public class TraceVariantVisNodeDialog extends DefaultNodeSettingsPane {
 	protected DialogComponentColumnNameSelection event_classifierComp ;
 	protected DialogComponentColumnNameSelection trace_classifierComp;	
 	protected DialogComponentBoolean m_generateImageCheckBox;
-	protected SettingsModelString t_classifier =  new SettingsModelString(DefaultTableMinerModel.KEY_TRACE_CLASSIFIER, null);
-	protected SettingsModelString e_classifier =  new SettingsModelString(DefaultTableMinerModel.KEY_EVENT_CLASSIFIER, null);
+	protected SettingsModelString t_classifier =  new SettingsModelString("t_classifier", null);
+	protected SettingsModelString e_classifier =  new SettingsModelString("e_classifier", null);
 	protected SettingsModelBoolean create_image = new SettingsModelBoolean("Create image at outport", false);
 	
 	public TraceVariantVisNodeDialog(TraceVariantVisNodeModel n) {
