@@ -1,10 +1,6 @@
 package org.pm4knime.node.logmanipulation.sample.knimetable;
 
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeFactory;
 
