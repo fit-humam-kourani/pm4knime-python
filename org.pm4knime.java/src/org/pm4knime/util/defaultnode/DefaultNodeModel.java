@@ -11,6 +11,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortType;
+import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings;
 import org.processmining.framework.plugin.PluginContext;
 
 /**
@@ -18,7 +19,7 @@ import org.processmining.framework.plugin.PluginContext;
  * @author kefang-pads
  *
  */
-public class DefaultNodeModel extends NodeModel {
+public abstract class DefaultNodeModel<S extends DefaultTableMinerSettings> extends NodeModel {
 	
 	protected DefaultNodeModel(PortType[] inPortTypes, PortType[] outPortTypes) {
 		super(inPortTypes, outPortTypes);

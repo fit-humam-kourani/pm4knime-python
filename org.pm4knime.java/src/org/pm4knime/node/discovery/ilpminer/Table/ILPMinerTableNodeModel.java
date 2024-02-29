@@ -1,23 +1,17 @@
 package org.pm4knime.node.discovery.ilpminer.Table;
 
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
-import org.pm4knime.settingsmodel.SMILPMinerParameter;
 import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
 import org.pm4knime.util.defaultnode.TraceVariantRepresentation;
-import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerModel;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 import org.pm4knime.node.discovery.ilpminer.Table.util.TableHybridILPMinerParametersImpl;
 import org.pm4knime.node.discovery.ilpminer.Table.util.TableHybridILPMinerPlugin;
-import org.pm4knime.node.discovery.inductiveminer.Table.InductiveMinerTableNodeSettings;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.acceptingpetrinet.models.impl.AcceptingPetriNetImpl;
 import org.processmining.framework.plugin.PluginContext;

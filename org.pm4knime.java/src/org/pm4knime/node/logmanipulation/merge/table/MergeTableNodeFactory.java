@@ -1,66 +1,42 @@
 package org.pm4knime.node.logmanipulation.merge.table;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
-/**
- * This is an example implementation of the node factory of the
- * "MergeLog" node.
- *
- * @author Kefang Ding
- */
-public class MergeTableNodeFactory 
-        extends NodeFactory<MergeTableNodeModel> {
 
-    MergeTableNodeModel node;
+@SuppressWarnings("restriction")
+public final class MergeTableNodeFactory extends WebUINodeFactory<MergeTableNodeModel> {
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    public MergeTableNodeModel createNodeModel() {
-		// Create and return a new node model.
-    	node = new MergeTableNodeModel();
-    	return node;
-    }
+	MergeTableNodeModel node;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Merge Event Tables")
+			.icon("../../category-manipulation.png")
+			.shortDescription("This node merges two event tables.")
+			.fullDescription("This node merges two event tables.")
+			.modelSettingsClass(MergeTableNodeSettings.class)//
+			.addInputPort("Table", BufferedDataTable.TYPE ,"The first event table to be merged (used as the base event table).")//
+			.addInputPort("Table", BufferedDataTable.TYPE ,"The second event table to be merged.")//
+			.addOutputPort("Table", BufferedDataTable.TYPE, "The merged event table.")//
+			.nodeType(NodeType.Manipulator)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<MergeTableNodeModel> createNodeView(final int viewIndex,
-            final MergeTableNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return true;
-    }
+	public MergeTableNodeFactory() {
+		super(CONFIG);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return new MergeTableNodeDialog(this.node);
-    }
+
+	protected MergeTableNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+	@Override
+	public MergeTableNodeModel createNodeModel() {
+		node = new MergeTableNodeModel();
+		return node;
+	}
 
 }
 

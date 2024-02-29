@@ -1,62 +1,42 @@
 package org.pm4knime.node.logmanipulation.filter.knimetable;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
-/**
- * This is an example implementation of the node factory of the
- * "FilterByLength" node.
- *
- * @author Kefang Ding
- */
-public class FilterByLengthTableNodeFactory 
-        extends NodeFactory<FilterByLengthTableNodeModel> {
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FilterByLengthTableNodeModel createNodeModel() {
-		// Create and return a new node model.
-        return new FilterByLengthTableNodeModel();
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
+@SuppressWarnings("restriction")
+public final class FilterByLengthTableNodeFactory extends WebUINodeFactory<FilterByLengthTableNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<FilterByLengthTableNodeModel> createNodeView(final int viewIndex,
-            final FilterByLengthTableNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
+	FilterByLengthTableNodeModel node;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return true;
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Filter Event Table by Length")
+			.icon("../../category-manipulation.png")
+			.shortDescription("This node filters the traces based on their length.")
+			.fullDescription("This node filters the traces based on their length.")
+			.modelSettingsClass(FilterByLengthTableNodeSettings.class)//
+			.addInputPort("Table", BufferedDataTable.TYPE ,"The event table to be filtered.")//
+			.addOutputPort("Table", BufferedDataTable.TYPE, "The filtered event table.")//
+			.nodeType(NodeType.Manipulator)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return new FilterByLengthTableNodeDialog();
-    }
+
+	public FilterByLengthTableNodeFactory() {
+		super(CONFIG);
+	}
+
+
+	protected FilterByLengthTableNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public FilterByLengthTableNodeModel createNodeModel() {
+		node = new FilterByLengthTableNodeModel(FilterByLengthTableNodeSettings.class);
+		return node;
+	}
 
 }
 
