@@ -23,7 +23,7 @@ import org.processmining.plugins.petrinet.replayresult.PNRepResult;
  *
  * @author 
  */
-public class FitnessCheckerNodeView extends NodeView<FitnessCheckerNodeModel> {
+public class OLD_FitnessCheckerNodeView extends NodeView<OLD_FitnessCheckerNodeModel> {
 
 	private JPanel m_viewPanel;
     /**
@@ -31,7 +31,7 @@ public class FitnessCheckerNodeView extends NodeView<FitnessCheckerNodeModel> {
      * 
      * @param nodeModel The model (class: {@link FitnessCheckerNodeModel})
      */
-    protected FitnessCheckerNodeView(final FitnessCheckerNodeModel nodeModel, JPanel viewPanel) {
+    protected OLD_FitnessCheckerNodeView(final OLD_FitnessCheckerNodeModel nodeModel, JPanel viewPanel) {
         super(nodeModel);
         // TODO: show the conformance projection here 
         m_viewPanel = viewPanel; 
@@ -46,7 +46,7 @@ public class FitnessCheckerNodeView extends NodeView<FitnessCheckerNodeModel> {
     protected void modelChanged() {
         if(getNodeModel() != null) {
         	
-        	FitnessCheckerNodeModel nodeModel = getNodeModel();
+        	OLD_FitnessCheckerNodeModel nodeModel = getNodeModel();
         	RepResultPortObjectTable repResultPO = nodeModel.repResultPO;
         	if(repResultPO == null) {
         		return;

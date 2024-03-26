@@ -1,7 +1,5 @@
 package org.pm4knime.node.conformance.table.fitness;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 import org.knime.core.data.DataCell;
@@ -13,41 +11,36 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.pm4knime.node.conformance.table.precision.PrecisionCheckerNodeSettings;
 import org.pm4knime.portobject.RepResultPortObjectSpecTable;
 import org.pm4knime.portobject.RepResultPortObjectTable;
 import org.pm4knime.util.ReplayerUtil;
 import org.pm4knime.util.defaultnode.DefaultNodeModel;
-import org.pm4knime.util.defaultnode.EmptyNodeSettings;
-
-
-@SuppressWarnings("restriction")
-public class FitnessCheckerNodeModel extends NodeModel {
-	private static final NodeLogger logger = NodeLogger.getLogger(FitnessCheckerNodeModel.class);
+/**
+ * <code>NodeModel</code> for the "ConformanceChecker" node.
+ *
+ * @author 
+ */
+public class OLD_FitnessCheckerNodeModel extends DefaultNodeModel implements PortObjectHolder {
+	private static final NodeLogger logger = NodeLogger.getLogger(OLD_FitnessCheckerNodeModel.class);
 	
 	private DataTableSpec m_tSpec;
 	RepResultPortObjectTable repResultPO;
 	
-	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
-
-    private final Class<EmptyNodeSettings> m_settingsClass;
-	
-    protected FitnessCheckerNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
+	// it seems there is no parameters to add in this result shown...
+    /**
+     * Constructor for the node model.
+     */
+    protected OLD_FitnessCheckerNodeModel() {
+    
+        // TODO: Specify the amount of input and output ports needed.
     	super(new PortType[] { RepResultPortObjectTable.TYPE}, new PortType[] {BufferedDataTable.TYPE});
-    	m_settingsClass = modelSettingsClass;
     }
 
     /**
@@ -58,14 +51,16 @@ public class FitnessCheckerNodeModel extends NodeModel {
             final ExecutionContext exec) throws Exception {
     	logger.info("Start: Unified PNReplayer Conformance Checking");
     	repResultPO = (RepResultPortObjectTable) inData[0];
-
+// check cancellation of node before sync
+    	checkCanceled(null, exec);
     	// make the transitions in replay result and transitions corresponding!!
     	ReplayerUtil.adjustRepResult(repResultPO.getRepResult(), repResultPO.getNet());
     	
     	BufferedDataContainer buf = exec.createDataContainer(m_tSpec);
     	// one warning here, if we could get the fitness information , or not.
     	// if the types are changed from this step, then exceptions happen.
-
+// check cancellation of node before writing
+    	checkCanceled(null, exec);
     	Map<String, Object> info = repResultPO.getRepResult().getInfo();
     	int i=0;
     	for(String key : info.keySet()) {
@@ -86,6 +81,8 @@ public class FitnessCheckerNodeModel extends NodeModel {
     	buf.close();
     	BufferedDataTable bt = buf.getTable();
     	
+// check cancellation of node before closing
+    	checkCanceled(null, exec);
         return new PortObject[]{bt};
     }
 
@@ -108,47 +105,20 @@ public class FitnessCheckerNodeModel extends NodeModel {
         return new PortObjectSpec[]{m_tSpec};
     }
 
+    public RepResultPortObjectTable getRepResultPO() {
+		// TODO Auto-generated method stub
+		return repResultPO;
+	}
 	
 	@Override
-	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-		// TODO Auto-generated method stub
-		
+	public void setInternalPortObjects(PortObject[] portObjects) {
+		repResultPO = (RepResultPortObjectTable)portObjects[0];
 	}
 
 	@Override
-	protected void saveInternals(File nodeInternDir, ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
+	public PortObject[] getInternalPortObjects() {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) {
-         // TODO: generated method stub
-    	if (m_settings != null) {
-            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
-        }
-    }
-
-    
-	@Override
-    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
-    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
-    }
-
-	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	protected void reset() {
-		// TODO Auto-generated method stub
-		
+		return new PortObject[] {repResultPO};
 	}
 
 

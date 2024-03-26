@@ -1,67 +1,44 @@
 package org.pm4knime.node.conformance.table.fitness;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
+import org.pm4knime.portobject.RepResultPortObjectTable;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
 
-/**
- * This is an example implementation of the node factory of the
- * "ConformanceChecker" node.
- *
- * @author 
- */
-public class FitnessCheckerNodeFactory 
-        extends NodeFactory<FitnessCheckerNodeModel> {
+@SuppressWarnings("restriction")
+public class FitnessCheckerNodeFactory extends WebUINodeFactory<FitnessCheckerNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FitnessCheckerNodeModel createNodeModel() {
-		// Create and return a new node model.
-        return new FitnessCheckerNodeModel();
-    }
+	FitnessCheckerNodeModel node;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		return 1;
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Alignment-Based Fitness Evaluator")
+			.icon("../../category-conformance.png")
+			.shortDescription("Based on the replay result, this node outputs the statistical fitness information.")
+			.fullDescription("This node computes the statistical fitness information based on the result of alignment-based replayer.")//
+			.modelSettingsClass(EmptyNodeSettings.class)//
+			.addInputPort("Replay Result", RepResultPortObjectTable.TYPE ,"replay result")//
+			.addOutputPort("Fitness Statinfo", BufferedDataTable.TYPE, "fitness statistical information")//
+			.nodeType(NodeType.Other)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<FitnessCheckerNodeModel> createNodeView(final int viewIndex,
-            final FitnessCheckerNodeModel nodeModel) {
-		JPanel viewPanel = new JPanel();
-    	viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.Y_AXIS));
-    	viewPanel.setName("Fitness Projection Panel");
-		return new FitnessCheckerNodeView(nodeModel, viewPanel);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return false;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return null;
-    }
+	public FitnessCheckerNodeFactory() {
+		super(CONFIG);
+	}
 
+
+	protected FitnessCheckerNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public FitnessCheckerNodeModel createNodeModel() {
+		node = new FitnessCheckerNodeModel(EmptyNodeSettings.class);
+		return node;
+	}
 }
-

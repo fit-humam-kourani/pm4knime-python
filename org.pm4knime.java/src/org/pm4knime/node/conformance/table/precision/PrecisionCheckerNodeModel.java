@@ -47,7 +47,7 @@ public class PrecisionCheckerNodeModel extends NodeModel {
 //	private final SettingsModelString m_algorithm =  new SettingsModelString(
 //			MultiETCSettings.ALGORITHM, ALIGN_1);
 	
-	protected PrecisionCheckerNodeSettings m_settings;
+	protected PrecisionCheckerNodeSettings m_settings = new PrecisionCheckerNodeSettings();
 
     private final Class<PrecisionCheckerNodeSettings> m_settingsClass;
 	
