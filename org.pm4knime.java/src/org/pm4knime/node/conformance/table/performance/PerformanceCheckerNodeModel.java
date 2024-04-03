@@ -20,7 +20,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.pm4knime.node.conformance.performance.PerfCheckerInfoAssistant;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestFlattenerTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestReplayerParameterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PerfCounterTable;
@@ -87,12 +86,21 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 
 	private ExecutionMonitor exe;
 
-	protected PerformanceCheckerNodeModel() {
+//	protected PerformanceCheckerNodeModel() {
+//
+//		// TODO: Specify the amount of input and output ports needed.
+//		super(new PortType[] { RepResultPortObjectTable.TYPE },
+//				new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE, BufferedDataTable.TYPE });
+//		m_parameter = new SMPerformanceParameter("Performance Parameter");
+//	}
 
+
+	public PerformanceCheckerNodeModel(Class<PerformanceCheckerNodeSettings> class1) {
 		// TODO: Specify the amount of input and output ports needed.
 		super(new PortType[] { RepResultPortObjectTable.TYPE },
 				new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE, BufferedDataTable.TYPE });
 		m_parameter = new SMPerformanceParameter("Performance Parameter");
+		
 	}
 
 	/**

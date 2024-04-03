@@ -1,69 +1,47 @@
 package org.pm4knime.node.conformance.table.performance;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
+import org.pm4knime.portobject.RepResultPortObjectTable;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
 
-/**
- * This is an example implementation of the node factory of the
- * "PerformanceChecker" node.
- *
- * @author Kefang Ding
- */
-public class PerformanceCheckerNodeFactory 
-        extends NodeFactory<PerformanceCheckerNodeModel> {
+@SuppressWarnings("restriction")
+public class PerformanceCheckerNodeFactory extends WebUINodeFactory<PerformanceCheckerNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PerformanceCheckerNodeModel createNodeModel() {
-		// Create and return a new node model.
-        return new PerformanceCheckerNodeModel();
-    }
+	PerformanceCheckerNodeModel node;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 1;
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Alignment-Based Performance Evaluator")
+			.icon("../../category-conformance.png")
+			.shortDescription("Based on the replay result, this node computes the statistical performance information.")
+			.fullDescription("This node computes the statistical precision information based on the result of alignment-based replayer.\r\n"
+					+ "        Conceptually, the precision of a process model compared to one event log is supposed to be (1) high when the model \r\n"
+					+ "        allows for few traces not seen in the log; and (2) low when it allows for many traces not seen in the log.")
+			.modelSettingsClass(PerformanceCheckerNodeSettings.class)//
+			.addInputPort("Replay Result", RepResultPortObjectTable.TYPE ,"replay result")//
+			.addOutputPort("Global Performance StatInfo", BufferedDataTable.TYPE, "global performance statistical information.")//
+			.addOutputPort("Transition Performance Statistics", BufferedDataTable.TYPE, "performance statistical information for the different transitions in the Petri net (waiting time, synchronization time, and sojourn time).")//
+			.addOutputPort("Place Performance Statistics", BufferedDataTable.TYPE, "performance statistical information for the different places in the Petri net (waiting time, synchronization time, and sojourn time).")//
+			.nodeType(NodeType.Other)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<PerformanceCheckerNodeModel> createNodeView(final int viewIndex,
-            final PerformanceCheckerNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-    	JPanel viewPanel = new JPanel();
-    	viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.Y_AXIS));
-    	viewPanel.setName("Performance Projection Panel");
-		return new PerformanceCheckerNodeView(nodeModel, viewPanel);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return true;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return new PerformanceCheckerNodeDialog();
-    }
+	public PerformanceCheckerNodeFactory() {
+		super(CONFIG);
+	}
+
+
+	protected PerformanceCheckerNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public PerformanceCheckerNodeModel createNodeModel() {
+		node = new PerformanceCheckerNodeModel(PerformanceCheckerNodeSettings.class);
+		return node;
+	}
 
 }
-
