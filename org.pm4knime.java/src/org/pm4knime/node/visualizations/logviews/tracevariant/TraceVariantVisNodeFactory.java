@@ -1,40 +1,41 @@
 package org.pm4knime.node.visualizations.logviews.tracevariant;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
-public class TraceVariantVisNodeFactory extends NodeFactory<TraceVariantVisNodeModel>
-implements WizardNodeFactoryExtension<TraceVariantVisNodeModel, TraceVariantVisViewRepresentation, TraceVariantVisViewValue> {
+@SuppressWarnings("restriction")
+public class TraceVariantVisNodeFactory extends WebUINodeFactory<TraceVariantVisNodeModel> implements WizardNodeFactoryExtension<TraceVariantVisNodeModel, TraceVariantVisViewRepresentation, TraceVariantVisViewValue> {
+	
+	TraceVariantVisNodeModel node;
 
-TraceVariantVisNodeModel n;
+	public static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Trace Variant Explorer")
+			.icon("trace.png")
+			.shortDescription("Trace Variant Explorer")
+			.fullDescription("This node implements the trace variant explorer. The trace variant explorer represents an event log as a multi-set of unique activity sequences (called trace variants).") 
+			.modelSettingsClass(TraceVariantVisNodeSettings.class)//
+			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
+			.addOutputPort("Image", ImagePortObject.TYPE, "an SVG image")//
+			.nodeType(NodeType.Visualizer)
+			.build();
 
-@Override
-public TraceVariantVisNodeModel createNodeModel() {
 
-	n = new TraceVariantVisNodeModel();
-	return n;
-}
+	public TraceVariantVisNodeFactory() {
+		super(CONFIG);
+	}
 
-@Override
-protected int getNrNodeViews() {
-	return 0;
-}
 
-@Override
-public NodeView<TraceVariantVisNodeModel> createNodeView(int viewIndex, TraceVariantVisNodeModel nodeModel) {
-	return null;
-}
+	protected TraceVariantVisNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
 
-@Override
-protected boolean hasDialog() {
-	return true;
-}
 
-@Override
-protected NodeDialogPane createNodeDialogPane() {
-	return new TraceVariantVisNodeDialog(n);
-}
-
+	@Override
+	public TraceVariantVisNodeModel createNodeModel() {
+		node = new TraceVariantVisNodeModel(TraceVariantVisNodeSettings.class);
+		return node;
+	}
 }

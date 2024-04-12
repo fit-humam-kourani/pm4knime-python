@@ -37,7 +37,8 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 	
 	protected BufferedDataTable table;
 
-	public TraceVariantVisNodeModel() {
+
+	public TraceVariantVisNodeModel(Class<TraceVariantVisNodeSettings> class1) {
 		super(IN_TYPES, OUT_TYPES, "Trace Variant Explorer");
 	}
 
