@@ -49,13 +49,18 @@ public class Table2XLogConverterNodeModel extends NodeModel {
     /**
      * Constructor for the node model.
      */
-    protected Table2XLogConverterNodeModel() {
-    
-        // TODO: Specify the amount of input and output ports needed.
-        super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{XLogPortObject.TYPE});
-    }
+//    protected Table2XLogConverterNodeModel() {
+//    
+//        // TODO: Specify the amount of input and output ports needed.
+//     
+//    }
 
-    /**
+    public Table2XLogConverterNodeModel(Class<Table2XLogConverterNodeSettings> class1) {
+		// TODO Auto-generated constructor stub
+       super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{XLogPortObject.TYPE});
+	}
+
+	/**
      * they must portOBject to PortObject, else not working.
      * {@inheritDoc}
      */
@@ -209,4 +214,3 @@ public class Table2XLogConverterNodeModel extends NodeModel {
 	}
 
 }
-

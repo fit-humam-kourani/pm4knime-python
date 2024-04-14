@@ -23,7 +23,9 @@ import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObjectSpec;
+import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.util.HybridPetriNetUtil;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
 import org.processmining.plugins.graphviz.dot.Dot;
 
@@ -35,8 +37,16 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 	HybridPetriNetPortObjectSpec m_spec = new HybridPetriNetPortObjectSpec();
 	protected HybridPetriNetPortObject pnPO;
 	protected BufferedDataTable inTable;
-    public Table2HybridPetriNetConverterNodeModel() {
-        super(new PortType[]{BufferedDataTable.TYPE},
+    
+//	public Table2HybridPetriNetConverterNodeModel() {
+//        super(new PortType[]{BufferedDataTable.TYPE},
+//                new PortType[]{HybridPetriNetPortObject.TYPE},
+//                "Hybrid Petri Net JS View");
+//    }
+    
+    public Table2HybridPetriNetConverterNodeModel(Class<EmptyNodeSettings> class1) {
+		// TODO Auto-generated constructor stub
+    	super(new PortType[]{BufferedDataTable.TYPE},
                 new PortType[]{HybridPetriNetPortObject.TYPE},
                 "Hybrid Petri Net JS View");
     }

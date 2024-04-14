@@ -24,6 +24,7 @@ import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.PetriNetUtil;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.plugins.graphviz.dot.Dot;
 
@@ -35,13 +36,22 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
 	PetriNetPortObjectSpec m_spec = new PetriNetPortObjectSpec();
 	protected PetriNetPortObject pnPO;
 	protected BufferedDataTable inTable;
-    public Table2PetriNetConverterNodeModel() {
+//    public Table2PetriNetConverterNodeModel() {
+//        super(new PortType[]{BufferedDataTable.TYPE},
+//                new PortType[]{PetriNetPortObject.TYPE},
+//                "Petri Net JS View");
+//    }
+    
+
+    public Table2PetriNetConverterNodeModel(Class<EmptyNodeSettings> class1) {
+		// TODO Auto-generated constructor stub
         super(new PortType[]{BufferedDataTable.TYPE},
                 new PortType[]{PetriNetPortObject.TYPE},
                 "Petri Net JS View");
     }
 
-    @Override
+
+	@Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
