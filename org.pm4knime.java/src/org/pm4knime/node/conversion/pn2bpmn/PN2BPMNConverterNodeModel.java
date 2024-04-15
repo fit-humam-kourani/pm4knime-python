@@ -22,6 +22,7 @@ import org.pm4knime.portobject.AbstractDotPanelPortObject;
 
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.pm4knime.portobject.BpmnPortObject;
 import org.pm4knime.portobject.BpmnPortObjectSpec;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
@@ -70,16 +71,22 @@ public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
     /**
      * Constructor for the node model.
      */
-    public PN2BPMNConverterNodeModel() {
-        // Call the constructor of the parent class with input and output PortTypes and a node name
-        super(new PortType[] { PetriNetPortObject.TYPE },
-                new PortType[] { BpmnPortObject.TYPE }, "BPMN JS View");
-                 
-    }
+//    public PN2BPMNConverterNodeModel() {
+//        // Call the constructor of the parent class with input and output PortTypes and a node name
+//        super(new PortType[] { PetriNetPortObject.TYPE },
+//                new PortType[] { BpmnPortObject.TYPE }, "BPMN JS View");
+//                 
+//    }
+    
+   public PN2BPMNConverterNodeModel(Class<EmptyNodeSettings> class1) {
+		// TODO Auto-generated constructor stub
+	   super(new PortType[] { PetriNetPortObject.TYPE },
+               new PortType[] { BpmnPortObject.TYPE }, "BPMN JS View");
+	}
 
-    
-    
-   // Override the method to create PortObjects during execution
+
+
+	// Override the method to create PortObjects during execution
     @Override
     protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView,
             final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
@@ -685,4 +692,3 @@ private Object[] cloneToPetrinet(PetrinetGraph petriNet, Marking initialMarking,
 	}
 	
 }
-
