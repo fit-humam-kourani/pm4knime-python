@@ -23,6 +23,7 @@ import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.portobject.ProcessTreePortObject;
 import org.pm4knime.portobject.ProcessTreePortObjectSpec;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.acceptingpetrinet.models.impl.AcceptingPetriNetFactory;
 import org.processmining.plugins.graphviz.dot.Dot;
@@ -40,13 +41,20 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
     /**
      * Constructor for the node model.
      */
-    protected PT2PNConverterNodeModel() {
-    	super(new PortType[] { ProcessTreePortObject.TYPE },
-				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
-    }
+//    protected PT2PNConverterNodeModel() {
+//    	super(new PortType[] { ProcessTreePortObject.TYPE },
+//				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
+//    }
 
     
-    @Override
+    public PT2PNConverterNodeModel(Class<EmptyNodeSettings> class1) {
+		// TODO Auto-generated constructor stub
+    	super(new PortType[] { ProcessTreePortObject.TYPE },
+				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
+	}
+
+
+	@Override
     protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView,
         final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         return new PortObject[]{pnPO};
@@ -193,4 +201,3 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	}
 	
 }
-
