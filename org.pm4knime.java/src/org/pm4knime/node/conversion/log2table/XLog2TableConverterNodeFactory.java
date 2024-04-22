@@ -1,63 +1,44 @@
 package org.pm4knime.node.conversion.log2table;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
+import org.pm4knime.portobject.XLogPortObject;
 
-/**
- * This is an example implementation of the node factory of the
- * "Xlog2TableConverter" node.
- *
- * @author Kefang
- */
-public class XLog2TableConverterNodeFactory 
-        extends NodeFactory<XLog2TableConverterNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public XLog2TableConverterNodeModel createNodeModel() {
-		// Create and return a new node model.
-        return new XLog2TableConverterNodeModel();
-    }
+@SuppressWarnings("restriction")
+public class XLog2TableConverterNodeFactory extends WebUINodeFactory<XLog2TableConverterNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
+	XLog2TableConverterNodeModel node;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<XLog2TableConverterNodeModel> createNodeView(final int viewIndex,
-            final XLog2TableConverterNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Event Log to Table")
+			.icon("../category-conversion.png")
+			.shortDescription("This node converts an event log into a KNIME Data Table.")
+			.fullDescription("This node converts an event log into a KNIME Data Table.")
+			.modelSettingsClass(XLog2TableConverterNodeSettings.class)//
+			.addInputPort("Event Log", XLogPortObject.TYPE, "an event log")//
+			.addOutputPort("Table", BufferedDataTable.TYPE ,"an event table")//
+			
+			.nodeType(NodeType.Manipulator)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return true;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return new XLog2TableConverterNodeDialog();
-    }
+
+	public XLog2TableConverterNodeFactory() {
+		super(CONFIG);
+	}
+
+
+	protected XLog2TableConverterNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public XLog2TableConverterNodeModel createNodeModel() {
+		node = new XLog2TableConverterNodeModel(XLog2TableConverterNodeSettings.class);
+		return node;
+	}
 
 }
-
