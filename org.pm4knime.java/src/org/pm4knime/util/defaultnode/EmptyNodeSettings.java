@@ -26,6 +26,6 @@ public final class EmptyNodeSettings implements DefaultNodeSettings {
 	@Layout(EmptyLayout.Text.class)
 	@Signal(id = NodeSignal.class, condition = TrueCondition.class)
 	@Effect(signals = NodeSignal.class, type = EffectType.HIDE)
-	public boolean dummy_var = true;
+	boolean dummy_var = true;
 		
 }

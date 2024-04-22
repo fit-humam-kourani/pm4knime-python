@@ -30,6 +30,8 @@ import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
 import org.processmining.plugins.graphviz.dot.Dot;
 
+
+@SuppressWarnings("restriction")
 class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	
 //	private SettingsModelString m_pnColSettingsModel =
@@ -57,9 +59,13 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
     	m_settingsClass = modelSettingsClass;
     }
 
-    @Override
+    
+	@Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
+    	if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 
         String column = null;
