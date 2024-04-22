@@ -1,5 +1,8 @@
 package org.pm4knime.util.defaultnode;
 
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
@@ -22,10 +25,10 @@ public final class EmptyNodeSettings implements DefaultNodeSettings {
         }   
 	      
 	 }
-	
+		
 	@Layout(EmptyLayout.Text.class)
 	@Signal(id = NodeSignal.class, condition = TrueCondition.class)
 	@Effect(signals = NodeSignal.class, type = EffectType.HIDE)
-	boolean dummy_var = true;
-	
+	public static boolean dummy_var = true;
+		
 }
