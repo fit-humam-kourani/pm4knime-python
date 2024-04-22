@@ -15,6 +15,7 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
@@ -66,7 +67,10 @@ public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
     private Place initialPlace;
 	private Transition initialTransition;
     
-    
+	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
+
+    private final Class<EmptyNodeSettings> m_settingsClass;
+
     
     /**
      * Constructor for the node model.
@@ -78,10 +82,11 @@ public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
 //                 
 //    }
     
-   public PN2BPMNConverterNodeModel(Class<EmptyNodeSettings> class1) {
+   public PN2BPMNConverterNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
 		// TODO Auto-generated constructor stub
 	   super(new PortType[] { PetriNetPortObject.TYPE },
                new PortType[] { BpmnPortObject.TYPE }, "BPMN JS View");
+	   m_settingsClass = modelSettingsClass;
 	}
 
 
@@ -604,18 +609,33 @@ private Object[] cloneToPetrinet(PetrinetGraph petriNet, Marking initialMarking,
     /**
      * {@inheritDoc}
      */
+//    @Override
+//    protected void saveSettingsTo(final NodeSettingsWO settings) {
+//         // TODO: generated method stub
+//    }
+//
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+//            throws InvalidSettingsException {
+//        // TODO: generated method stub
+//    }
+
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
+    	if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    
+	@Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        // TODO: generated method stub
+    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
     }
 
     /**
