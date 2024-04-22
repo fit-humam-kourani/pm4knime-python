@@ -15,6 +15,7 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
@@ -45,12 +46,17 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 //    	super(new PortType[] { ProcessTreePortObject.TYPE },
 //				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
 //    }
+	
+	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
+
+    private final Class<EmptyNodeSettings> m_settingsClass;
 
     
-    public PT2PNConverterNodeModel(Class<EmptyNodeSettings> class1) {
+    public PT2PNConverterNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
 		// TODO Auto-generated constructor stub
     	super(new PortType[] { ProcessTreePortObject.TYPE },
 				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
+    	m_settingsClass = modelSettingsClass;
 	}
 
 
@@ -116,15 +122,16 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
+    	if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    
+	@Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        // TODO: generated method stub
+    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
     }
 
     /**
