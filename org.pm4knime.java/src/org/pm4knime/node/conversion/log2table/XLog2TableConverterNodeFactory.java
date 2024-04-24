@@ -4,7 +4,7 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.portobject.XLogPortObject;
-
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 
 @SuppressWarnings("restriction")
 public class XLog2TableConverterNodeFactory extends WebUINodeFactory<XLog2TableConverterNodeModel> {
@@ -16,10 +16,9 @@ public class XLog2TableConverterNodeFactory extends WebUINodeFactory<XLog2TableC
 			.icon("../category-conversion.png")
 			.shortDescription("This node converts an event log into a KNIME Data Table.")
 			.fullDescription("This node converts an event log into a KNIME Data Table.")
-			.modelSettingsClass(XLog2TableConverterNodeSettings.class)//
+			.modelSettingsClass(EmptyNodeSettings.class)//
 			.addInputPort("Event Log", XLogPortObject.TYPE, "an event log")//
 			.addOutputPort("Table", BufferedDataTable.TYPE ,"an event table")//
-			
 			.nodeType(NodeType.Manipulator)
 			.build();
 
@@ -37,7 +36,7 @@ public class XLog2TableConverterNodeFactory extends WebUINodeFactory<XLog2TableC
 
 	@Override
 	public XLog2TableConverterNodeModel createNodeModel() {
-		node = new XLog2TableConverterNodeModel(XLog2TableConverterNodeSettings.class);
+		node = new XLog2TableConverterNodeModel(EmptyNodeSettings.class);
 		return node;
 	}
 
