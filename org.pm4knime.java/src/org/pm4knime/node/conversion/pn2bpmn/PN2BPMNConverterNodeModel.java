@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -60,6 +61,8 @@ import org.processmining.plugins.graphalgorithms.DFS;
  *
  * @author Sanjida Islam Ivy
  */
+
+@SuppressWarnings("restriction")
 public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	// Define class-level variables
     protected PortObject bpmnPO; // Store the BPMN PortObject
@@ -575,19 +578,16 @@ private Object[] cloneToPetrinet(PetrinetGraph petriNet, Marking initialMarking,
 	
 
 	return new Object[] { clonePetriNet, transitionsMap, placesMap, newInitialMarking, newFinalMarking };
-}
-	
-    
-    
-    
-   
-
-	
+}	
     
     // Configure the node based on input port object specifications
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         // Check if the input is a valid PetriNetPortObjectSpec
+    	if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
+    	
         PetriNetPortObjectSpec spec = (PetriNetPortObjectSpec) inSpecs[0];
 
         if (!spec.getClass().equals(PetriNetPortObjectSpec.class)) {

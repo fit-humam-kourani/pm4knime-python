@@ -29,18 +29,20 @@ import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.plugins.graphviz.dot.Dot;
 
+@SuppressWarnings("restriction")
 class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	
 //	private SettingsModelString m_pnColSettingsModel =
 //			Table2PetriNetConverterNodeDialog.getPetriNetColumnSettingsModel();
 	
+	PetriNetPortObjectSpec m_spec = new PetriNetPortObjectSpec();
+	protected PetriNetPortObject pnPO;
+	protected BufferedDataTable inTable;
+	
 	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
 
     private final Class<EmptyNodeSettings> m_settingsClass;
 
-	PetriNetPortObjectSpec m_spec = new PetriNetPortObjectSpec();
-	protected PetriNetPortObject pnPO;
-	protected BufferedDataTable inTable;
 //    public Table2PetriNetConverterNodeModel() {
 //        super(new PortType[]{BufferedDataTable.TYPE},
 //                new PortType[]{PetriNetPortObject.TYPE},
@@ -59,7 +61,11 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
 
 	@Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
-            throws InvalidSettingsException {
+            throws InvalidSettingsException {		
+    	
+		if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 
         String column = null;

@@ -36,6 +36,8 @@ import org.processmining.processtree.ProcessTree;
  *
  * @author Kefang Ding
  */
+
+@SuppressWarnings("restriction")
 public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	protected PortObject pnPO;
 	protected ProcessTreePortObject ptPO;
@@ -102,6 +104,11 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
+    	
+    	if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
+    	
     	if(!inSpecs[0].getClass().equals(ProcessTreePortObjectSpec.class)) 
     		throw new InvalidSettingsException("Input is not a valid process tree!");
     	
