@@ -1,61 +1,42 @@
 package org.pm4knime.node.conversion.pn2table;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.NodeFactory.NodeType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
+import org.pm4knime.portobject.PetriNetPortObject;
 
-public class PetriNet2TableConverterNodeFactory extends NodeFactory<PetriNet2TableConverterNodeModel> {
 
-    
+@SuppressWarnings("restriction")
+public class PetriNet2TableConverterNodeFactory extends WebUINodeFactory<PetriNet2TableConverterNodeModel> {
+
 	PetriNet2TableConverterNodeModel node;
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    public PetriNet2TableConverterNodeModel createNodeModel() {
-		// Create and return a new node model.
-        node = new PetriNet2TableConverterNodeModel();
-        return node;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Petri Net to Table")
+			.icon("../category-conversion.png")
+			.shortDescription("Convert a Petri net into a KNIME Data Table")
+			.fullDescription("This node converts a Petri net into a KNIME data table.")//
+			.modelSettingsClass(PetriNet2TableConverterNodeSettings.class)//
+			.addInputPort("Petri net", PetriNetPortObject.TYPE, "a Petri net")//
+			.addOutputPort("Table", BufferedDataTable.TYPE ,"an event table")//
+			.nodeType(NodeType.Manipulator)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<PetriNet2TableConverterNodeModel> createNodeView(final int viewIndex,
-            final PetriNet2TableConverterNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
+	public PetriNet2TableConverterNodeFactory() {
+		super(CONFIG);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return true;
-    }
-    //set this false
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return new PetriNet2TableConverterNodeDialog(node);
-    }
-    //set this null
+	protected PetriNet2TableConverterNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
 
+
+	@Override
+	public PetriNet2TableConverterNodeModel createNodeModel() {
+		node = new PetriNet2TableConverterNodeModel(PetriNet2TableConverterNodeSettings.class);
+		return node;
+	}
 }
-
