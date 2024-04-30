@@ -47,8 +47,8 @@ public class Table2XLogConverterNodeModel extends NodeModel {
     
 	private static final NodeLogger logger = NodeLogger.getLogger(Table2XLogConverterNodeModel.class);
 	// here we have optional item, but now just this two
-	public static final String CFG_KEY_CONFIG = "Table to event log conveter config";
-	//SMTable2XLogConfig m_config =  new SMTable2XLogConfig(CFG_KEY_CONFIG);
+//	public static final String CFG_KEY_CONFIG = "Table to event log converter config";
+//	SMTable2XLogConfig m_config =  new SMTable2XLogConfig(CFG_KEY_CONFIG);
 	XLogPortObject logPO;
 	
 	protected Table2XLogConverterNodeSettings m_settings = new Table2XLogConverterNodeSettings();
@@ -102,10 +102,11 @@ public class Table2XLogConverterNodeModel extends NodeModel {
     	// it creates the corresponding column spec and create another DataTable for it.
     	// one thing to remember, it is not so important to have order of timestamp. 
     	ToXLogConverter handler = new ToXLogConverter();
+
     	//handler.setConfig(m_config);
     	handler.setLogger(logger);
     	
-    	handler.convertDataTable2Log(sortedTable, exec);
+    	handler.convertDataTable2Log(sortedTable, m_settings, exec);
     	XLog log = handler.getXLog();
     	
     	checkCanceled();
@@ -151,22 +152,25 @@ public class Table2XLogConverterNodeModel extends NodeModel {
     			!spec.getColumnSpec(tsName).getType().equals(ZonedDateTimeCellFactory.TYPE))
     		throw new InvalidSettingsException("The time stamp doesn't have the required format in LocalDateTime or ZonedDateTime");
     	    	
-    	//if(m_config.getMTraceAttrSet().getIncludeList().contains(m_config.getMCaseID().getStringValue())) 
     	if(Arrays.asList(m_settings.m_columnFilterTrace).contains(m_settings.case_id)) 
-    		if(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.case_id))
+    		if(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.event_class))
     			if(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.life_cycle)
     					|| m_settings.life_cycle.equals(SMTable2XLogConfig.CFG_NO_OPTION))
     				if(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.time_stamp) 
     						|| m_settings.time_stamp.equals(SMTable2XLogConfig.CFG_NO_OPTION))
-//    		if(m_config.getMEventAttrSet().getIncludeList().contains(m_config.getMEventClass().getStringValue()))
-//    			if(m_config.getMEventAttrSet().getIncludeList().contains(m_config.getMLifecycle().getStringValue()) 
-//    					|| m_config.getMLifecycle().getStringValue().equals(SMTable2XLogConfig.CFG_NO_OPTION))
-//    				if(m_config.getMEventAttrSet().getIncludeList().contains(m_config.getMTimeStamp().getStringValue()) 
-//    						|| m_config.getMTimeStamp().getStringValue().equals(SMTable2XLogConfig.CFG_NO_OPTION))
     					return new PortObjectSpec[]{new XLogPortObjectSpec()};
    	
-    	throw new InvalidSettingsException("Make sure the attribute set choice panel includes all"
-    			+ " the choices in the panel!");
+    	if(!Arrays.asList(m_settings.m_columnFilterTrace).contains(m_settings.case_id)) 
+    		throw new InvalidSettingsException("Please ensure that Case ID is a trace attribute.");
+    	if(!Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.event_class))
+    		throw new InvalidSettingsException("Please ensure that Event Class is an event attribute.");
+    	if(!(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.life_cycle) 
+    			|| m_settings.life_cycle.equals(SMTable2XLogConfig.CFG_NO_OPTION)))
+    		throw new InvalidSettingsException("Please ensure that Life Cycle is either set to MISSING or is an event attribute.");
+    	if(!(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.time_stamp) 
+    			|| m_settings.time_stamp.equals(SMTable2XLogConfig.CFG_NO_OPTION)))
+    		throw new InvalidSettingsException("Please ensure that Time Stamp is either set to MISSING or is an event attribute.");
+    	throw new InvalidSettingsException("Default error message");
     	
     }
 

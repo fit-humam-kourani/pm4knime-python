@@ -12,8 +12,17 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.processmining.log.csvimport.config.CSVConversionConfig.CSVEmptyCellHandlingMode;
+import org.processmining.log.csvimport.config.CSVConversionConfig.CSVErrorHandlingMode;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+
+import java.util.Arrays;
 import java.util.stream.Stream;
+
+import org.deckfour.xes.factory.XFactory;
+
 
 @SuppressWarnings("restriction")
 public final class Table2XLogConverterNodeSettings implements DefaultNodeSettings {
@@ -37,18 +46,34 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 
 		}
 	}
-	
+
 	static final class AllColumns implements ChoicesProvider {
 
-        @Override
-        public String[] choices(final DefaultNodeSettingsContext context) {
-            var spec = context.getDataTableSpecs()[0];
-            return spec == null ? new String[0] : spec.getColumnNames();
-        }
+		@Override
+		public String[] choices(final DefaultNodeSettingsContext context) {
+			var spec = context.getDataTableSpecs()[0];
+			return spec == null ? new String[0] : spec.getColumnNames();
+		}
 
-    }
+	}
 
 	public static final class StringColumnChoices implements ChoicesProvider {
+
+		@Override
+		public String[] choices(final DefaultNodeSettingsContext context) {
+
+			final DataTableSpec specs = context.getDataTableSpecs()[0];
+
+			if (specs == null) {
+				return new String[0];
+			} else {
+				return specs.stream().filter(s -> s.getType().isCompatible(StringValue.class))
+						.map(DataColumnSpec::getName).toArray(String[]::new);
+			}
+		}
+	}
+
+	public static final class StringColumnChoicesWithMissing implements ChoicesProvider {
 
 		@Override
 		public String[] choices(final DefaultNodeSettingsContext context) {
@@ -86,9 +111,17 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 		}
 	}
 
-	public static final String[] xFactoryVariantList = { "XESLite: MapDB (Compressed, Sequential)", "Standard / naive",
-			"XESLite: MapDB (with Cache)", "XESLite: Sequential IDs & Open Hash Map", "XESLite: In-Memory Store",
-			"XESLite: MapDB (without Cache)" };
+	//	public static final String[] xFactoryVariantList = { "XESLite: MapDB (Compressed, Sequential)", "Standard / naive",
+	//			"XESLite: MapDB (with Cache)", "XESLite: Sequential IDs & Open Hash Map", "XESLite: In-Memory Store",
+	//			"XESLite: MapDB (without Cache)" };
+
+	static ExpertConfigPanel ecPanel = new ExpertConfigPanel();
+
+	public static final String[] xFactoryVariantList = Iterables.toArray(Iterables.transform(ExpertConfigPanel.getAvailableXFactories(), new Function<XFactory, String>() {
+		public String apply(XFactory factory) {
+			return factory.toString(); 
+		}
+	}), String.class);
 
 	public static class XFactoryChoicesProvider implements ChoicesProvider {
 		@Override
@@ -97,8 +130,9 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 		}
 	}
 
-	public static final String[] errorHandlingVariantList = { "Stop on Error", "Omit Trace on Error",
-			"Omit Event on Error", "Omit Attribute on Error" };
+	public static final String[] errorHandlingVariantList = Arrays.stream(CSVErrorHandlingMode.values())
+			.map(mode -> (mode.toString()))
+			.toArray(String[]::new);
 
 	public static class ErrorHandlingChoicesProvider implements ChoicesProvider {
 		@Override
@@ -107,8 +141,12 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 		}
 	}
 
-	public static final String[] sparseLogVariantList = { "Dense (Include empty cells)",
-			"Sparse (Exclude empty cells)" };
+	//	public static final String[] sparseLogVariantList = { "Dense (Include empty cells)",
+	//			"Sparse (Exclude empty cells)" };
+
+	public static final String[] sparseLogVariantList = Arrays.stream(CSVEmptyCellHandlingMode.values())
+			.map(mode -> (mode.toString()))
+			.toArray(String[]::new);
 
 	public static class SparseLogChoicesProvider implements ChoicesProvider {
 		@Override
@@ -119,56 +157,50 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 
 	@Widget(title = "Case ID", description = "Column to be used as a caseID in the event log")
 	@Layout(Table2XLogDialogLayout.StandardOptions.class)
-	//@Layout(DialogLayout.MainDropdownSection.class)
 	@ChoicesWidget(choices = StringColumnChoices.class)
-	public String case_id;
+	String case_id;
 
-	@Widget(title = "Eventclass", description = "Column to be used as an eventID in the event log")
+	@Widget(title = "Event Class", description = "Column to be used as an eventID in the event log")
 	@Layout(Table2XLogDialogLayout.StandardOptions.class)
-	//@Layout(DialogLayout.MainDropdownSection.class)
 	@ChoicesWidget(choices = StringColumnChoices.class)
-	public String event_class;
+	String event_class;
 
 	@Widget(title = "Life Cycle", description = "Column to be used for the life cycle attribute in the event log.")
 	@Layout(Table2XLogDialogLayout.StandardOptions.class)
-	//@Layout(DialogLayout.MainDropdownSection.class)
-	@ChoicesWidget(choices = StringColumnChoices.class)
-	public String life_cycle;
+	@ChoicesWidget(choices = StringColumnChoicesWithMissing.class)
+	String life_cycle = "MISSING";
 
 	@Widget(title = "Time Stamp", description = "Column to be used for the time stamp attribute in the event log. It should be in format of ZonedDateTime or DateTime; otherwise, an error will be thrown.")
 	@Layout(Table2XLogDialogLayout.StandardOptions.class)
-	//@Layout(DialogLayout.MainDropdownSection.class)
 	@ChoicesWidget(choices = TimeColumnChoices.class)
-	public String time_stamp;
+	String time_stamp = "MISSING";
 
-	//@Persist(configKey = "column-filter", customPersistor = LegacyColumnFilterPersistor.class)
 	@Widget(title = "Trace Attributes", description = "Table columns to be used as trace attributes. Please make sure the columns chosen in the \"Standard Options\" dialog window are included; \r\n"
 			+ "            otherwise, an error will be thrown.")
 	@ChoicesWidget(choices = AllColumns.class)
 	@Layout(Table2XLogDialogLayout.ChooseAttributesSet.class)
-	public String[] m_columnFilterTrace = new String[0];
+	String[] m_columnFilterTrace = new String[0];
 
-	//@Persist(configKey = "column-filter", customPersistor = LegacyColumnFilterPersistor.class)
 	@Widget(title = "Event Attributes", description = "Table columns to be used as event attributes. Please make sure the columns chosen in the \\\"Standard Options\\\" dialog window are included; \\r\\n\"\r\n"
 			+ "			+ \"            otherwise, an error will be thrown.")
 	@ChoicesWidget(choices = AllColumns.class)
 	@Layout(Table2XLogDialogLayout.ChooseAttributesSet.class)
-	public String[] m_columnFilterEvent = new String[0];
+	String[] m_columnFilterEvent = new String[0];
 
 	@Widget(title = "XFactory", description = "XFactory implementation that is used to create the log.")
 	@Layout(Table2XLogDialogLayout.ExpertChoice.class)
 	@ChoicesWidget(choices = XFactoryChoicesProvider.class)
-	public String xfactory = xFactoryVariantList[0];
+	String xfactory = xFactoryVariantList[0];
 
 	@Widget(title = "Error Handling", description = "The strategy for handling errors.")
 	@Layout(Table2XLogDialogLayout.ExpertChoice.class)
 	@ChoicesWidget(choices = ErrorHandlingChoicesProvider.class)
-	public String error_handling = errorHandlingVariantList[0];
+	String error_handling = errorHandlingVariantList[0];
 
 	@Widget(title = "Sparse / Dense Log", description = "This affects how empty cells in the table are handled. \r\n"
 			+ "          Some plug-ins require the log to be dense, i.e., all attributes are defined for each event. \r\n"
 			+ "          In other cases, it might be more efficient or even required to only add attributes to events if the attributes actually contain data.")
 	@Layout(Table2XLogDialogLayout.ExpertChoice.class)
 	@ChoicesWidget(choices = SparseLogChoicesProvider.class)
-	public String sparse_log = sparseLogVariantList[0];
+	String sparse_log = sparseLogVariantList[0];
 }

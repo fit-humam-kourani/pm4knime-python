@@ -16,6 +16,7 @@ import org.deckfour.xes.extension.std.XLifecycleExtension;
 import org.deckfour.xes.extension.std.XOrganizationalExtension;
 import org.deckfour.xes.extension.std.XTimeExtension;
 import org.deckfour.xes.factory.XFactory;
+import org.deckfour.xes.factory.XFactoryRegistry;
 import org.deckfour.xes.info.impl.XLogInfoImpl;
 import org.deckfour.xes.model.XAttributable;
 import org.deckfour.xes.model.XAttribute;
@@ -51,9 +52,9 @@ import org.processmining.log.utils.XUtils;
  */
 public class ToXLogConverter {
 	
-	protected Table2XLogConverterNodeSettings m_settings = new Table2XLogConverterNodeSettings();
+	protected Table2XLogConverterNodeSettings m_settings;
 
-	private XFactory factory = null;
+	private XFactory factory;
 	
 	private XLog log = null;
 	private XTrace currentTrace = null;
@@ -62,6 +63,9 @@ public class ToXLogConverter {
 	
 	private XEvent currentEvent = null;
 	private XEvent currentStartEvent;
+	
+	NodeLogger logger;
+	
 	// need to check if we have the available values for it. But else, we don't need here
 //	private int instanceCounter = 0;
 	
@@ -70,26 +74,28 @@ public class ToXLogConverter {
 	
 //	DateTimeFormatter df ; //;
 	
-	//SMTable2XLogConfig config = null;
-	NodeLogger logger;
-//	public void setConfig(SMTable2XLogConfig m_config) {
-//		this.config = m_config;
-//		factory = m_config.getFactory();
+	//SMTable2XLogConfig config;
+		
+//	public void setConfig() {
+//		//this.config = m_config;
+//		factory = config.getFactory();
 //	}
-//	
+		
 	
 	/**
 	 * convert CSV data table into xlog, but we need to know the column index,
 	 * so we know which one is which event?
+	 * @param m_settings2 
 	 * @param exec 
 	 * @param logName
 	 * @throws CanceledExecutionException 
 	 */
-	public void convertDataTable2Log(BufferedDataTable csvData, ExecutionContext exec) throws CanceledExecutionException {
+	public void convertDataTable2Log(BufferedDataTable csvData, Table2XLogConverterNodeSettings m_settings2, ExecutionContext exec) throws CanceledExecutionException {
 		
 		// get trace and event attribute available sets here 
 		//List<String> traceColumns= config.getMTraceAttrSet().getIncludeList();
-		
+		this.m_settings = m_settings2;
+		this.factory = XFactoryRegistry.instance().currentDefault();
 		List<String> traceColumns = Arrays.asList(m_settings.m_columnFilterTrace);
 		// find the idx for it, for once 
 		//List<String> eventColumns= config.getMEventAttrSet().getIncludeList();
@@ -324,8 +330,7 @@ public class ToXLogConverter {
 	
 	
 	public void endTrace(String caseId) {
-		//if (errorDetected && config.getErrorHandlingMode() == CSVErrorHandlingMode.OMIT_TRACE_ON_ERROR) {
-		if (errorDetected && m_settings.error_handling.equals("Omit Trace on Error")) {
+		if (errorDetected && m_settings.error_handling.equals(CSVErrorHandlingMode.OMIT_TRACE_ON_ERROR.toString())) {
 			// Skip the entire trace
 			logger.warn("Unmatch trace attribute values error is detected on the trace, therefore trace is omitted");
 			return;
@@ -343,8 +348,7 @@ public class ToXLogConverter {
 	}
 	
 	public void startEvent(String eventClass, Date timeStamp, String lifecycle) {
-		//if (config.getErrorHandlingMode() == CSVErrorHandlingMode.OMIT_EVENT_ON_ERROR) {
-		if(m_settings.error_handling.equals("Omit Event on Error"))
+		if(m_settings.error_handling.equals(CSVErrorHandlingMode.OMIT_EVENT_ON_ERROR.toString()))
 			// Include the other events in that trace
 			errorDetected = false;
 		
@@ -364,8 +368,7 @@ public class ToXLogConverter {
 	}
 	
 	private void startEventWithoutTimeStamp(String eventClass, String lifecycle) {
-		//if (config.getErrorHandlingMode() == CSVErrorHandlingMode.OMIT_EVENT_ON_ERROR) {
-		if(m_settings.error_handling.equals("Omit Event on Error")) {
+		if(errorDetected && m_settings.error_handling.equals(CSVErrorHandlingMode.OMIT_EVENT_ON_ERROR.toString())) {
 			// Include the other events in that trace
 			errorDetected = false;
 		}
@@ -386,8 +389,7 @@ public class ToXLogConverter {
 
 	
 	public void endEvent() {
-		//if (errorDetected && config.getErrorHandlingMode() == CSVErrorHandlingMode.OMIT_EVENT_ON_ERROR) {
-		if (errorDetected && m_settings.error_handling.equals("Omit Event on Error")) {
+		if (errorDetected && m_settings.error_handling.equals(CSVErrorHandlingMode.OMIT_EVENT_ON_ERROR.toString())) {
 			// Do not include the event
 			return;
 		}
