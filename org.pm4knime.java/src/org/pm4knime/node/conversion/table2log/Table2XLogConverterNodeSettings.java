@@ -111,10 +111,6 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 		}
 	}
 
-	//	public static final String[] xFactoryVariantList = { "XESLite: MapDB (Compressed, Sequential)", "Standard / naive",
-	//			"XESLite: MapDB (with Cache)", "XESLite: Sequential IDs & Open Hash Map", "XESLite: In-Memory Store",
-	//			"XESLite: MapDB (without Cache)" };
-
 	static ExpertConfigPanel ecPanel = new ExpertConfigPanel();
 
 	public static final String[] xFactoryVariantList = Iterables.toArray(Iterables.transform(ExpertConfigPanel.getAvailableXFactories(), new Function<XFactory, String>() {
@@ -140,9 +136,6 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 			return errorHandlingVariantList;
 		}
 	}
-
-	//	public static final String[] sparseLogVariantList = { "Dense (Include empty cells)",
-	//			"Sparse (Exclude empty cells)" };
 
 	public static final String[] sparseLogVariantList = Arrays.stream(CSVEmptyCellHandlingMode.values())
 			.map(mode -> (mode.toString()))
