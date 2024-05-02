@@ -112,12 +112,16 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 	}
 
 	static ExpertConfigPanel ecPanel = new ExpertConfigPanel();
-
-	public static final String[] xFactoryVariantList = Iterables.toArray(Iterables.transform(ExpertConfigPanel.getAvailableXFactories(), new Function<XFactory, String>() {
-		public String apply(XFactory factory) {
-			return factory.toString(); 
-		}
-	}), String.class);
+	
+	public static final String[] xFactoryVariantList = Iterables.toArray(
+		    Iterables.transform(ExpertConfigPanel.getAvailableXFactories(), new Function<XFactory, String>() {
+		        public String apply(XFactory factory) {
+		            if (factory.toString().contains("org.deckfour.xes.factory.XFactoryNaiveImpl")) {
+		                return "Standard / naïve"; 
+		            }
+		            return factory.toString(); 
+		        }
+		    }), String.class);
 
 	public static class XFactoryChoicesProvider implements ChoicesProvider {
 		@Override

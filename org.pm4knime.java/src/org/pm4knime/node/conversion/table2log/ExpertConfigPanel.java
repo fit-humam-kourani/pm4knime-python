@@ -195,10 +195,10 @@ public class ExpertConfigPanel extends JPanel{
 	public static Set<XFactory> getAvailableXFactories() {
 		//Try to register XESLite Factories
 		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.lite.factory.XFactoryLiteImpl");
-		tryRegisterFactory(ExpertConfigPanel.class,"org.xeslite.external.XFactoryExternalStore$MapDBDiskImpl");
-		tryRegisterFactory(ExpertConfigPanel.class,"org.xeslite.external.XFactoryExternalStore$MapDBDiskWithoutCacheImpl");
-		tryRegisterFactory(ExpertConfigPanel.class,"org.xeslite.external.XFactoryExternalStore$MapDBDiskSequentialAccessImpl");
-		tryRegisterFactory(ExpertConfigPanel.class,"org.xeslite.external.XFactoryExternalStore$InMemoryStoreImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.external.XFactoryExternalStore$MapDBDiskImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.external.XFactoryExternalStore$MapDBDiskWithoutCacheImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.external.XFactoryExternalStore$MapDBDiskSequentialAccessImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.external.XFactoryExternalStore$InMemoryStoreImpl");
 		return XFactoryRegistry.instance().getAvailable();
 	}
 
