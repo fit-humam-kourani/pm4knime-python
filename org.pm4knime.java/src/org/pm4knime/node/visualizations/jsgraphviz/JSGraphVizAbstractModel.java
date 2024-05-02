@@ -15,6 +15,7 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.base.data.xml.SvgCell;
 import org.pm4knime.portobject.AbstractDotPanelPortObject;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 
 
 public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
@@ -24,11 +25,21 @@ public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphV
 	AbstractDotPanelPortObject port_obj;
 	
 
-	public JSGraphVizAbstractModel(PortType[] in_types, String view_name) {
+//	public JSGraphVizAbstractModel(PortType[] in_types, String view_name) {
+//		super(in_types, OUT_TYPES, view_name);
+//		IN_TYPE = in_types[0];
+//	}
+	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
+
+	private final Class<EmptyNodeSettings> m_settingsClass;
+
+	public JSGraphVizAbstractModel(PortType[] in_types, String view_name, Class<EmptyNodeSettings> modelSettingsClass) {
+		// TODO Auto-generated constructor stub
 		super(in_types, OUT_TYPES, view_name);
-		IN_TYPE = in_types[0];
+		m_settingsClass = modelSettingsClass;
+		IN_TYPE = in_types[0];	
 	}
-	
+
 
 	@Override
 	public JSGraphVizViewRepresentation createEmptyViewRepresentation() {

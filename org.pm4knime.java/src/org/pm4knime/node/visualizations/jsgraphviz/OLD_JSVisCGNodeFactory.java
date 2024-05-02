@@ -1,14 +1,14 @@
 //package org.pm4knime.node.visualizations.jsgraphviz;
 //
 //import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-//import org.pm4knime.portobject.HybridPetriNetPortObject;
+//import org.pm4knime.portobject.CausalGraphPortObject;
 //import org.knime.core.node.NodeDialogPane;
 //import org.knime.core.node.NodeFactory;
 //import org.knime.core.node.NodeView;
 //import org.knime.core.node.port.PortType;
 //
 //
-//public class JSVisHybridPNNodeFactory 
+//public class JSVisCGNodeFactory 
 //        extends NodeFactory<JSGraphVizAbstractModel> implements WizardNodeFactoryExtension<JSGraphVizAbstractModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
 //
 //    /**
@@ -16,9 +16,9 @@
 //     */
 //    @Override
 //    public JSGraphVizAbstractModel createNodeModel() {
-//        
-//    	PortType[] IN_TYPES = {HybridPetriNetPortObject.TYPE};
-//        return new JSGraphVizAbstractModel(IN_TYPES, "Hybrid Petr iNet JS View");
+//
+//    	PortType[] IN_TYPES = {CausalGraphPortObject.TYPE};
+//        return new JSGraphVizAbstractModel(IN_TYPES, "Causal Graph JS View");
 //    }
 //
 //    /**
