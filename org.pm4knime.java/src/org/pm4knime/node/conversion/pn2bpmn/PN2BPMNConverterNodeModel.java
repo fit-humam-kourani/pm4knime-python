@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -15,6 +16,7 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
@@ -22,6 +24,7 @@ import org.pm4knime.portobject.AbstractDotPanelPortObject;
 
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.pm4knime.portobject.BpmnPortObject;
 import org.pm4knime.portobject.BpmnPortObjectSpec;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
@@ -58,6 +61,8 @@ import org.processmining.plugins.graphalgorithms.DFS;
  *
  * @author Sanjida Islam Ivy
  */
+
+@SuppressWarnings("restriction")
 public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	// Define class-level variables
     protected PortObject bpmnPO; // Store the BPMN PortObject
@@ -65,21 +70,31 @@ public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
     private Place initialPlace;
 	private Transition initialTransition;
     
-    
+	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
+
+    private final Class<EmptyNodeSettings> m_settingsClass;
+
     
     /**
      * Constructor for the node model.
      */
-    public PN2BPMNConverterNodeModel() {
-        // Call the constructor of the parent class with input and output PortTypes and a node name
-        super(new PortType[] { PetriNetPortObject.TYPE },
-                new PortType[] { BpmnPortObject.TYPE }, "BPMN JS View");
-                 
-    }
+//    public PN2BPMNConverterNodeModel() {
+//        // Call the constructor of the parent class with input and output PortTypes and a node name
+//        super(new PortType[] { PetriNetPortObject.TYPE },
+//                new PortType[] { BpmnPortObject.TYPE }, "BPMN JS View");
+//                 
+//    }
+    
+   public PN2BPMNConverterNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
+		// TODO Auto-generated constructor stub
+	   super(new PortType[] { PetriNetPortObject.TYPE },
+               new PortType[] { BpmnPortObject.TYPE }, "BPMN JS View");
+	   m_settingsClass = modelSettingsClass;
+	}
 
-    
-    
-   // Override the method to create PortObjects during execution
+
+
+	// Override the method to create PortObjects during execution
     @Override
     protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView,
             final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
@@ -563,19 +578,16 @@ private Object[] cloneToPetrinet(PetrinetGraph petriNet, Marking initialMarking,
 	
 
 	return new Object[] { clonePetriNet, transitionsMap, placesMap, newInitialMarking, newFinalMarking };
-}
-	
-    
-    
-    
-   
-
-	
+}	
     
     // Configure the node based on input port object specifications
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         // Check if the input is a valid PetriNetPortObjectSpec
+    	if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
+    	
         PetriNetPortObjectSpec spec = (PetriNetPortObjectSpec) inSpecs[0];
 
         if (!spec.getClass().equals(PetriNetPortObjectSpec.class)) {
@@ -597,18 +609,33 @@ private Object[] cloneToPetrinet(PetrinetGraph petriNet, Marking initialMarking,
     /**
      * {@inheritDoc}
      */
+//    @Override
+//    protected void saveSettingsTo(final NodeSettingsWO settings) {
+//         // TODO: generated method stub
+//    }
+//
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+//            throws InvalidSettingsException {
+//        // TODO: generated method stub
+//    }
+
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
+    	if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    
+	@Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        // TODO: generated method stub
+    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
     }
 
     /**
@@ -685,4 +712,3 @@ private Object[] cloneToPetrinet(PetrinetGraph petriNet, Marking initialMarking,
 	}
 	
 }
-

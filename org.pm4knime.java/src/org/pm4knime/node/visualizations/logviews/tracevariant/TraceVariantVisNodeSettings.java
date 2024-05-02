@@ -14,7 +14,7 @@ import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.Dialog
 
 @SuppressWarnings("restriction")
 public final class TraceVariantVisNodeSettings implements DefaultNodeSettings {
-		
+
 	@Widget(title = "Trace Classifier", description = "The column to be used as a trace classifier.")
 	@Layout(DialogLayout.MainDropdownSection.class)
     @ChoicesWidget(choices = StringColumnChoices.class)

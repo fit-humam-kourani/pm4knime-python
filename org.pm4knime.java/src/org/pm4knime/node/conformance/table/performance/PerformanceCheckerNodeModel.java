@@ -20,12 +20,14 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestFlattenerTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestReplayerParameterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PerfCounterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ReliablePerfCounterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.SMAlignmentReplayParameterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.TableEventLog;
+import org.pm4knime.node.conformance.table.precision.PrecisionCheckerNodeSettings;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ManifestEvClassPatternTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ManifestFactoryTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ManifestTable;
@@ -69,11 +71,15 @@ import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
  *            +
  *            https://github.com/rapidprom/rapidprom-source/blob/master/src/main/java/org/rapidprom/operators/conformance/PerformanceConformanceAnalysisOperator.java
  */
+@SuppressWarnings("restriction")
 public class PerformanceCheckerNodeModel extends DefaultNodeModel implements PortObjectHolder {
 	private static final NodeLogger logger = NodeLogger.getLogger(PerformanceCheckerNodeModel.class);
 
 	private static final String CFG_MC_MANIFEST = "Model Content for Manifest";
+	
+	protected PerformanceCheckerNodeSettings m_settings = new PerformanceCheckerNodeSettings();
 
+    private final Class<PerformanceCheckerNodeSettings> m_settingsClass;
 
 	// we create a similar nodeSetting like Conformance Checking?
 	SMPerformanceParameter m_parameter;
@@ -95,12 +101,12 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 //	}
 
 
-	public PerformanceCheckerNodeModel(Class<PerformanceCheckerNodeSettings> class1) {
+	public PerformanceCheckerNodeModel(Class<PerformanceCheckerNodeSettings> modelSettingsClass) {
 		// TODO: Specify the amount of input and output ports needed.
 		super(new PortType[] { RepResultPortObjectTable.TYPE },
 				new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE, BufferedDataTable.TYPE });
 		m_parameter = new SMPerformanceParameter("Performance Parameter");
-		
+		m_settingsClass = modelSettingsClass;
 	}
 
 	/**
@@ -247,7 +253,9 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 	 */
 	@Override
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-
+		if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
 		if (!inSpecs[0].getClass().equals(RepResultPortObjectSpecTable.class))
 			throw new InvalidSettingsException("Input is not a valid replay result!");
 
@@ -265,19 +273,21 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		// TODO: generated method stub
-		m_parameter.saveSettingsTo(settings);
-	}
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+         // TODO: generated method stub
+    	if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
+    }
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-		// TODO: generated method stub
-		m_parameter.loadSettingsFrom(settings);
-	}
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+    }
 
 	@Override
 	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
@@ -305,7 +315,7 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 	@Override
 	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		// TODO Auto-generated method stub
-		m_parameter.validateSettings(settings);
+		//m_parameter.validateSettings(settings);		
 	}
 	
 	public RepResultPortObjectTable getRepResultPO() {

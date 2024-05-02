@@ -1,62 +1,45 @@
 package org.pm4knime.node.conversion.table2hpn;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
+import org.pm4knime.portobject.HybridPetriNetPortObject;
 
-public class Table2HybridPetriNetConverterNodeFactory extends NodeFactory<Table2HybridPetriNetConverterNodeModel> implements WizardNodeFactoryExtension<Table2HybridPetriNetConverterNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+@SuppressWarnings("restriction")
+public class Table2HybridPetriNetConverterNodeFactory extends WebUINodeFactory<Table2HybridPetriNetConverterNodeModel> implements WizardNodeFactoryExtension<Table2HybridPetriNetConverterNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
 
 	Table2HybridPetriNetConverterNodeModel node;
-	
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    public Table2HybridPetriNetConverterNodeModel createNodeModel() {
-		// Create and return a new node model.
-        node = new Table2HybridPetriNetConverterNodeModel();
-        return node;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Table to Hybrid Petri Net")
+			.icon("../category-conversion.png")
+			.shortDescription("Convert a KNIME Data Table into a hybrid Petri net")
+			.fullDescription("This node converts a KNIME Data Table into a hybrid Petri net.")//
+			.modelSettingsClass(EmptyNodeSettings.class)//
+			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
+			.addOutputPort("Hybrid Petri Net", HybridPetriNetPortObject.TYPE, "a hybrid Petri net")//
+			.nodeType(NodeType.Manipulator)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<Table2HybridPetriNetConverterNodeModel> createNodeView(final int viewIndex,
-            final Table2HybridPetriNetConverterNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return false;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return null;
-    }
+	public Table2HybridPetriNetConverterNodeFactory() {
+		super(CONFIG);
+	}
 
+
+	protected Table2HybridPetriNetConverterNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public Table2HybridPetriNetConverterNodeModel createNodeModel() {
+		node = new Table2HybridPetriNetConverterNodeModel(EmptyNodeSettings.class);
+		return node;
+	}
 }
-

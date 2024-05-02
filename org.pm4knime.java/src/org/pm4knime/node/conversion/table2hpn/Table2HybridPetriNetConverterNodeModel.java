@@ -17,16 +17,21 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObjectSpec;
+import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.util.HybridPetriNetUtil;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
 import org.processmining.plugins.graphviz.dot.Dot;
 
+
+@SuppressWarnings("restriction")
 class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	
 //	private SettingsModelString m_pnColSettingsModel =
@@ -35,15 +40,32 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 	HybridPetriNetPortObjectSpec m_spec = new HybridPetriNetPortObjectSpec();
 	protected HybridPetriNetPortObject pnPO;
 	protected BufferedDataTable inTable;
-    public Table2HybridPetriNetConverterNodeModel() {
-        super(new PortType[]{BufferedDataTable.TYPE},
+	
+	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
+
+    private final Class<EmptyNodeSettings> m_settingsClass;
+    
+//	public Table2HybridPetriNetConverterNodeModel() {
+//        super(new PortType[]{BufferedDataTable.TYPE},
+//                new PortType[]{HybridPetriNetPortObject.TYPE},
+//                "Hybrid Petri Net JS View");
+//    }
+    
+    public Table2HybridPetriNetConverterNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
+		// TODO Auto-generated constructor stub
+    	super(new PortType[]{BufferedDataTable.TYPE},
                 new PortType[]{HybridPetriNetPortObject.TYPE},
                 "Hybrid Petri Net JS View");
+    	m_settingsClass = modelSettingsClass;
     }
 
-    @Override
+    
+	@Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
+    	if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 
         String column = null;
@@ -135,13 +157,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
         return -1;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) {
-//    	m_pnColSettingsModel.saveSettingsTo(settings);
-    }
+    
 
     /**
      * {@inheritDoc}
@@ -152,15 +168,20 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 //    	m_pnColSettingsModel.validateSettings(settings);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
-//    	m_pnColSettingsModel.loadSettingsFrom(settings);
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+         // TODO: generated method stub
+    	if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
     }
 
+    
+	@Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+    }
     
     
     @Override

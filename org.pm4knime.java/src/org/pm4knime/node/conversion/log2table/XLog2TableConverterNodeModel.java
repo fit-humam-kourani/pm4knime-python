@@ -33,9 +33,11 @@ import org.knime.core.node.defaultnodesettings.SettingsModelFilterString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.pm4knime.portobject.XLogPortObject;
 import org.pm4knime.portobject.XLogPortObjectSpec;
 import org.pm4knime.util.XLogSpecUtil;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 
 /**
  * <code>NodeModel</code> for the "Xlog2CSVConverter" node. If we could change XLog into DataTable, 
@@ -55,26 +57,39 @@ import org.pm4knime.util.XLogSpecUtil;
  * They are only DataTable conversion!! Rename the nodes, please!!!
  * @author Kefang
  */
+@SuppressWarnings("restriction")
 public class XLog2TableConverterNodeModel extends NodeModel {
 	private static final NodeLogger logger = NodeLogger.getLogger(XLog2TableConverterNodeModel.class);
 	
 	static final String CFG_TABLE_NAME = "Converted Data Table from Event Log";
 	
-	private SettingsModelFilterString m_traceAttrSet  = new SettingsModelFilterString(XLogSpecUtil.CFG_KEY_TRACE_ATTRSET, new String[]{}, new String[]{}, false );
+	private SettingsModelFilterString m_traceAttrSet  = new SettingsModelFilterString(XLogSpecUtil.CFG_KEY_TRACE_ATTRSET, new String[]{}, new String[]{}, true);
 	
-	private SettingsModelFilterString m_eventAttrSet = new SettingsModelFilterString(XLogSpecUtil.CFG_KEY_EVENT_ATTRSET, new String[]{}, new String[]{}, false );
+	private SettingsModelFilterString m_eventAttrSet = new SettingsModelFilterString(XLogSpecUtil.CFG_KEY_EVENT_ATTRSET, new String[]{}, new String[]{}, true);
 	
 	private XLogPortObjectSpec m_inSpec;
+	
+	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
+
+    private final Class<EmptyNodeSettings> m_settingsClass;
+
     /**
      * Constructor for the node model.
      */
-    protected XLog2TableConverterNodeModel() {
-    
-        // TODO: Specify the amount of input and output ports needed.
-        super( new PortType[]{XLogPortObject.TYPE}, new PortType[]{BufferedDataTable.TYPE});
+//    protected XLog2TableConverterNodeModel() {
+//    
+//        // TODO: Specify the amount of input and output ports needed.
+//        super( new PortType[]{XLogPortObject.TYPE}, new PortType[]{BufferedDataTable.TYPE});
+//    }
+
+    public XLog2TableConverterNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
+		// TODO Auto-generated constructor stub
+    	super(new PortType[]{XLogPortObject.TYPE}, new PortType[]{BufferedDataTable.TYPE});
+    	//super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{XLogPortObject.TYPE});
+    	m_settingsClass = modelSettingsClass;
     }
 
-    /**
+	/**
      * {@inheritDoc}
      */
     @Override
@@ -176,6 +191,9 @@ public class XLog2TableConverterNodeModel extends NodeModel {
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
 
+    	if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
         // TODO: create a new DataTable there
     	XLogPortObjectSpec spec = (XLogPortObjectSpec) inSpecs[0];
 
@@ -215,8 +233,11 @@ public class XLog2TableConverterNodeModel extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
-    	m_traceAttrSet.saveSettingsTo(settings);
-    	m_eventAttrSet.saveSettingsTo(settings);
+//    	m_traceAttrSet.saveSettingsTo(settings);
+//    	m_eventAttrSet.saveSettingsTo(settings);
+    	if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
     	
     }
 
@@ -226,8 +247,9 @@ public class XLog2TableConverterNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-    	m_traceAttrSet.loadSettingsFrom(settings);
-    	m_eventAttrSet.loadSettingsFrom(settings);
+//    	m_traceAttrSet.loadSettingsFrom(settings);
+//    	m_eventAttrSet.loadSettingsFrom(settings);
+    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
     	
     }
 
@@ -261,4 +283,3 @@ public class XLog2TableConverterNodeModel extends NodeModel {
     }
 
 }
-

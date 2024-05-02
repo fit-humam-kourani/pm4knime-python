@@ -5,9 +5,7 @@
 	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
 	<name>Event Log to Table</name>
 
-	<shortDescription>
-		Convert an event log into KNIME Data Table
-	</shortDescription>
+	<shortDescription>This node converts an event log into a KNIME Data Table.</shortDescription>
 
 	<fullDescription>
 		<intro>This node converts an event log into a KNIME Data Table.
