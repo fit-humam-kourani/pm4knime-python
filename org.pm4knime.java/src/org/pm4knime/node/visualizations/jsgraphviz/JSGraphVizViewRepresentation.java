@@ -22,15 +22,15 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 	DecTreeToImageNodeFactory f;
 	
 	private static final String DOT_DATA = "dotstr";
-	private static final String PAR_DOT_DATA = "parsed_dot";
+	private static final String PAR_DOT_DATA = "parseddot";
 	private String m_dotstr;
-	private String parsed_dot;
+	private String parseddot;
 
 	@Override
 	public void saveToNodeSettings(NodeSettingsWO settings) {
 		try {
 			settings.addString(DOT_DATA, m_dotstr);
-			settings.addString(PAR_DOT_DATA, parsed_dot);
+			settings.addString(PAR_DOT_DATA, parseddot);
 	    } catch (Exception ex) {
 	        // do nothing
 	    }   
@@ -40,7 +40,7 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 	public void loadFromNodeSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		try {
 			m_dotstr = settings.getString(DOT_DATA);
-			parsed_dot = settings.getString(PAR_DOT_DATA);
+			parseddot = settings.getString(PAR_DOT_DATA);
 	    } catch (Exception ex) {
 	        // do nothing
 	    }   
@@ -61,12 +61,14 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 		JSGraphVizViewRepresentation other = (JSGraphVizViewRepresentation)obj;
 		return new EqualsBuilder()
 				.append(m_dotstr, other.m_dotstr)
+				.append(parseddot, other.parseddot)
                 .isEquals();
 	}
 
 	@Override
 	public int hashCode() {
 		 return new HashCodeBuilder().append(m_dotstr)
+				 .append(parseddot)
 				 .toHashCode();
 	}
 
@@ -161,9 +163,9 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 		Map<String, List<?>> parsedData = DotStringParser.parseDotString(dotstr);	
 		Gson gson = new Gson();
         String jsonData = gson.toJson(parsedData);
-		this.parsed_dot = jsonData;
-		System.out.println("parsed_dot: ");
-		System.out.println(this.parsed_dot);
+		this.parseddot = jsonData;
+		System.out.println("parseddot: ");
+		System.out.println(this.parseddot);
 	}
 }
 

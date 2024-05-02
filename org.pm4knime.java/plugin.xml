@@ -704,14 +704,7 @@
             <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>
                                                                                                                                     
             
-            
-            
-            
-            
-            
-            
-            
-            
+             
             <webDependency webResourceBundleID="Viz"> </webDependency>
                                                                                                                                     
             
@@ -817,13 +810,19 @@
             <webResource relativePathSource="js-libs/" relativePathTarget="js-libs/"> </webResource>
                                                                        
             
-            
-            
-            
+            <importResource relativePath="js-libs/dagre.min.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/smil.user.min.js" type="JAVASCRIPT"> </importResource>
+		    <importResource relativePath="js-libs/jquery.js" type="JAVASCRIPT"> </importResource>
+		    <importResource relativePath="js-libs/lodash.js" type="JAVASCRIPT"> </importResource>
+		    <importResource relativePath="js-libs/backbone.js" type="JAVASCRIPT"> </importResource>
+		    
+		    <importResource relativePath="js-libs/joint.min.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/joint.min.css" type="CSS"/>
             
             <importResource relativePath="js-libs/viz.js" type="JAVASCRIPT"> </importResource>
-                                                               
             
+                                                               
+   
             
             
             
