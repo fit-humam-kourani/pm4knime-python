@@ -75,6 +75,10 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 	public String getDotstr() {
 		return m_dotstr;
 	}
+	
+	public String getParseddot() {
+		return parseddot;
+	}
 
 	public void setDotstr(final String dotstr) {
 ////		System.out.println(dotstr);
@@ -164,8 +168,7 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 		Gson gson = new Gson();
         String jsonData = gson.toJson(parsedData);
 		this.parseddot = jsonData;
-		System.out.println("parseddot: ");
-		System.out.println(this.parseddot);
+
 	}
 }
 
