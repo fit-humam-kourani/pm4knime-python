@@ -101,7 +101,7 @@ public class InductiveMinerDFGTableNodeModel extends WebUIJSViewNodeModel<Induct
 			Dot dot =  port_obj.getDotPanel().getDot();
 			dotstr = dot.toString();
 		}
-		representation.setDotstr(dotstr);
+		//representation.setDotstr(dotstr);
 
 	}
 

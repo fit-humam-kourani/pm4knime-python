@@ -98,7 +98,7 @@ public class ProcessTreeReaderNodeModel extends AbstractSVGWizardNodeModel<JSGra
 			Dot dot =  port_obj.getDotPanel().getDot();
 			dotstr = dot.toString();
 		}
-		representation.setDotstr(dotstr);
+		//representation.setDotstr(dotstr);
 
 	}
     

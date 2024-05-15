@@ -96,7 +96,7 @@ public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphV
 			dotstr = dot.toString();
 		}
 		
-		representation.setDotstr(dotstr);
+		//representation.setDotstr(dotstr);
 	}
 
 	@Override

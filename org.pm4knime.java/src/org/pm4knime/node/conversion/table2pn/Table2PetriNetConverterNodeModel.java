@@ -21,13 +21,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.PetriNetUtil;
 import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
-import org.processmining.plugins.graphviz.dot.Dot;
+
 
 @SuppressWarnings("restriction")
 class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
@@ -118,6 +117,8 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
             columnIndex = findPetriNetColumnIndex(inSpec);
         }
 
+        AcceptingPetriNet pn = null; 
+        
         final RowIterator it = inTable.iterator();
         while (it.hasNext()) {
             DataRow row = it.next();
@@ -125,7 +126,7 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
             if (!cell.isMissing()) {
                 String stringPN = ((PetriNetValue)cell).getPetriNetString();
 
-                AcceptingPetriNet pn = PetriNetUtil.stringToPetriNet(stringPN);
+                pn = PetriNetUtil.stringToPetriNet(stringPN);
                 pnPO = new PetriNetPortObject(pn);
         		break;
 
@@ -133,13 +134,13 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
                 setWarningMessage("Found missing Petri net cell, skipping it...");
             }
         }
-        String dotstr;
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
+		
+		PetriNetPortObject pn_po = new PetriNetPortObject(pn);
+		
+		pnPO = pn_po;
 
-		AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) pnPO;
-		Dot dot =  port_obj.getDotPanel().getDot();
-		dotstr = dot.toString();
-		representation.setDotstr(dotstr);
+		representation.setJSONString(pn_po.getJSON());
 //        throw new IllegalArgumentException(
 //                "Input table contains only missing cells.");
         		

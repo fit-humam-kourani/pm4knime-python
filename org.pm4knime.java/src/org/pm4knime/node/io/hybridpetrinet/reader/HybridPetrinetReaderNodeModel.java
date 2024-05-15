@@ -103,7 +103,7 @@ public class HybridPetrinetReaderNodeModel extends AbstractSVGWizardNodeModel<JS
 			Dot dot =  port_obj.getDotPanel().getDot();
 			dotstr = dot.toString();
 		}
-		representation.setDotstr(dotstr);
+		//representation.setDotstr(dotstr);
 
 	}
 

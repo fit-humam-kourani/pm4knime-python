@@ -129,7 +129,7 @@ public class BpmnReaderNodeModel
 			Dot dot =  bpmn_port_obj.getDotPanel().getDot();
 			dotstr = dot.toString();
 		}
-		representation.setDotstr(dotstr);
+		//representation.setDotstr(dotstr);
 
 	}
 

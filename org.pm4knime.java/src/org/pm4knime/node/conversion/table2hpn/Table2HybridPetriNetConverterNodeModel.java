@@ -139,7 +139,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 		AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) pnPO;
 		Dot dot =  port_obj.getDotPanel().getDot();
 		dotstr = dot.toString();
-		representation.setDotstr(dotstr);
+		//representation.setDotstr(dotstr);
 //        throw new IllegalArgumentException(
 //                "Input table contains only missing cells.");
         		

@@ -121,7 +121,7 @@ public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
             Dot dot = port_obj.getDotPanel().getDot(); // Get DOT representation of the BPMN
             dotstr = dot.toString(); // Convert DOT to a string
         }
-        representation.setDotstr(dotstr); // Set the DOT string in the view representation
+        //representation.setDotstr(dotstr); // Set the DOT string in the view representation
     }
     
     public BPMNDiagram convert(AcceptingPetriNet petrinet) {
