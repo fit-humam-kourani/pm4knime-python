@@ -11,11 +11,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
-import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
-import org.processmining.models.graphbased.directed.petrinet.elements.Place;
-import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
-import org.processmining.models.semantics.petrinet.Marking;
-import org.processmining.models.graphbased.directed.DirectedGraphEdge;
+
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.gson.Gson;
@@ -28,31 +24,7 @@ import java.util.TreeSet;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class JSGraphVizViewRepresentation extends JSONViewContent {
 	
-	public static class Node {
-        String id;
-        String type;
-        String label; 
-        boolean initial_marking;
-        boolean final_marking;
-
-        public Node(String id, String type, String label, boolean initial_marking, boolean final_marking) {
-            this.id = id;
-            this.type = type;
-            this.label = label; 
-            this.initial_marking = initial_marking;
-            this.final_marking = final_marking;
-        }
-    }
-
-    public static class Link {
-        String source;
-        String target;
-
-        public Link(String source, String target) {
-            this.source = source;
-            this.target = target;
-        }
-    }
+	
 
 	public final int pseudoIdentifier = (new Random()).nextInt();
 	DecTreeToImageNodeFactory f;
@@ -115,139 +87,15 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 	public String getParseddot() {
 		return parseddot;
 	}
-
-	public void petriNetToJSON(AcceptingPetriNet anet) {
-////		System.out.println(dotstr);
-//		HashMap<String, String> idMap = new HashMap<String, String>();
-//        Pattern pattern = Pattern.compile("e[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
-//        Matcher matcher = pattern.matcher(dotstr);
-//
-//        int idCounter = 0;
-//        while (matcher.find()) {
-////        	System.out.println(matcher.toString());
-//            String oldId = matcher.group();
-////            System.out.println("OLD ID" + oldId);
-//            if (!idMap.containsKey(oldId)) {
-//                String newId = "id" + idCounter;
-////                System.out.println("New ID" + newId);
-//                idMap.put(oldId, newId);
-//                idCounter++;
-//            }
-//        }
-//        String finalDotString = dotstr;
-//        // Now replace all old ids with new ones
-//        for (Map.Entry<String, String> entry : idMap.entrySet()) {
-//        	finalDotString = finalDotString.replace(entry.getKey(), entry.getValue());
-//        }
-//        Pattern edgePattern = Pattern.compile("id=\"id[0-9]+\"");
-//        Matcher edgeMatcher = edgePattern.matcher(finalDotString);
-//
-//        // Replace all matching edge IDs with an empty ID
-//        while (edgeMatcher.find()) {
-//            String id = edgeMatcher.group();
-//            finalDotString = finalDotString.replace(id, "id=\"\"");
-//        }
-////        System.out.println("NEW DOT");
-////        System.out.println(finalDotString);
-//        
-//        String[] lines = finalDotString.split("\\n");
-//
-//        // Use a StringBuilder to build the new dot string with sorted edges
-//        StringBuilder sortedDot = new StringBuilder();
-//
-//        // Use a TreeSet to sort the edges by the source node ID
-//        TreeSet<String> sortedEdges = new TreeSet<>();
-//
-//        // Flag to indicate if there are edges
-//        boolean hasEdges = false;
-//
-//        // Iterate over each line
-//        for (String line : lines) {
-//            // Check if the line represents an edge
-//            if (line.contains("->")) {
-//                // Get the ID of the source node
-//                String sourceNodeId = line.split(" -> ")[0];
-//
-//                // Store the line in the set, which automatically sorts the edges
-//                sortedEdges.add(line);
-//                hasEdges = true;
-//            } else {
-//                // Append non-edge lines directly to the new dot string
-//                sortedDot.append(line).append("\n");
-//            }
-//        }
-//        
-//     // Remove the last newline character if present
-//        if (sortedDot.length() > 0 && sortedDot.charAt(sortedDot.length() - 1) == '\n') {
-//            sortedDot.setLength(sortedDot.length() - 2);
-//            
-//        }
-//
-//        // Append the sorted edges to the new dot string
-//        for (String edge : sortedEdges) {
-//            sortedDot.append(edge).append("\n");
-//        }
-//
-//        
-//        // Append the closing brace only if there are edges
-//        if (hasEdges) {
-//            sortedDot.append("}");
-//        }
-//
-//        finalDotString = sortedDot.toString();
-//        System.out.println("LAST DOT");
-//        System.out.println(finalDotString);
-
-//		this.m_dotstr = finalDotString;
-		
-		Map<String, List<?>> result = new HashMap<>();
-		Map <String, String> nodeToIDMapping = new HashMap<>();
-					
-		Set<Place> finalMarkingPlaces = new TreeSet<Place>();
-		for (Marking setMarkings : anet.getFinalMarkings())
-			finalMarkingPlaces.addAll(setMarkings);	
-		
-		List<Node> nodes = new ArrayList<>();
-		
-		for(Place place : anet.getNet().getPlaces()) {
-			nodeToIDMapping.put(place.getLabel().toString(), place.getLocalID().toString());
-			if(anet.getInitialMarking().contains(place))
-				nodes.add(new Node(place.getLocalID().toString(), "place", "", true, false));
-			else if (finalMarkingPlaces.contains(place))
-				nodes.add(new Node(place.getLocalID().toString(), "place", "", false, true));
-			else
-				nodes.add(new Node(place.getLocalID().toString(), "place", "", false, false));
-		}
-		
-		for (Transition transition : anet.getNet().getTransitions())
-		{
-			nodeToIDMapping.put(transition.getLabel().toString(), transition.getLocalID().toString());
-			String label = transition.getLabel();
-			if (label.contains("tau"))
-				nodes.add(new Node(transition.getLocalID().toString(), "transition", "", false, false));
-			else 
-				nodes.add(new Node(transition.getLocalID().toString(), "transition", label, false, false));
-		}
-		
-		result.put("nodes", nodes);
-		
-		List<Link> links = new ArrayList<>();
-		
-		for (DirectedGraphEdge<?, ?> edge : anet.getNet().getEdges())
-		{
-			String source = nodeToIDMapping.get(edge.getSource().getLabel().toString());
-			String target = nodeToIDMapping.get(edge.getTarget().getLabel().toString());
-			links.add(new Link(source, target));
-		}
 	
-		result.put("links", links);
+	public void setJSONString(Map<String, List<?>> json) {
 		
 		Gson gson = new Gson();
-        String jsonData = gson.toJson(result);
+        String jsonData = gson.toJson(json);
 		this.parseddot = jsonData;
 		
 		//System.out.println(parseddot);
 		
-		}
+	}
 }
 

@@ -49,7 +49,7 @@ public abstract class DefaultTableMinerNodeModel<S extends DefaultTableMinerSett
 			Dot dot =  port_obj.getDotPanel().getDot();
 			dotstr = dot.toString();
 		}
-		representation.setDotstr(dotstr);
+//		representation.setDotstr(dotstr);
 
 	}
 	

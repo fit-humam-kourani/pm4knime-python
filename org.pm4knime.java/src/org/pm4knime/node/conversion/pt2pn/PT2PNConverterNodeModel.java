@@ -73,11 +73,13 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 		AcceptingPetriNet anet = AcceptingPetriNetFactory.createAcceptingPetriNet(pn.petrinet, pn.initialMarking,
 				pn.finalMarking);
 		
-		pnPO = new PetriNetPortObject(anet);
+		PetriNetPortObject pn_po = new PetriNetPortObject(anet);
+		
+		pnPO = pn_po;
 
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
 		
-		representation.petriNetToJSON(anet);
+		representation.setJSONString(pn_po.getJSON());
 		
 	}
 

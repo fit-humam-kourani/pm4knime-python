@@ -2,23 +2,26 @@ package org.pm4knime.portobject;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JComponent;
 
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortObjectZipInputStream;
 import org.knime.core.node.port.PortObjectZipOutputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.pm4knime.util.PetriNetUtil;
-import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
-import org.processmining.acceptingpetrinet.plugins.VisualizeAcceptingPetriNetPlugin;
-import org.processmining.framework.plugin.PluginContext;
+import org.processmining.models.graphbased.directed.DirectedGraphEdge;
 import org.processmining.plugins.InductiveMiner.efficienttree.EfficientTree;
 import org.processmining.plugins.InductiveMiner.efficienttree.EfficientTreeReduce.ReductionFailedException;
 import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
@@ -26,6 +29,10 @@ import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.inductiveVisualMiner.plugins.EfficientTreeVisualisationPlugin;
 import org.processmining.plugins.inductiveVisualMiner.plugins.GraphvizPetriNet;
+
+import org.processmining.models.graphbased.directed.petrinet.elements.Place;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
+import org.processmining.models.semantics.petrinet.Marking;
 
 /**
  * this class defines PetriNetPortObject. It includes models as Petrinet + InitialMarking, FinalMarking, FinalMarkings[].
@@ -35,6 +42,32 @@ import org.processmining.plugins.inductiveVisualMiner.plugins.GraphvizPetriNet;
  *
  */
 public class PetriNetPortObject extends AbstractDotPanelPortObject {
+	
+	public static class Node {
+        String id;
+        String type;
+        String label; 
+        boolean i_marking;
+        boolean f_marking;
+
+        public Node(String id, String type, String label, boolean initial_marking, boolean final_marking) {
+            this.id = id;
+            this.type = type;
+            this.label = label; 
+            this.i_marking = initial_marking;
+            this.f_marking = final_marking;
+        }
+    }
+
+    public static class Link {
+        String source;
+        String target;
+
+        public Link(String source, String target) {
+            this.source = source;
+            this.target = target;
+        }
+    }
 
 	/**
 	 * Define port type of objects of this class when used as PortObjects.
@@ -201,4 +234,51 @@ public class PetriNetPortObject extends AbstractDotPanelPortObject {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public Map<String, List<?>> getJSON() {
+		Map<String, List<?>> result = new HashMap<>();
+		
+		Set<Place> finalMarkingPlaces = new TreeSet<Place>();
+		for (Marking setMarkings : m_anet.getFinalMarkings())
+			finalMarkingPlaces.addAll(setMarkings);	
+		
+		List<Node> nodes = new ArrayList<>();
+		
+		for(Place place : m_anet.getNet().getPlaces()) {
+			if(m_anet.getInitialMarking().contains(place))
+				nodes.add(new Node(place.getId().toString(), "place", "", true, false));
+			else if (finalMarkingPlaces.contains(place))
+				nodes.add(new Node(place.getId().toString(), "place", "", false, true));
+			else
+				nodes.add(new Node(place.getId().toString(), "place", "", false, false));
+		}
+		
+		for (Transition transition : m_anet.getNet().getTransitions())
+		{
+			String label = transition.getLabel();
+			if (transition.isInvisible())
+				nodes.add(new Node(transition.getId().toString(), "transition", "", false, false));
+			else 
+				nodes.add(new Node(transition.getId().toString(), "transition", label, false, false));
+		}
+		
+		result.put("nodes", nodes);
+		
+		List<Link> links = new ArrayList<>();
+		
+		for (DirectedGraphEdge<?, ?> edge : m_anet.getNet().getEdges())
+		{
+			String source = edge.getSource().getId().toString();
+			String target = edge.getTarget().getId().toString();
+			links.add(new Link(source, target));
+		}
+
+		result.put("links", links);
+		
+		return result;
+		
+	}
+	
+	
+	
 }
