@@ -3,6 +3,7 @@ package org.pm4knime.node.visualizations.jsgraphviz;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.base.node.mine.decisiontree2.image.DecTreeToImageNodeFactory;
@@ -10,13 +11,48 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
-import org.pm4knime.node.visualizations.jsgraphviz.util.DotStringParser;
+import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
+import org.processmining.models.graphbased.directed.petrinet.elements.Place;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
+import org.processmining.models.semantics.petrinet.Marking;
+import org.processmining.models.graphbased.directed.DirectedGraphEdge;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
+
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class JSGraphVizViewRepresentation extends JSONViewContent {
+	
+	public static class Node {
+        String id;
+        String type;
+        String label; 
+        boolean initial_marking;
+        boolean final_marking;
+
+        public Node(String id, String type, String label, boolean initial_marking, boolean final_marking) {
+            this.id = id;
+            this.type = type;
+            this.label = label; 
+            this.initial_marking = initial_marking;
+            this.final_marking = final_marking;
+        }
+    }
+
+    public static class Link {
+        String source;
+        String target;
+
+        public Link(String source, String target) {
+            this.source = source;
+            this.target = target;
+        }
+    }
 
 	public final int pseudoIdentifier = (new Random()).nextInt();
 	DecTreeToImageNodeFactory f;
@@ -80,7 +116,7 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 		return parseddot;
 	}
 
-	public void setDotstr(final String dotstr) {
+	public void petriNetToJSON(AcceptingPetriNet anet) {
 ////		System.out.println(dotstr);
 //		HashMap<String, String> idMap = new HashMap<String, String>();
 //        Pattern pattern = Pattern.compile("e[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
@@ -163,12 +199,55 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 //        System.out.println(finalDotString);
 
 //		this.m_dotstr = finalDotString;
-		this.m_dotstr = dotstr;
-		Map<String, List<?>> parsedData = DotStringParser.parseDotString(dotstr);	
+		
+		Map<String, List<?>> result = new HashMap<>();
+		Map <String, String> nodeToIDMapping = new HashMap<>();
+					
+		Set<Place> finalMarkingPlaces = new TreeSet<Place>();
+		for (Marking setMarkings : anet.getFinalMarkings())
+			finalMarkingPlaces.addAll(setMarkings);	
+		
+		List<Node> nodes = new ArrayList<>();
+		
+		for(Place place : anet.getNet().getPlaces()) {
+			nodeToIDMapping.put(place.getLabel().toString(), place.getLocalID().toString());
+			if(anet.getInitialMarking().contains(place))
+				nodes.add(new Node(place.getLocalID().toString(), "place", "", true, false));
+			else if (finalMarkingPlaces.contains(place))
+				nodes.add(new Node(place.getLocalID().toString(), "place", "", false, true));
+			else
+				nodes.add(new Node(place.getLocalID().toString(), "place", "", false, false));
+		}
+		
+		for (Transition transition : anet.getNet().getTransitions())
+		{
+			nodeToIDMapping.put(transition.getLabel().toString(), transition.getLocalID().toString());
+			String label = transition.getLabel();
+			if (label.contains("tau"))
+				nodes.add(new Node(transition.getLocalID().toString(), "transition", "", false, false));
+			else 
+				nodes.add(new Node(transition.getLocalID().toString(), "transition", label, false, false));
+		}
+		
+		result.put("nodes", nodes);
+		
+		List<Link> links = new ArrayList<>();
+		
+		for (DirectedGraphEdge<?, ?> edge : anet.getNet().getEdges())
+		{
+			String source = nodeToIDMapping.get(edge.getSource().getLabel().toString());
+			String target = nodeToIDMapping.get(edge.getTarget().getLabel().toString());
+			links.add(new Link(source, target));
+		}
+	
+		result.put("links", links);
+		
 		Gson gson = new Gson();
-        String jsonData = gson.toJson(parsedData);
+        String jsonData = gson.toJson(result);
 		this.parseddot = jsonData;
-
-	}
+		
+		//System.out.println(parseddot);
+		
+		}
 }
 
