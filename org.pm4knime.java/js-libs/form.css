@@ -33,3 +33,7 @@
   .zoom-button:focus {
     outline: none; /* Removes the outline to keep the look clean */
   }
+
+.label {
+    font-size: 22px; 
+  }

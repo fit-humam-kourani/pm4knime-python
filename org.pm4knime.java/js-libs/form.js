@@ -31,22 +31,25 @@
 	  // mainContainer.style.background = "#f0ede6";
 	  mainContainer.style.flexDirection = "column";
 	  mainContainer.style.border = "1px solid #ccc";
-	  mainContainer.style.width = "1210px"; // Full width of the viewport
-	  // mainContainer.style.height = "100vh"; // Full height of the viewport
+	  mainContainer.style.width = "100%"; // Full width of the viewport
+	  mainContainer.style.height = "50%"; // Full height of the viewport
 	
 	  const controlBar = document.createElement("div");
 	  controlBar.style.background = "#e0e0e0";
 	  controlBar.style.color = "#fff";
 	  controlBar.style.padding = "5px";
-	  controlBar.style.width = "1200px"; // Fixed width
-	  // controlBar.style.height = "100px";
+	  controlBar.style.width = "100%"; // Fixed width
+	  //controlBar.style.height = "35px";
 	  // controlBar.textContent = "Control Bar";
 	  controlBar.style.fontFamily = "Arial, sans-serif";
 	
 	  // Create the graph container with fixed size
 	  const graphContainer = document.createElement("div");
 	  graphContainer.style.width = "100%"; // Fixed width
-	  graphContainer.style.height = "800px"; // Fixed height
+	  
+	  const controlBarHeight = controlBar.offsetHeight; // Get the dynamic height of the controlBar
+	  graphContainer.style.height = `calc(100vh - 55px)`;
+
 	  // graphContainer.style.border = "1px solid #ccc";
 	  // graphContainer.style.padding = "10px";
 	  mainContainer.style.background = "white";
@@ -212,7 +215,7 @@
 		      size: { width: 50, height: 50 },
 		    });
 		  } else if (node.type === "transition") {
-		    const fontSize = 22; // Example font size
+		    const fontSize = 22; // the font size of the labels must be set in the css file
 		    const textWidth = estimateTextWidth(node.label, fontSize);
 		    const transitionWidth = Math.max(textWidth + 10, 20);
 		    node.width = transitionWidth;
@@ -223,8 +226,7 @@
 		      attrs: {
 		        ".label": {
 		          text: node.label || "",
-		          fill: "black",
-		          "font-size": fontSize,
+		          "fill": "black",
 		          "ref-x": 0.5,
 		          "ref-y": 0.5,
 		          "text-anchor": "middle",
@@ -235,7 +237,9 @@
 		          stroke: "#3f77cf",
 		          "stroke-width": 2,
 		        },
+		        
 		      },
+		      
 		    });
 		  }
 		  graph.addCell(element);
@@ -396,88 +400,7 @@
     view.getSVG = () => {
         return (new XMLSerializer()).serializeToString(_svg);;
     };
-    
-    function addScript( src ) {
-      var s = document.createElement( 'script' );
-      s.setAttribute( 'src', src );
-      document.body.appendChild( s );
-    }
-  
-    function visu( src ) {
-
-        //addScript( '/Users/Ralf/Documents/Git/knime/pm4knime-core/pm4knime-core/plugin/js-lib/viz/full.render.js')
-        //addScript( '/Users/Ralf/Documents/Git/knime/pm4knime-core/pm4knime-core/plugin/js-lib/viz/viz.js' )
-
-
-
-        var viz = new Viz();
-
-        viz.renderSVGElement(src)
-          .then(function(element) { 
-               
-           _svg = element;
-           
-           var exportA = document.createElement('a');
-           exportA.innerHTML = `<button type="button">Export</button>`;
-           exportA.href = viz.generate_url(element);
-           exportA.download = "js-view.svg";
-           
-           
-
-           var zoomIn = document.createElement('a');
-           zoomIn.innerHTML = `<button type="button">Zoom in</button>`;
-           zoomIn.addEventListener( 'click', function(){
-               element.setAttribute("max-height", "none"); 
-               element.setAttribute("max-width", "none"); 
-               var width = element.clientWidth*1.1; 
-               var height = element.clientHeight*1.1; 
-               element.setAttribute("width", width + "px"); 
-               element.setAttribute("height", height + "px"); 
-               
-           });
-           
-           var zoomOut = document.createElement('a');
-           zoomOut.innerHTML = `<button type="button">Zoom out</button>`;
-           zoomOut.addEventListener( 'click', function(){
-               element.setAttribute("max-height", "none"); 
-               element.setAttribute("max-width", "none"); 
-               var width = element.clientWidth*0.9; 
-               var height = element.clientHeight*0.9; 
-               element.setAttribute("width", width + "px"); 
-               element.setAttribute("height", height + "px"); 
-           });
-           
-           var parent1 = document.createElement("div");
-           parent1.style.top = "0px";
-           parent1.style.left = "0px";
-           parent1.style.position = "fixed";
-           parent1.style.border = "groove #e6e6e6";
-           parent1.appendChild(exportA);
-           parent1.appendChild(zoomIn);
-           parent1.appendChild(zoomOut);
-           document.body.appendChild(parent1);     
-                     
-           var parent2 = document.createElement("div");
-           parent2.style.top = "50px";
-           parent2.style.left = "0px";
-           parent2.style.position = "absolute";
-           parent2.appendChild(element);              
-           document.body.appendChild(parent2); 
-            
-          })
-          .catch(error => {
-            // Create a new Viz instance (@see Caveats page for more info)
-            viz = new Viz();
-
-            // Possibly display the error
-            console.error(error);
-          });     
-          
-          
-
-    }
-    
-    
+      
 
     return view;
 }());
