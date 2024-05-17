@@ -10,10 +10,10 @@
         _representation = representation;
         _value = value;
 		// console.error('representation.dotstr: ', representation.dotstr);
-		// console.error('representation.parseddot: ', representation.parseddot);
+		console.error('representation.json: ', representation.json);
 
         // vis = visu(representation.dotstr);
-        let jsonDataFromJava = JSON.parse(representation.parseddot); 
+        let jsonDataFromJava = JSON.parse(representation.json); 
 		let nodes = jsonDataFromJava.nodes;
 		let edges = jsonDataFromJava.links;
         createGraphElements(nodes, edges);

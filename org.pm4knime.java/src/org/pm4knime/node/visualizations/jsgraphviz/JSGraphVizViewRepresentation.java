@@ -16,11 +16,6 @@ import org.knime.js.core.JSONViewContent;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
-
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class JSGraphVizViewRepresentation extends JSONViewContent {
 	
@@ -29,16 +24,13 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 	public final int pseudoIdentifier = (new Random()).nextInt();
 	DecTreeToImageNodeFactory f;
 	
-	private static final String DOT_DATA = "dotstr";
-	private static final String PAR_DOT_DATA = "parseddot";
-	private String m_dotstr;
-	private String parseddot;
+	private static final String JSON = "json";
+	private String json;
 
 	@Override
 	public void saveToNodeSettings(NodeSettingsWO settings) {
 		try {
-			settings.addString(DOT_DATA, m_dotstr);
-			settings.addString(PAR_DOT_DATA, parseddot);
+			settings.addString(JSON, json);
 	    } catch (Exception ex) {
 	        // do nothing
 	    }   
@@ -47,8 +39,7 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 	@Override
 	public void loadFromNodeSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		try {
-			m_dotstr = settings.getString(DOT_DATA);
-			parseddot = settings.getString(PAR_DOT_DATA);
+			json = settings.getString(JSON);
 	    } catch (Exception ex) {
 	        // do nothing
 	    }   
@@ -68,33 +59,29 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
 		
 		JSGraphVizViewRepresentation other = (JSGraphVizViewRepresentation)obj;
 		return new EqualsBuilder()
-				.append(m_dotstr, other.m_dotstr)
-				.append(parseddot, other.parseddot)
+				.append(json, other.json)
                 .isEquals();
 	}
 
 	@Override
 	public int hashCode() {
-		 return new HashCodeBuilder().append(m_dotstr)
-				 .append(parseddot)
+		 return new HashCodeBuilder().append(json)
 				 .toHashCode();
 	}
 
-	public String getDotstr() {
-		return m_dotstr;
-	}
 	
-	public String getParseddot() {
-		return parseddot;
+	public String getJson() {
+		return json;
 	}
 	
 	public void setJSONString(Map<String, List<?>> json) {
 		
 		Gson gson = new Gson();
         String jsonData = gson.toJson(json);
-		this.parseddot = jsonData;
+		this.json = jsonData;
 		
-		//System.out.println(parseddot);
+		System.out.println("json data on the jave side");
+		System.out.println(json);
 		
 	}
 }

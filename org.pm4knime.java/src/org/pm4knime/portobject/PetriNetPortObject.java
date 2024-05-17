@@ -34,40 +34,8 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
 
-/**
- * this class defines PetriNetPortObject. It includes models as Petrinet + InitialMarking, FinalMarking, FinalMarkings[].
- * Serializer load and save Petrinet with PromPlugin for accepting Petri net. 
- * Views uses the Accepting Petri Net to show it
- * @author kefang-pads
- *
- */
-public class PetriNetPortObject extends AbstractDotPanelPortObject {
-	
-	public static class Node {
-        String id;
-        String type;
-        String label; 
-        boolean i_marking;
-        boolean f_marking;
 
-        public Node(String id, String type, String label, boolean initial_marking, boolean final_marking) {
-            this.id = id;
-            this.type = type;
-            this.label = label; 
-            this.i_marking = initial_marking;
-            this.f_marking = final_marking;
-        }
-    }
-
-    public static class Link {
-        String source;
-        String target;
-
-        public Link(String source, String target) {
-            this.source = source;
-            this.target = target;
-        }
-    }
+public class PetriNetPortObject extends AbstractJSONPortObject {
 
 	/**
 	 * Define port type of objects of this class when used as PortObjects.
@@ -148,31 +116,6 @@ public class PetriNetPortObject extends AbstractDotPanelPortObject {
 		
 		return new JComponent[] {};
 	}
-	
-	@Override
-	public DotPanel getDotPanel() {
-		
-		if(effTree != null) {
-			Dot dot = EfficientTreeVisualisationPlugin.fancy(effTree);
-			DotPanel navDot = new DotPanel(dot);
-			
-			navDot.setName("Generated petri net");
-			return navDot;
-			
-		}
-		
-		
-	    if(m_anet != null) {
-			
-			DotPanel navDot;
-			navDot = new DotPanel(GraphvizPetriNet.convert(m_anet));
-			navDot.setName("Generated petri net");
-			return navDot;
-			
-		}
-		return null;
-		
-	}
 
 	
 	// here we serialise the PortObject by using the prom plugin
@@ -246,20 +189,20 @@ public class PetriNetPortObject extends AbstractDotPanelPortObject {
 		
 		for(Place place : m_anet.getNet().getPlaces()) {
 			if(m_anet.getInitialMarking().contains(place))
-				nodes.add(new Node(place.getId().toString(), "place", "", true, false));
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", true, false));
 			else if (finalMarkingPlaces.contains(place))
-				nodes.add(new Node(place.getId().toString(), "place", "", false, true));
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", false, true));
 			else
-				nodes.add(new Node(place.getId().toString(), "place", "", false, false));
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", false, false));
 		}
 		
 		for (Transition transition : m_anet.getNet().getTransitions())
 		{
 			String label = transition.getLabel();
 			if (transition.isInvisible())
-				nodes.add(new Node(transition.getId().toString(), "transition", "", false, false));
+				nodes.add(new Node(transition.getId().toString(), "transition", ""));
 			else 
-				nodes.add(new Node(transition.getId().toString(), "transition", label, false, false));
+				nodes.add(new Node(transition.getId().toString(), "transition", label));
 		}
 		
 		result.put("nodes", nodes);

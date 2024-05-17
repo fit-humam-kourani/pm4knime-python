@@ -17,17 +17,17 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
-import org.pm4knime.node.conformance.table.precision.PrecisionCheckerNodeSettings;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.util.defaultnode.TraceVariantRepresentation;
 
 
+@SuppressWarnings("restriction")
 public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVariantVisViewRepresentation, TraceVariantVisViewValue> implements PortObjectHolder {
 
 	// Input and output port types
 	private static PortType[] IN_TYPES = {BufferedDataTable.TYPE};
 	private static PortType[] OUT_TYPES = {ImagePortObject.TYPE};
-	AbstractDotPanelPortObject port_obj;
+	AbstractJSONPortObject port_obj;
 	
 	public static final String KEY_TRACE_CLASSIFIER = "Trace Classifier";
 	public static final String KEY_EVENT_CLASSIFIER = "Event Classifier";

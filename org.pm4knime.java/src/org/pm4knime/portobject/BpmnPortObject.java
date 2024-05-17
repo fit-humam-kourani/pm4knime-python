@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 
@@ -49,7 +50,7 @@ import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.processmining.contexts.uitopia.UIContext;
 
-public class BpmnPortObject extends AbstractDotPanelPortObject {
+public class BpmnPortObject extends AbstractJSONPortObject {
 
 	/**
 	 * Define port type of objects of this class when used as PortObjects.
@@ -253,5 +254,11 @@ public class BpmnPortObject extends AbstractDotPanelPortObject {
 		bw.write(result);
 		bw.close();
 		
+	}
+
+	@Override
+	public Map<String, List<?>> getJSON() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

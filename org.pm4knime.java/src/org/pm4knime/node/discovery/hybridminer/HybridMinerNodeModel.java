@@ -13,7 +13,7 @@ import org.knime.core.node.web.ValidationError;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.node.visualizations.jsgraphviz.util.WebUIJSViewNodeModel;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.CausalGraphPortObject;
 import org.pm4knime.portobject.CausalGraphPortObjectSpec;
 import org.pm4knime.portobject.HybridPetriNetPortObject;
@@ -24,7 +24,6 @@ import org.processmining.models.connections.petrinets.behavioral.FinalMarkingCon
 import org.processmining.models.connections.petrinets.behavioral.InitialMarkingConnection;
 import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.semantics.petrinet.Marking;
-import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.extendedhybridminer.algorithms.cg2hpn.CGToHybridPN;
 import org.processmining.extendedhybridminer.models.causalgraph.ExtendedCausalGraph;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
@@ -40,7 +39,7 @@ public class HybridMinerNodeModel extends WebUIJSViewNodeModel<HybridMinerNodeSe
 	
 	private HybridMinerNodeSettings m_settings;
 		
-	protected PortObject hpnPO;
+	protected AbstractJSONPortObject hpnPO;
 	protected CausalGraphPortObject cgPO;
 
 	protected HybridMinerNodeModel(final Class<HybridMinerNodeSettings> modelSettingsClass) {
@@ -63,12 +62,7 @@ public class HybridMinerNodeModel extends WebUIJSViewNodeModel<HybridMinerNodeSe
 		final String dotstr;
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
 
-		synchronized (getLock()) {
-			AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) hpnPO;
-			Dot dot =  port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
-		}
-		//representation.setDotstr(dotstr);
+		representation.setJSONString(hpnPO.getJSON());
 
 	}
 	
@@ -91,7 +85,7 @@ public class HybridMinerNodeModel extends WebUIJSViewNodeModel<HybridMinerNodeSe
 	}
 	
     
-    protected PortObject mine(ExtendedCausalGraph cg, final ExecutionContext exec) throws Exception{
+    protected AbstractJSONPortObject mine(ExtendedCausalGraph cg, final ExecutionContext exec) throws Exception{
     	logger.info("Begin: Hybrid Petri Net Miner");
     	
     	PluginContext pluginContext = PM4KNIMEGlobalContext.instance()

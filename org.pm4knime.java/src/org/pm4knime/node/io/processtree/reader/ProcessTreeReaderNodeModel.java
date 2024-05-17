@@ -26,7 +26,6 @@ import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.Mess
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.ProcessTreePortObject;
 import org.pm4knime.portobject.ProcessTreePortObjectSpec;
 import org.processmining.plugins.graphviz.dot.Dot;
@@ -90,15 +89,9 @@ public class ProcessTreeReaderNodeModel extends AbstractSVGWizardNodeModel<JSGra
         
         exec.checkCanceled();
 		
-		final String dotstr;
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
 
-		synchronized (getLock()) {
-			AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) m_ptPort;
-			Dot dot =  port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
-		}
-		//representation.setDotstr(dotstr);
+		representation.setJSONString(m_ptPort.getJSON());
 
 	}
     

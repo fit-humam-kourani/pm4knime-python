@@ -3,11 +3,6 @@ package org.pm4knime.node.io.bpmn.reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
-import java.util.Scanner;
-
-import javax.swing.JComponent;
-
-import org.apache.axis.utils.IOUtils;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -30,37 +25,9 @@ import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.Mess
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.BpmnPortObject;
 import org.pm4knime.portobject.BpmnPortObjectSpec;
-import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
-import org.processmining.plugins.graphviz.dot.Dot;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-import org.processmining.plugins.bpmn.BPMNVisualization;
-import org.processmining.framework.plugin.PluginContext;
-
-
-import java.util.Collection;
-import java.util.Map;
-import org.processmining.models.graphbased.directed.bpmn.elements.Swimlane;
-import org.processmining.models.graphbased.directed.bpmn.BPMNNode;
-import java.util.HashMap;
-import org.processmining.models.graphbased.directed.bpmn.BPMNDiagramFactory;
-import org.processmining.plugins.bpmn.dialogs.BpmnSelectDiagramDialog;
-import org.processmining.plugins.bpmn.parameters.BpmnSelectDiagramParameters;
-import org.processmining.framework.plugin.PluginContext;
-import org.processmining.plugins.bpmn.plugins.BpmnImportPlugin;
-import org.processmining.plugins.bpmn.Bpmn;
 import org.processmining.models.graphbased.directed.bpmn.BPMNDiagram;
-
-
-
-import org.processmining.contexts.uitopia.annotations.Visualizer;
-import org.processmining.framework.plugin.annotations.Plugin;
-import org.processmining.framework.plugin.annotations.PluginLevel;
-import org.processmining.framework.plugin.annotations.PluginVariant;
-import org.processmining.models.jgraph.ProMJGraphVisualizer;
 
 
 public class BpmnReaderNodeModel
@@ -121,15 +88,9 @@ public class BpmnReaderNodeModel
         
         exec.checkCanceled();
 		
-		final String dotstr;
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
 
-		synchronized (getLock()) {
-			AbstractDotPanelPortObject bpmn_port_obj = (AbstractDotPanelPortObject) port_obj;
-			Dot dot =  bpmn_port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
-		}
-		//representation.setDotstr(dotstr);
+		representation.setJSONString(port_obj.getJSON());
 
 	}
 

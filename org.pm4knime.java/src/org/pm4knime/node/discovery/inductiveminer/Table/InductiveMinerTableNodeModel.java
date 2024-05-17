@@ -15,6 +15,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 import org.pm4knime.node.discovery.dfgminer.dfgTableMiner.helper.BufferedTableIMLog;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.ProcessTreePortObject;
 import org.pm4knime.portobject.ProcessTreePortObjectSpec;
 import org.processmining.framework.packages.PackageManager.Canceller;
@@ -46,7 +47,7 @@ public class InductiveMinerTableNodeModel extends DefaultTableMinerNodeModel<Ind
 		
 
 		@Override
-		protected PortObject mine(BufferedDataTable log, final ExecutionContext exec) throws Exception {
+		protected AbstractJSONPortObject mine(BufferedDataTable log, final ExecutionContext exec) throws Exception {
 			logger.info("Begin: Inductive Miner");
 			String activityClassifier = m_settings.e_classifier;
 			IMLog imlog =  new BufferedTableIMLog(log, activityClassifier, m_settings.t_classifier);

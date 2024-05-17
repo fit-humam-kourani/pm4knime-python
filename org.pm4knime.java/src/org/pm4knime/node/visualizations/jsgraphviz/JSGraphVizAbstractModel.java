@@ -14,7 +14,7 @@ import org.processmining.plugins.graphviz.dot.Dot;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.base.data.xml.SvgCell;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 
 
@@ -22,7 +22,7 @@ public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphV
 
 	private static PortType[] OUT_TYPES = {ImagePortObject.TYPE};
 	private static PortType IN_TYPE;
-	AbstractDotPanelPortObject port_obj;
+	AbstractJSONPortObject port_obj;
 	
 
 //	public JSGraphVizAbstractModel(PortType[] in_types, String view_name) {
@@ -90,13 +90,10 @@ public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphV
 
 		synchronized (getLock()) {
 			
-			port_obj = (AbstractDotPanelPortObject) inObjects[0];
-			//System.out.println(processtree.getSummary());
-			Dot dot =  port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
+			port_obj = (AbstractJSONPortObject) inObjects[0];
+			representation.setJSONString(port_obj.getJSON());
 		}
-		
-		//representation.setDotstr(dotstr);
+
 	}
 
 	@Override
@@ -125,7 +122,7 @@ public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphV
 
 	
 	public void setInternalPortObjects(PortObject[] portObjects) {
-		port_obj = (AbstractDotPanelPortObject) portObjects[0];
+		port_obj = (AbstractJSONPortObject) portObjects[0];
 	}
 	
 	@Override

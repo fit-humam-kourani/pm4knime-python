@@ -11,6 +11,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 import org.pm4knime.node.discovery.defaultminer.TraceVariantRep;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.PetriNetUtil;
@@ -38,7 +39,7 @@ public class AlphaMinerTableNodeModel extends DefaultTableMinerNodeModel<AlphaMi
 	}
 
 
-	protected PortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception {
+	protected AbstractJSONPortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception {
 		// TODO Auto-generated method stub
 		logger.info("Start: Alpha Miner");
 		AlphaMinerParameters alphaParams = null;

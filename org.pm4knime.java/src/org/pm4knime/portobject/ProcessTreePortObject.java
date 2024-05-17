@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JComponent;
@@ -28,7 +30,7 @@ import org.processmining.processtree.impl.ProcessTreeImpl;
 import org.processmining.processtree.ptml.Ptml;
 import org.processmining.processtree.ptml.importing.PtmlImportTree;
 
-public class ProcessTreePortObject extends AbstractDotPanelPortObject {
+public class ProcessTreePortObject extends AbstractJSONPortObject {
 	// if we put save and load codes at this place, then we save codes for reader and writer,
 	// because we can use them directly.. so we put the save and load here
 	// but we need to specify the input and output operator
@@ -242,5 +244,11 @@ public class ProcessTreePortObject extends AbstractDotPanelPortObject {
 //		}
 
     }
+
+	@Override
+	public Map<String, List<?>> getJSON() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

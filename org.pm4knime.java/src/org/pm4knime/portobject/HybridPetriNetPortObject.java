@@ -5,6 +5,12 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JComponent;
@@ -20,10 +26,14 @@ import org.knime.core.node.port.PortTypeRegistry;
 import org.pm4knime.node.visualizations.jsgraphviz.util.GraphvizHybridPetriNet;
 import org.pm4knime.util.HybridPetriNetUtil;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
+import org.processmining.models.graphbased.directed.DirectedGraphEdge;
+import org.processmining.models.graphbased.directed.petrinet.elements.Place;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
+import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 
 
-public class HybridPetriNetPortObject extends AbstractDotPanelPortObject {
+public class HybridPetriNetPortObject extends AbstractJSONPortObject {
 
 	/**
 	 * Define port type of objects of this class when used as PortObjects.
@@ -162,5 +172,51 @@ public class HybridPetriNetPortObject extends AbstractDotPanelPortObject {
 	public static class HybridPetriNetPortObjectSerializer
 			extends AbstractPortObject.AbstractPortObjectSerializer<HybridPetriNetPortObject> {
 
+	}
+
+	public Map<String, List<?>> getJSON() {
+		Map<String, List<?>> result = new HashMap<>();
+		
+		Set<Place> finalMarkingPlaces = new TreeSet<Place>();
+		for (Marking setMarkings : pn.setFinalMarkings())
+			finalMarkingPlaces.addAll(setMarkings);	
+		
+		Marking init_marking = pn.setInitialMarking();
+		
+		List<Node> nodes = new ArrayList<>();
+		
+		for(Place place : pn.getPlaces()) {
+			if(init_marking.contains(place))
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", true, false));
+			else if (finalMarkingPlaces.contains(place))
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", false, true));
+			else
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", false, false));
+		}
+		
+		for (Transition transition : pn.getTransitions())
+		{
+			String label = transition.getLabel();
+			if (transition.isInvisible())
+				nodes.add(new Node(transition.getId().toString(), "transition", ""));
+			else 
+				nodes.add(new Node(transition.getId().toString(), "transition", label));
+		}
+		
+		result.put("nodes", nodes);
+		
+		List<Link> links = new ArrayList<>();
+		
+		for (DirectedGraphEdge<?, ?> edge : pn.getEdges())
+		{
+			String source = edge.getSource().getId().toString();
+			String target = edge.getTarget().getId().toString();
+			links.add(new Link(source, target, edge.getClass().getSimpleName()));
+		}
+
+		result.put("links", links);
+		
+		return result;
+		
 	}
 }

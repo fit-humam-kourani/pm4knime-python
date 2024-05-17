@@ -22,7 +22,7 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.node.visualizations.jsgraphviz.util.WebUIJSViewNodeModel;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.DfgMsdPortObject;
 import org.pm4knime.portobject.DfgMsdPortObjectSpec;
 import org.pm4knime.portobject.ProcessTreePortObject;
@@ -92,16 +92,10 @@ public class InductiveMinerDFGTableNodeModel extends WebUIJSViewNodeModel<Induct
 
 		ptpo = new ProcessTreePortObject(tree);
 		logger.info("End:  Inductive Miner");
-		
-		final String dotstr;
+
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
 
-		synchronized (getLock()) {
-			AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) ptpo;
-			Dot dot =  port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
-		}
-		//representation.setDotstr(dotstr);
+	    representation.setJSONString(ptpo.getJSON());
 
 	}
 

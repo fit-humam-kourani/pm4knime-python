@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JComponent;
@@ -23,7 +25,7 @@ import org.processmining.plugins.inductiveminer2.plugins.DfgMsdImportPlugin;
 import org.processmining.plugins.inductiveminer2.plugins.DfgMsdVisualisationPlugin;
 import org.processmining.plugins.inductiveminer2.withoutlog.dfgmsd.DfgMsd;
 
-public class DfgMsdPortObject extends AbstractDotPanelPortObject {
+public class DfgMsdPortObject extends AbstractJSONPortObject {
 
 	public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(DfgMsdPortObject.class);
 	private static final String ZIP_ENTRY_NAME = "DfgMsdPortObject";
@@ -241,6 +243,12 @@ public class DfgMsdPortObject extends AbstractDotPanelPortObject {
 		}
 
 	public static final class DfgMsdPortObjectSerializer extends AbstractPortObjectSerializer<DfgMsdPortObject> {
+	}
+
+	@Override
+	public Map<String, List<?>> getJSON() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
