@@ -17,7 +17,11 @@ public final class HybridMinerNodeFactory extends WebUINodeFactory<HybridMinerNo
 			.name("Hybrid Petri Net Miner")
 			.icon("../category-discovery.png")
 			.shortDescription("This node implements the second step of the Hybrid Miner to discover a hybrid Petri net from a causal graph.")
-			.fullDescription("This node implements the second step of the Hybrid Miner to discover a hybrid Petri net from a causal graph. The hybrid miner combines the best of formal and informal modeling notations by discovering hybrid Petri nets. The hybrid miner converts the edges of the input causal graph into formal places if there is enough evidence in the data justifying adding formal constraints. For vague structures where formal constraints cannot be justified, causal relations are depicted in the final hybrid Petri net as informal edges.")
+			.fullDescription("This node implements the second step of the Hybrid Miner to discover a hybrid Petri net from a causal graph. "
+					+ "The hybrid miner converts the edges of the input causal graph into formal places if there is enough evidence in the data justifying adding formal constraints. "
+					+ "A hybrid Petri net can also contain arcs directly connecting transitions to indicate informal dependencies between them. "
+					+ "We distinguish three types of informal arcs: (1) strong dependencies are represented by blue solid arcs (certain arcs); "
+					+ "(2) weak dependencies are represented by red dotted arcs (uncertain arcs); (3) long-term dependencies are represented by orange solid arcs.")
 			.modelSettingsClass(HybridMinerNodeSettings.class)//
 			.addInputPort("Causal Graph", CausalGraphPortObject.TYPE ,"a causal graph")//
 			.addOutputPort("Hybrid Petri Net", HybridPetriNetPortObject.TYPE, "a hybrid Petri net")//

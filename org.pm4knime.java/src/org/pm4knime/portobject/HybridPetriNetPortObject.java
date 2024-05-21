@@ -44,6 +44,16 @@ public class HybridPetriNetPortObject extends AbstractJSONPortObject {
 	
 	private static final String ZIP_ENTRY_NAME = "HybridPetriNetPortObject";
 	
+	public static final String HYBRID_PETRI_NET_TEXT = "A Hybrid Petri net is a directed graph used to model processes. "
+			+ "It consists of places, transitions, and directed arcs connecting them. A place is enabled if it it contains at least one token. "
+			+ "A transition can only fire if all incoming places are enabled. After firing a transition, a token is consumed from all of its incoming places, "
+			+ "and a token is produced in all of its outgoing places. The initial marking indicates the initial state of the Hybrid Petri net. "
+			+ "Places that belong to the initial marking are marked by green tokens inside them. The final marking denotes the final state of the Hybrid Petri net. "
+			+ "Places within the final marking are highlighted with a heavier border. A Hybrid Petri net can also contain arcs directly connecting transitions to indicate informal dependencies between them. "
+			+ "We distinguish three types of informal arcs: (1) strong dependencies are represented by blue solid arcs (certain arcs); "
+			+ "(2) weak dependencies are represented by red dotted arcs (uncertain arcs); "
+			+ "(3) long-term dependencies are represented by orange solid arcs.";
+	
 	static ExtendedHybridPetrinet pn ;
 	HybridPetriNetPortObjectSpec m_spec;
 	

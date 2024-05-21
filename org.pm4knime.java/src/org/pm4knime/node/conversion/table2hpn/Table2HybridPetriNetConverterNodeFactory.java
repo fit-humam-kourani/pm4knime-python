@@ -18,7 +18,8 @@ public class Table2HybridPetriNetConverterNodeFactory extends WebUINodeFactory<T
 			.name("Table to Hybrid Petri Net")
 			.icon("../category-conversion.png")
 			.shortDescription("Convert a KNIME Data Table into a hybrid Petri net")
-			.fullDescription("This node converts a KNIME Data Table into a hybrid Petri net.")//
+			.fullDescription("This node converts a KNIME Data Table into a hybrid Petri net. "
+					+ HybridPetriNetPortObject.HYBRID_PETRI_NET_TEXT)//
 			.modelSettingsClass(EmptyNodeSettings.class)//
 			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
 			.addOutputPort("Hybrid Petri Net", HybridPetriNetPortObject.TYPE, "a hybrid Petri net")//
