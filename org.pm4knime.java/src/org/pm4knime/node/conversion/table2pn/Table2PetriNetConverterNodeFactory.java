@@ -18,7 +18,8 @@ public class Table2PetriNetConverterNodeFactory extends WebUINodeFactory<Table2P
 			.name("Table to Petri Net")
 			.icon("../category-conversion.png")
 			.shortDescription("Convert a KNIME Data Table into a Petri net")
-			.fullDescription("This node converts a KNIME Data Table into a Petri net.")//
+			.fullDescription("This node converts a KNIME Data Table into a Petri net. "
+					+ PetriNetPortObject.PETRI_NET_TEXT)//
 			.modelSettingsClass(EmptyNodeSettings.class)//
 			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
 			.addOutputPort("Petri net", PetriNetPortObject.TYPE, "a Petri net")//

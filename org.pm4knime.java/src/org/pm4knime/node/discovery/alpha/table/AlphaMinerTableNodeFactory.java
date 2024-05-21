@@ -20,7 +20,8 @@ public class AlphaMinerTableNodeFactory extends WebUINodeFactory<AlphaMinerTable
 			.name("Alpha Miner")
 			.icon("../../category-discovery.png")
 			.shortDescription("This node implements the Alpha Miner to discover a Petri net from an event table.")
-			.fullDescription(" This node implements the Alpha Miner to discover a Petri net from an event table. ") 
+			.fullDescription(" This node implements the Alpha Miner to discover a Petri net from an event table. "
+					+ PetriNetPortObject.PETRI_NET_TEXT)//
 			.modelSettingsClass(AlphaMinerTableNodeSettings.class)//
 			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
 			.addOutputPort("Petri Net", PetriNetPortObject.TYPE, "a Petri net")//

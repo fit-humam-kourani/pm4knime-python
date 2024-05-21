@@ -25,10 +25,6 @@ import org.processmining.models.graphbased.directed.DirectedGraphEdge;
 import org.processmining.plugins.InductiveMiner.efficienttree.EfficientTree;
 import org.processmining.plugins.InductiveMiner.efficienttree.EfficientTreeReduce.ReductionFailedException;
 import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
-import org.processmining.plugins.graphviz.dot.Dot;
-import org.processmining.plugins.graphviz.visualisation.DotPanel;
-import org.processmining.plugins.inductiveVisualMiner.plugins.EfficientTreeVisualisationPlugin;
-import org.processmining.plugins.inductiveVisualMiner.plugins.GraphvizPetriNet;
 
 import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
@@ -45,6 +41,13 @@ public class PetriNetPortObject extends AbstractJSONPortObject {
 			PortTypeRegistry.getInstance().getPortType(PetriNetPortObject.class, true);
 	
 	private static final String ZIP_ENTRY_NAME = "PetriNetPortObject";
+	
+	public static final String PETRI_NET_TEXT = "A Petri net is a directed bipartite graph used to model processes. It consists of places, transitions, and directed arcs connecting them. "
+			+ "A place is enabled if it it contains at least one token. A transition can only fire if all incoming places are enabled. After firing a transition, "
+			+ "a token is consumed from all of its incoming places, and a token is produced in all of its outgoing places. The initial marking indicates the initial state of the Petri net. "
+			+ "Places that belong to the initial marking are marked by green tokens inside them. The final marking denotes the final state of the Petri net. "
+			+ "Places within the final marking are highlighted with a heavier border.";
+	
 	
 	// use AcceptingPetriNet as the model
 	// m_anet: a field that carries anet
