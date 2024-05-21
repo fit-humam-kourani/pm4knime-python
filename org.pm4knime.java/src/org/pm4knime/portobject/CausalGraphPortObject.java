@@ -379,7 +379,7 @@ public class CausalGraphPortObject extends AbstractJSONPortObject {
 		
 		for (HybridDirectedGraphNode node : cg.getNodes())
 		{
-			nodes.add(new Node(node.getId().toString(), "CG", node.getLabel()));
+			nodes.add(new Node(node.getId().toString(), "activity", node.getLabel()));
 		}
 		
 		result.put("nodes", nodes);
