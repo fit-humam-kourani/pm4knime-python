@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +15,12 @@ import javax.swing.JComponent;
 
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.port.AbstractPortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortObjectZipInputStream;
 import org.knime.core.node.port.PortObjectZipOutputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.processmining.models.graphbased.NodeID;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.inductiveminer2.helperclasses.graphs.IntGraph;
 import org.processmining.plugins.inductiveminer2.plugins.DfgMsdImportPlugin;
@@ -70,26 +72,26 @@ public class DfgMsdPortObject extends AbstractJSONPortObject {
 		// TODO it has view which is
 		// we need to change the steps..
 		//JComponent viewPanel = DfgMsdVisualisationPlugin.fancy((DirectlyFollowsGraph) dfm);
-//		JComponent viewPanel = getDotPanel();
-//		viewPanel.setName("Directly Follows Model");
-//		return new JComponent[] { viewPanel };
+		//		JComponent viewPanel = getDotPanel();
+		//		viewPanel.setName("Directly Follows Model");
+		//		return new JComponent[] { viewPanel };
 		return new JComponent[] { };
 	}
-	
+
 	public DotPanel getDotPanel() {
-		
+
 		if(dfm != null) {
-				DotPanel navDot = DfgMsdVisualisationPlugin.fancy(dfm);
-				
-				navDot.setName("Generated DFG Model");
-				return navDot;
-				
-			}
-			
-			
-			return null;
-			
+			DotPanel navDot = DfgMsdVisualisationPlugin.fancy(dfm);
+
+			navDot.setName("Generated DFG Model");
+			return navDot;
+
 		}
+
+
+		return null;
+
+	}
 
 	@Override
 	protected void save(PortObjectZipOutputStream out, ExecutionMonitor exec)
@@ -223,8 +225,8 @@ public class DfgMsdPortObject extends AbstractJSONPortObject {
 		if ((nextEntry == null) || !nextEntry.getName().equals(ZIP_ENTRY_NAME)) {
 			throw new IOException("Expected zip entry '" + ZIP_ENTRY_NAME + "' not present");
 		}
-		 
-		DfgMsdPortObject result = null;
+
+		//DfgMsdPortObject result = null;
 		try {
 			// they put layout information into context, if we want to show the them, 
 			// we need to keep the context the same in load and save program. But how to do this??
@@ -238,17 +240,64 @@ public class DfgMsdPortObject extends AbstractJSONPortObject {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 in.close();
-		
-		}
+		in.close();
+
+	}
 
 	public static final class DfgMsdPortObjectSerializer extends AbstractPortObjectSerializer<DfgMsdPortObject> {
 	}
 
 	@Override
 	public Map<String, List<?>> getJSON() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		
+		Map<String, List<?>> result = new HashMap<>();	
+		Map<Integer, String> vertexToIDMapping = new HashMap<>();
+		
+		int numActivities = dfm.getNumberOfActivities();
+		int startVertex = numActivities;
+		int endVertex = numActivities + 1;
+				
+		vertexToIDMapping.put(startVertex, new NodeID().toString());
+		vertexToIDMapping.put(endVertex, new NodeID().toString());
+		
+		List<Node> nodes = new ArrayList<>();
+					
+		for(int node : dfm.getDirectlyFollowsGraph().getNodes()) {
+			NodeID id = new NodeID();
+			vertexToIDMapping.put(node, id.toString());
+			nodes.add(new PlaceNode(id.toString(), "activity", dfm.getActivityOfIndex(node), false, false));
+		}
+		
+		nodes.add(new PlaceNode(vertexToIDMapping.get(startVertex), "artificial start", "start", true, false));
+		nodes.add(new PlaceNode(vertexToIDMapping.get(endVertex), "artificial end", "end", false, true));
+		
+		result.put("nodes", nodes);
 
+		List<LinkWithFrequency> links = new ArrayList<>();
+		
+		for (long edge : dfm.getDirectlyFollowsGraph().getEdges()) {
+			int source = dfm.getDirectlyFollowsGraph().getEdgeSource(edge);
+			int target = dfm.getDirectlyFollowsGraph().getEdgeTarget(edge);
+			int weight = (int)dfm.getDirectlyFollowsGraph().getEdgeWeight(edge);
+			links.add(new LinkWithFrequency(vertexToIDMapping.get(source), vertexToIDMapping.get(target), weight));
+		}
+				
+		for (int start : dfm.getStartActivities()) {
+			int source = startVertex;
+			int target = start;
+			int weight = (int) dfm.getStartActivities().getCardinalityOf(start);
+			links.add(new LinkWithFrequency(vertexToIDMapping.get(source), vertexToIDMapping.get(target), weight));
+		}
+		
+		for (int end : dfm.getEndActivities()) {
+			int source = end;
+			int target = endVertex;
+			int weight = (int) dfm.getEndActivities().getCardinalityOf(end);
+			links.add(new LinkWithFrequency(vertexToIDMapping.get(source), vertexToIDMapping.get(target), weight));
+		}
+				
+		result.put("links", links);
+		
+		return result;
+	}
 }

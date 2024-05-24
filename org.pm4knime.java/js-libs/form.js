@@ -216,7 +216,7 @@
 				});
 			}
 			else if (node.type === "activity") {
-				const fontSize = 22; 
+				const fontSize = 22;
 				const textWidth = estimateTextWidth(node.label, fontSize);
 				const transitionWidth = Math.max(textWidth + 10, 20);
 				node.width = transitionWidth;
@@ -271,6 +271,65 @@
 
 				});
 			}
+			else if (node.type === "artificial start") {
+				const fontSize = 22;
+				const textWidth = estimateTextWidth(node.label, fontSize);
+				const transitionWidth = Math.max(textWidth + 10, 20);
+				node.width = transitionWidth;
+				node.height = 50;
+
+				var element = new pn.Transition({
+					position: node.position,
+					size: { width: transitionWidth, height: 50 },
+					attrs: {
+						".label": {
+							text: node.label || "",
+							"fill": "black",
+							"ref-x": 0.5,
+							"ref-y": 0.5,
+							"text-anchor": "middle",
+							"y-alignment": "middle",
+						},
+						".root": {
+							fill: "#c8fcc0",
+							stroke: "#167f06",
+							"stroke-width": 2,
+						},
+
+					},
+
+				});
+			}
+			else if (node.type === "artificial end") {
+				const fontSize = 22;
+				const textWidth = estimateTextWidth(node.label, fontSize);
+				const transitionWidth = Math.max(textWidth + 10, 20);
+				node.width = transitionWidth;
+				node.height = 50;
+
+				var element = new pn.Transition({
+					position: node.position,
+					size: { width: transitionWidth, height: 50 },
+					attrs: {
+						".label": {
+							text: node.label || "",
+							"fill": "black",
+							"ref-x": 0.5,
+							"ref-y": 0.5,
+							"text-anchor": "middle",
+							"y-alignment": "middle",
+						},
+						".root": {
+							fill: "#fcb6b6",
+							stroke: "#c30909",
+							"stroke-width": 2,
+						},
+
+					},
+
+				});
+			}
+
 			graph.addCell(element);
 
 			elements[node.id] = element;
@@ -279,28 +338,43 @@
 
 		edges.forEach(function(edge) {
 
+			var linkAttrs = {
+				".connection": { stroke: "grey", "stroke-width": 3 },
+				".marker-target": { fill: "grey", stroke: "grey", "stroke-width": 2 }
+			};
+			var labels = [];
+			if (edge.frequency !== undefined && edge.frequency !== null) {
+				labels.push({
+					position: 0.5, 
+					attrs: {
+						text: { text: edge.frequency.toString(), fill: 'black', 'font-size': 12 },
+						rect: { fill: 'white', stroke: 'none' }
+					}
+				});
+			}
+
 			var link = new pn.Link({
 				source: { id: elements[edge.source].id, selector: ".root" },
 				target: { id: elements[edge.target].id, selector: ".root" },
-				type: edge.type,
-				attrs: {
-					".connection": { stroke: "grey", "stroke-width": 3 },
-					".marker-target": { fill: "grey", stroke: "grey", "stroke-width": 2 },
-				},
-				// router: { name: "manhattan" },
-				// connector: { name: "smooth" },
+				attrs: linkAttrs,
+				labels: labels,
 			});
 
+			if (edge.frequency >= -1) {
+				link.attr('.connection', { stroke: '#000f80' });
+				link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+			}
+
 			if (edge.type === 'SureEdge' || edge.type === 'HybridDirectedSureGraphEdge') {
-				link.attr('.connection', { stroke: 'blue' });
-				link.attr('.marker-target', { fill: 'blue' , stroke: 'blue'}); 
+				link.attr('.connection', { stroke: '#000f80' });
+				link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
 			} else if (edge.type === 'UncertainEdge' || edge.type === 'HybridDirectedUncertainGraphEdge') {
-				link.attr('.connection', { stroke: 'red' , 'stroke-dasharray': '4,2' });
-				link.attr('.marker-target', { fill: 'red' , stroke: 'red'});
+				link.attr('.connection', { stroke: 'red', 'stroke-dasharray': '4,2' });
+				link.attr('.marker-target', { fill: 'red', stroke: 'red' });
 			}
 			else if (edge.type === 'LongDepEdge' || edge.type === 'HybridDirectedLongDepGraphEdge') {
 				link.attr('.connection', { stroke: 'orange' });
-				link.attr('.marker-target', { fill: 'orange' , stroke: 'orange'});
+				link.attr('.marker-target', { fill: 'orange', stroke: 'orange' });
 			}
 
 			graph.addCell(link);
