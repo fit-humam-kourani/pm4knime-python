@@ -1,13 +1,13 @@
 package org.pm4knime.portobject;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +24,6 @@ import org.knime.core.node.port.PortObjectZipOutputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.pm4knime.node.visualizations.jsgraphviz.util.GraphvizBPMN;
-import org.pm4knime.util.HybridPetriNetUtil;
-import org.processmining.models.connections.GraphLayoutConnection;
 import org.processmining.models.graphbased.directed.bpmn.BPMNDiagram;
 import org.processmining.models.graphbased.directed.bpmn.BPMNDiagramFactory;
 import org.processmining.models.graphbased.directed.bpmn.BPMNNode;
@@ -33,19 +31,15 @@ import org.processmining.models.graphbased.directed.bpmn.elements.Swimlane;
 import org.processmining.plugins.bpmn.Bpmn;
 import org.processmining.plugins.bpmn.parameters.BpmnSelectDiagramParameters;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
-import org.processmining.plugins.pnml.base.FullPnmlElementFactory;
-import org.processmining.plugins.pnml.base.PnmlElementFactory;
-import org.processmining.plugins.pnml.base.Pnml.PnmlType;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
+
+
 import org.processmining.contexts.uitopia.UIPluginContext;
-import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
-import org.processmining.extendedhybridminer.models.pnml.HybridPnml;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.plugins.bpmn.BpmnDefinitions;
 import javax.swing.SwingUtilities;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.processmining.contexts.uitopia.UIContext;
@@ -168,11 +162,6 @@ public class BpmnPortObject extends AbstractJSONPortObject {
 		return result;
 	}
 
-	
-	
-	
-	
-	
 	@Override
 	protected void load(PortObjectZipInputStream in, PortObjectSpec spec, ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
@@ -245,7 +234,7 @@ public class BpmnPortObject extends AbstractJSONPortObject {
 
 	}
 
-	public static void exportBPMNDiagramToFile(OutputStream outStream, BPMNDiagram bpmn) throws Exception{
+	public static void exportBPMNDiagramToFile(OutputStream outStream, BPMNDiagram bpmn) throws Exception {
 		// TODO Auto-generated method stub
 		String result = BpmnPortObject.exportBPMNDiagram(bpmn);
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outStream));
@@ -253,12 +242,23 @@ public class BpmnPortObject extends AbstractJSONPortObject {
 		System.out.println(result);
 		bw.write(result);
 		bw.close();
-		
+
 	}
 
 	@Override
 	public Map<String, List<?>> getJSON() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Map<String, List<?>> result = new HashMap<>();
+		
+		try {
+			String value = BpmnPortObject.exportBPMNDiagram(model);
+			String key = "xml";     
+		    result.put(key, Collections.singletonList(value));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;	
+		
 	}
 }

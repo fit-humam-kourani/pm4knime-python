@@ -110,10 +110,9 @@ public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
     	// Create a BpmnPortObject from the AcceptingBPMN
     	bpmnPO = new BpmnPortObject(bpmnDiagram);
     	
-    	String dotstr;
-        JSGraphVizViewRepresentation representation = getViewRepresentation(); // Get the view representation
+    	JSGraphVizViewRepresentation representation = getViewRepresentation(); // Get the view representation
         
-        representation.setJSONString(null);
+        representation.setJSONString(bpmnPO.getJSON());
     }
     
     public BPMNDiagram convert(AcceptingPetriNet petrinet) {

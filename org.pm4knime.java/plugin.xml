@@ -819,6 +819,12 @@
 		    <importResource relativePath="js-libs/joint.min.js" type="JAVASCRIPT"> </importResource>
             <importResource relativePath="js-libs/joint.min.css" type="CSS"/>
             
+            <importResource relativePath="js-libs/diagram-js.css" type="CSS"/>
+            <importResource relativePath="js-libs/bpmn-embedded.css" type="CSS"/>
+            <importResource relativePath="js-libs/bpmn-modeler.development.js" type="JAVASCRIPT"> </importResource>
+            
+            <importResource relativePath="js-libs/bpmn-layouter.js" type="JAVASCRIPT"> </importResource>
+            
             <importResource relativePath="js-libs/viz.js" type="JAVASCRIPT"> </importResource>
             
                                                                

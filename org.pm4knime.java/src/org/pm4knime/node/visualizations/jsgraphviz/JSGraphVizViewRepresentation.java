@@ -80,7 +80,7 @@ public class JSGraphVizViewRepresentation extends JSONViewContent {
         String jsonData = gson.toJson(json);
 		this.json = jsonData;
 		
-		System.out.println("json data on the jave side");
+		System.out.println("json data on the java side");
 		System.out.println(json);
 		
 	}

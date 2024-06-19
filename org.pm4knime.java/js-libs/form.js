@@ -16,12 +16,59 @@
 		let jsonDataFromJava = JSON.parse(representation.json);
 		let nodes = jsonDataFromJava.nodes;
 		let edges = jsonDataFromJava.links;
-		createGraphElements(nodes, edges);
-		createPaper(nodes, edges);
+		let xml = jsonDataFromJava.xml;
+
+		if (xml) {
+			let xmlString = xml[0];
+			//console.error('XML: ', xmlString);
+			createBpmn(xmlString);
+		} else {
+			createGraphElements();
+			createPaper(nodes, edges);
+		}
 
 	};
 
-	function createGraphElements(nodesData, edgesData) {
+
+	async function createBpmn(xmlString) {
+
+		try {
+			xmlString = await bpmnLayoutWithDagre(xmlString);
+		} catch (err) { }
+		
+		modelXmlString = xmlString;
+
+		const mainContainer = document.createElement("div");
+		mainContainer.id = "main";
+		mainContainer.style.display = "flex";
+		mainContainer.style.flexDirection = "column";
+		mainContainer.style.alignItems = "center";
+		mainContainer.style.justifyContent = "space-between";
+		mainContainer.style.border = "1px solid #ccc";
+		mainContainer.style.width = "100vw";
+		mainContainer.style.height = "100vh";
+
+/*		const bpmnContainer = document.createElement("div");
+		bpmnContainer.id = "bpmn-container";
+		bpmnContainer.style.display = "flex";
+		bpmnContainer.style.flexDirection = "column";
+		bpmnContainer.style.width = "100%";
+		bpmnContainer.style.height = "100%";
+
+		mainContainer.appendChild(bpmnContainer);
+*/		document.body.appendChild(mainContainer);
+
+		const viewer = new BpmnJS({
+			container: mainContainer,
+		});
+
+		await viewer.importXML(modelXmlString);
+
+		viewer.get("canvas").zoom("fit-viewport");
+
+	}
+
+	function createGraphElements() {
 
 		const mainContainer = document.createElement("div");
 		mainContainer.style.display = "flex";
@@ -345,7 +392,7 @@
 			var labels = [];
 			if (edge.frequency !== undefined && edge.frequency !== null) {
 				labels.push({
-					position: 0.5, 
+					position: 0.5,
 					attrs: {
 						text: { text: edge.frequency.toString(), fill: 'black', 'font-size': 12 },
 						rect: { fill: 'white', stroke: 'none' }
@@ -360,7 +407,7 @@
 				labels: labels,
 			});
 
-			if (edge.frequency >= -1) {
+			if (edge.frequency > 0) {
 				link.attr('.connection', { stroke: '#000f80' });
 				link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
 			}
