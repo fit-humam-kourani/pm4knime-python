@@ -1,5 +1,5 @@
 /*!
- * bpmn-js - bpmn-modeler v17.7.0
+ * bpmn-js - bpmn-modeler v17.8.2
  *
  * Copyright (c) 2014-present, camunda Services GmbH
  *
@@ -8,7 +8,7 @@
  *
  * Source Code: https://github.com/bpmn-io/bpmn-js
  *
- * Date: 2024-05-22
+ * Date: 2024-06-17
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -178,7 +178,7 @@
    *
    * @template T
    *
-   * @param {T[][]} arr
+   * @param {T[][] | T[] | null} [arr]
    *
    * @return {T[]}
    */
@@ -845,7 +845,7 @@
    *
    * @return {T}
    */
-  function set$2(target, path, value) {
+  function set$1(target, path, value) {
 
     let currentTarget = target;
 
@@ -956,9 +956,11 @@
   /**
    * Flatten array, one level deep.
    *
-   * @param {Array<?>} arr
+   * @template T
    *
-   * @return {Array<?>}
+   * @param {T[][] | T[] | null} [arr]
+   *
+   * @return {T[]}
    */
 
   const nativeToString = Object.prototype.toString;
@@ -989,10 +991,11 @@
    * Iterate over collection; returning something
    * (non-undefined) will stop iteration.
    *
-   * @param  {Array|Object} collection
-   * @param  {Function} iterator
+   * @template T
+   * @param {Collection<T>} collection
+   * @param { ((item: T, idx: number) => (boolean|void)) | ((item: T, key: string) => (boolean|void)) } iterator
    *
-   * @return {Object} return result that stopped the iteration
+   * @return {T} return result that stopped the iteration
    */
   function forEach(collection, iterator) {
 
@@ -1215,51 +1218,37 @@
   };
 
   /**
-   * Remove all children from the given element.
+   * Clear utility
    */
-  function clear$1(el) {
-
-    var c;
-
-    while (el.childNodes.length) {
-      c = el.childNodes[0];
-      el.removeChild(c);
-    }
-
-    return el;
-  }
 
   /**
-   * @param { HTMLElement } element
-   * @param { String } selector
+   * Removes all children from the given element
    *
-   * @return { boolean }
+   * @param {Element} element
+   *
+   * @return {Element} the element (for chaining)
    */
-  function matches(element, selector) {
-    return element && typeof element.matches === 'function' && element.matches(selector);
+  function clear$1(element) {
+    var child;
+
+    while ((child = element.firstChild)) {
+      element.removeChild(child);
+    }
+
+    return element;
   }
 
   /**
    * Closest
    *
    * @param {Element} el
-   * @param {String} selector
-   * @param {Boolean} checkYourSelf (optional)
+   * @param {string} selector
+   * @param {boolean} checkYourSelf (optional)
    */
   function closest(element, selector, checkYourSelf) {
-    var currentElem = checkYourSelf ? element : element.parentNode;
+    var actualElement = checkYourSelf ? element : element.parentNode;
 
-    while (currentElem && currentElem.nodeType !== document.DOCUMENT_NODE &&
-        currentElem.nodeType !== document.DOCUMENT_FRAGMENT_NODE) {
-
-      if (matches(currentElem, selector)) {
-        return currentElem;
-      }
-
-      currentElem = currentElem.parentNode;
-    }
-
-    return matches(currentElem, selector) ? currentElem : null;
+    return actualElement && typeof actualElement.closest === 'function' && actualElement.closest(selector) || null;
   }
 
   var componentEvent = {};
@@ -1485,6 +1474,16 @@
 
   var domify$1 = domify;
 
+  /**
+   * @param { HTMLElement } element
+   * @param { String } selector
+   *
+   * @return { boolean }
+   */
+  function matches(element, selector) {
+    return element && typeof element.matches === 'function' && element.matches(selector) || false;
+  }
+
   function query(selector, el) {
     el = el || document;
 
@@ -1521,6 +1520,7 @@
    * appendTo utility
    */
 
+
   /**
    * Append a node to a target element and return the appended node.
    *
@@ -1536,6 +1536,7 @@
   /**
    * append utility
    */
+
 
   /**
    * Append a node to an element
@@ -1809,16 +1810,6 @@
      return this.list.contains(name);
    };
 
-  function remove$1(element) {
-    var parent = element.parentNode;
-
-    if (parent) {
-      parent.removeChild(element);
-    }
-
-    return element;
-  }
-
   /**
    * Clear utility
    */
@@ -1826,14 +1817,14 @@
   /**
    * Removes all children from the given element
    *
-   * @param  {DOMElement} element
-   * @return {DOMElement} the element (for chaining)
+   * @param  {SVGElement} element
+   * @return {Element} the element (for chaining)
    */
   function clear(element) {
     var child;
 
     while ((child = element.firstChild)) {
-      remove$1(child);
+      element.removeChild(child);
     }
 
     return element;
@@ -1850,6 +1841,7 @@
   /**
    * DOM parsing utility
    */
+
 
   var SVG_START = '<svg xmlns="' + ns.svg + '"';
 
@@ -1902,6 +1894,7 @@
    */
 
 
+
   /**
    * Create a specific type from name or SVG markup.
    *
@@ -1912,6 +1905,8 @@
    */
   function create$1(name, attrs) {
     var element;
+
+    name = name.trim();
 
     if (name.charAt(0) === '<') {
       element = parse(name).firstChild;
@@ -1930,6 +1925,7 @@
   /**
    * Geometry helpers
    */
+
 
   // fake node used to instantiate svg geometry elements
   var node = null;
@@ -1984,9 +1980,7 @@
   }
 
   function createTransform(matrix) {
-    if (matrix) {
-      return getNode().createSVGTransformFromMatrix(matrix);
-    } else {
+    {
       return getNode().createSVGTransform();
     }
   }
@@ -2068,38 +2062,6 @@
     return output;
   }
 
-  /**
-   * innerHTML like functionality for SVG elements.
-   * based on innerSVG (https://code.google.com/p/innersvg)
-   */
-
-
-  function set$1(element, svg) {
-
-    var parsed = parse(svg);
-
-    // clear element contents
-    clear(element);
-
-    if (!svg) {
-      return;
-    }
-
-    if (!isFragment(parsed)) {
-
-      // extract <svg> from parsed document
-      parsed = parsed.documentElement;
-    }
-
-    var nodes = slice$1(parsed.childNodes);
-
-    // import + append each node
-    for (var i = 0; i < nodes.length; i++) {
-      appendTo(nodes[i], element);
-    }
-
-  }
-
   function get(element) {
     var child = element.firstChild,
         output = [];
@@ -2112,29 +2074,21 @@
     return output.join('');
   }
 
-  function isFragment(node) {
-    return node.nodeName === '#document-fragment';
-  }
-
   function innerSVG(element, svg) {
 
-    if (svg !== undefined) {
-
-      try {
-        set$1(element, svg);
-      } catch (e) {
-        throw new Error('error parsing SVG: ' + e.message);
-      }
-
-      return element;
-    } else {
+    {
       return get(element);
     }
   }
 
+  function remove$1(element) {
+    var parent = element.parentNode;
 
-  function slice$1(arr) {
-    return Array.prototype.slice.call(arr);
+    if (parent) {
+      parent.removeChild(element);
+    }
+
+    return element;
   }
 
   /**
@@ -3043,7 +2997,7 @@
       var children = element.children;
 
       // max traversal depth not reached yet
-      if (maxDepth === -1 || depth < maxDepth) {
+      {
 
         // children exist && children not yet processed
         if (children && add$1(processedChildren, children, unique)) {
@@ -3065,7 +3019,7 @@
    * @return {Element[]} the collected elements
    */
   function selfAndAllChildren(elements, allowDuplicates) {
-    return selfAndChildren(elements, !allowDuplicates, -1);
+    return selfAndChildren(elements, !allowDuplicates);
   }
 
 
@@ -8049,7 +8003,7 @@
     rotate.setRotate(angle || 0, 0, 0);
 
     var scale = createTransform();
-    scale.setScale(amount || 1, amount || 1);
+    scale.setScale(1, 1);
 
     transform$1(gfx, [ translate, rotate, scale ]);
   }
@@ -9520,7 +9474,7 @@
         return this[key];
       },
       set: function(key, value) {
-        set$2(this, [ key ], value);
+        set$1(this, [ key ], value);
       }
     };
 
@@ -16862,7 +16816,7 @@
    * @return {ModdleElement[]}
    */
   function getDiagramsToImport(definitions, bpmnDiagram) {
-    if (!bpmnDiagram) {
+    if (!bpmnDiagram || !bpmnDiagram.plane) {
       return;
     }
 
@@ -16910,6 +16864,11 @@
     var handledElements = [ bpmnElement ];
 
     forEach$1(definitions.diagrams, function(diagram) {
+
+      if (!diagram.plane) {
+        return;
+      }
+
       var businessObject = diagram.plane.bpmnElement;
 
       if (
@@ -16958,6 +16917,7 @@
    *
    * @see http://bpmn.io/license for more information.
    */
+
 
 
   // inlined ../../resources/logo.svg
@@ -17498,7 +17458,7 @@
       const canvas = this.get('canvas');
 
       const contentNode = canvas.getActiveLayer(),
-            defsNode = query('defs', canvas._svg);
+            defsNode = query(':scope > defs', canvas._svg);
 
       const contents = innerSVG(contentNode),
             defs = defsNode ? '<defs>' + innerSVG(defsNode) + '</defs>' : '';
@@ -18531,7 +18491,7 @@
     return has$1(overrides, 'height') ? overrides.height : bounds.height;
   }
 
-  var rendererIds = new Ids();
+  var markerIds = new Ids();
 
   var ELEMENT_LABEL_DISTANCE$1 = 10,
       INNER_OUTER_DIST = 3,
@@ -18582,10 +18542,6 @@
         defaultStrokeColor = config && config.defaultStrokeColor,
         defaultLabelColor = config && config.defaultLabelColor;
 
-    var rendererId = rendererIds.next();
-
-    var markers = {};
-
     function shapeStyle(attrs) {
       return styles.computeStyle(attrs, {
         strokeLinecap: 'round',
@@ -18609,7 +18565,8 @@
       var {
         ref = { x: 0, y: 0 },
         scale = 1,
-        element
+        element,
+        parentGfx = canvas._svg
       } = options;
 
       var marker = create$1('marker', {
@@ -18624,36 +18581,28 @@
 
       append(marker, element);
 
-      var defs = query('defs', canvas._svg);
+      var defs = query(':scope > defs', parentGfx);
 
       if (!defs) {
         defs = create$1('defs');
 
-        append(canvas._svg, defs);
+        append(parentGfx, defs);
       }
 
       append(defs, marker);
-
-      markers[id] = marker;
     }
 
-    function colorEscape(str) {
+    function marker(parentGfx, type, fill, stroke) {
 
-      // only allow characters and numbers
-      return str.replace(/[^0-9a-zA-Z]+/g, '_');
-    }
 
-    function marker(type, fill, stroke) {
-      var id = type + '-' + colorEscape(fill) + '-' + colorEscape(stroke) + '-' + rendererId;
+      var id = markerIds.nextPrefixed('marker-');
 
-      if (!markers[id]) {
-        createMarker(id, type, fill, stroke);
-      }
+      createMarker(parentGfx, id, type, fill, stroke);
 
       return 'url(#' + id + ')';
     }
 
-    function createMarker(id, type, fill, stroke) {
+    function createMarker(parentGfx, id, type, fill, stroke) {
 
       if (type === 'sequenceflow-end') {
         var sequenceflowEnd = create$1('path', {
@@ -18668,7 +18617,8 @@
         addMarker(id, {
           element: sequenceflowEnd,
           ref: { x: 11, y: 10 },
-          scale: 0.5
+          scale: 0.5,
+          parentGfx
         });
       }
 
@@ -18690,7 +18640,8 @@
 
         addMarker(id, {
           element: messageflowStart,
-          ref: { x: 6, y: 6 }
+          ref: { x: 6, y: 6 },
+          parentGfx
         });
       }
 
@@ -18710,7 +18661,8 @@
 
         addMarker(id, {
           element: messageflowEnd,
-          ref: { x: 8.5, y: 5 }
+          ref: { x: 8.5, y: 5 },
+          parentGfx
         });
       }
 
@@ -18731,7 +18683,8 @@
         addMarker(id, {
           element: associationStart,
           ref: { x: 1, y: 10 },
-          scale: 0.5
+          scale: 0.5,
+          parentGfx
         });
       }
 
@@ -18752,7 +18705,8 @@
         addMarker(id, {
           element: associationEnd,
           ref: { x: 11, y: 10 },
-          scale: 0.5
+          scale: 0.5,
+          parentGfx
         });
       }
 
@@ -18768,7 +18722,8 @@
         addMarker(id, {
           element: conditionalFlowMarker,
           ref: { x: -1, y: 10 },
-          scale: 0.5
+          scale: 0.5,
+          parentGfx
         });
       }
 
@@ -18776,14 +18731,16 @@
         var defaultFlowMarker = create$1('path', {
           d: 'M 6 4 L 10 16',
           ...shapeStyle({
-            stroke: stroke
+            stroke: stroke,
+            fill: 'none'
           })
         });
 
         addMarker(id, {
           element: defaultFlowMarker,
           ref: { x: 0, y: 10 },
-          scale: 0.5
+          scale: 0.5,
+          parentGfx
         });
       }
     }
@@ -19571,11 +19528,11 @@
 
       if (semantic.get('associationDirection') === 'One' ||
           semantic.get('associationDirection') === 'Both') {
-        attrs.markerEnd = marker('association-end', fill, stroke);
+        attrs.markerEnd = marker(parentGfx, 'association-end', fill, stroke);
       }
 
       if (semantic.get('associationDirection') === 'Both') {
-        attrs.markerStart = marker('association-start', fill, stroke);
+        attrs.markerStart = marker(parentGfx, 'association-start', fill, stroke);
       }
 
       attrs = pickAttrs(attrs, [
@@ -19869,7 +19826,7 @@
 
         return renderAssociation(parentGfx, element, {
           ...attrs,
-          markerEnd: marker('association-end', getFillColor(element, defaultFillColor, attrs.fill), getStrokeColor$1(element, defaultStrokeColor, attrs.stroke))
+          markerEnd: marker(parentGfx, 'association-end', getFillColor(element, defaultFillColor, attrs.fill), getStrokeColor$1(element, defaultStrokeColor, attrs.stroke))
         });
       },
       'bpmn:DataObject': function(parentGfx, element, attrs = {}) {
@@ -19907,7 +19864,7 @@
 
         return renderAssociation(parentGfx, element, {
           ...attrs,
-          markerEnd: marker('association-end', getFillColor(element, defaultFillColor, attrs.fill), getStrokeColor$1(element, defaultStrokeColor, attrs.stroke))
+          markerEnd: marker(parentGfx, 'association-end', getFillColor(element, defaultFillColor, attrs.fill), getStrokeColor$1(element, defaultStrokeColor, attrs.stroke))
         });
       },
       'bpmn:DataStoreReference': function(parentGfx, element, attrs = {}) {
@@ -20173,8 +20130,8 @@
             stroke = getStrokeColor$1(element, defaultStrokeColor, attrs.stroke);
 
         var path = drawConnectionSegments(parentGfx, element.waypoints, {
-          markerEnd: marker('messageflow-end', fill, stroke),
-          markerStart: marker('messageflow-start', fill, stroke),
+          markerEnd: marker(parentGfx, 'messageflow-end', fill, stroke),
+          markerStart: marker(parentGfx, 'messageflow-start', fill, stroke),
           stroke,
           strokeDasharray: '10, 11',
           strokeWidth: 1.5
@@ -20430,7 +20387,7 @@
             stroke = getStrokeColor$1(element, defaultStrokeColor, attrs.stroke);
 
         var connection = drawConnectionSegments(parentGfx, element.waypoints, {
-          markerEnd: marker('sequenceflow-end', fill, stroke),
+          markerEnd: marker(parentGfx, 'sequenceflow-end', fill, stroke),
           stroke
         });
 
@@ -20444,7 +20401,7 @@
           // conditional flow marker
           if (semantic.get('conditionExpression') && is$1(sourceSemantic, 'bpmn:Activity')) {
             attr(connection, {
-              markerStart: marker('conditional-flow-marker', fill, stroke)
+              markerStart: marker(parentGfx, 'conditional-flow-marker', fill, stroke)
             });
           }
 
@@ -20452,7 +20409,7 @@
           if (sourceSemantic.get('default') && (is$1(sourceSemantic, 'bpmn:Gateway') || is$1(sourceSemantic, 'bpmn:Activity')) &&
               sourceSemantic.get('default') === semantic) {
             attr(connection, {
-              markerStart: marker('conditional-default-flow-marker', fill, stroke)
+              markerStart: marker(parentGfx, 'conditional-default-flow-marker', fill, stroke)
             });
           }
         }
@@ -23522,23 +23479,30 @@
         businessObjectParents = getBusinessObjectParentChain(element);
       }
 
-      var path = businessObjectParents.map(function(parent) {
-        var title = escapeHTML(parent.name || parent.id);
-        var link = domify$1('<li><span class="bjs-crumb"><a title="' + title + '">' + title + '</a></span></li>');
+      var path = businessObjectParents.flatMap(function(parent) {
+        var parentPlane =
+          canvas.findRoot(getPlaneIdFromShape(parent)) ||
+          canvas.findRoot(parent.id);
 
-        var parentPlane = canvas.findRoot(getPlaneIdFromShape(parent)) || canvas.findRoot(parent.id);
-
-        // when the root is a collaboration, the process does not have a corresponding
-        // element in the elementRegisty. Instead, we search for the corresponding participant
+        // when the root is a collaboration, the process does not have a
+        // corresponding element in the elementRegisty. Instead, we search
+        // for the corresponding participant
         if (!parentPlane && is$1(parent, 'bpmn:Process')) {
           var participant = elementRegistry.find(function(element) {
             var businessObject = getBusinessObject(element);
 
-            return businessObject && businessObject.get('processRef') && businessObject.get('processRef') === parent;
+            return businessObject && businessObject.get('processRef') === parent;
           });
 
-          parentPlane = canvas.findRoot(participant.id);
+          parentPlane = participant && canvas.findRoot(participant.id);
         }
+
+        if (!parentPlane) {
+          return [];
+        }
+
+        var title = escapeHTML(parent.name || parent.id);
+        var link = domify$1('<li><span class="bjs-crumb"><a title="' + title + '">' + title + '</a></span></li>');
 
         link.addEventListener('click', function() {
           canvas.setRootElement(parentPlane);
@@ -23623,8 +23587,8 @@
 
       currentRoot = newRoot;
 
-      // current root was replaced with a collaboration, we don't update the viewbox
-      if (is$1(newRoot, 'bpmn:Collaboration') && !storedViewbox) {
+      // Keep viewbox when replacing root elements
+      if (!is$1(newRoot, 'bpmn:SubProcess') && !storedViewbox) {
         return;
       }
 
@@ -23769,11 +23733,9 @@
       self._processToDiagramMap[diagram.plane.bpmnElement.id] = diagram;
     });
 
-    var newDiagrams = [];
-    definitions.diagrams.forEach(function(diagram) {
-      var createdDiagrams = self._createNewDiagrams(diagram.plane);
-      Array.prototype.push.apply(newDiagrams, createdDiagrams);
-    });
+    var newDiagrams = definitions.diagrams
+      .filter(diagram => diagram.plane)
+      .flatMap(diagram => self._createNewDiagrams(diagram.plane));
 
     newDiagrams.forEach(function(diagram) {
       self._movePlaneElementsToOrigin(diagram.plane);
@@ -24470,7 +24432,7 @@
         height: element.height - 4,
       }, OUTLINE_STYLE));
 
-    } else if (isAny(element, [ 'bpmn:Task', 'bpmn:SubProcess', 'bpmn:Group' ])) {
+    } else if (isAny(element, [ 'bpmn:Task', 'bpmn:SubProcess', 'bpmn:Group', 'bpmn:CallActivity' ])) {
       outline = create$1('rect');
 
       attr(outline, assign$1({
@@ -27689,13 +27651,13 @@
     contextPad: [ 'type', ContextPad ]
   };
 
-  var n$1,l$1,u$1,i$1,o$1,r$2,f$1,c$1={},s$1=[],a$1=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,h$1=Array.isArray;function v$1(n,l){for(var u in l)n[u]=l[u];return n}function p$1(n){var l=n.parentNode;l&&l.removeChild(n);}function y$1(l,u,t){var i,o,r,f={};for(r in u)"key"==r?i=u[r]:"ref"==r?o=u[r]:f[r]=u[r];if(arguments.length>2&&(f.children=arguments.length>3?n$1.call(arguments,2):t),"function"==typeof l&&null!=l.defaultProps)for(r in l.defaultProps)void 0===f[r]&&(f[r]=l.defaultProps[r]);return d$1(l,f,i,o,null)}function d$1(n,t,i,o,r){var f={type:n,props:t,key:i,ref:o,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,constructor:void 0,__v:null==r?++u$1:r,__i:-1,__u:0};return null==r&&null!=l$1.vnode&&l$1.vnode(f),f}function g(n){return n.children}function b(n,l){this.props=n,this.context=l;}function m$2(n,l){if(null==l)return n.__?m$2(n.__,n.__i+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?m$2(n):null}function w$1(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return w$1(n)}}function k$1(n){(!n.__d&&(n.__d=!0)&&i$1.push(n)&&!x$1.__r++||o$1!==l$1.debounceRendering)&&((o$1=l$1.debounceRendering)||r$2)(x$1);}function x$1(){var n,u,t,o,r,e,c,s,a;for(i$1.sort(f$1);n=i$1.shift();)n.__d&&(u=i$1.length,o=void 0,e=(r=(t=n).__v).__e,s=[],a=[],(c=t.__P)&&((o=v$1({},r)).__v=r.__v+1,l$1.vnode&&l$1.vnode(o),L(c,o,r,t.__n,void 0!==c.ownerSVGElement,32&r.__u?[e]:null,s,null==e?m$2(r):e,!!(32&r.__u),a),o.__v=r.__v,o.__.__k[o.__i]=o,M(s,o,a),o.__e!=e&&w$1(o)),i$1.length>u&&i$1.sort(f$1));x$1.__r=0;}function C$1(n,l,u,t,i,o,r,f,e,a,h){var v,p,y,d,_,g=t&&t.__k||s$1,b=l.length;for(u.__d=e,P(u,l,g),e=u.__d,v=0;v<b;v++)null!=(y=u.__k[v])&&"boolean"!=typeof y&&"function"!=typeof y&&(p=-1===y.__i?c$1:g[y.__i]||c$1,y.__i=v,L(n,y,p,i,o,r,f,e,a,h),d=y.__e,y.ref&&p.ref!=y.ref&&(p.ref&&z$1(p.ref,null,y),h.push(y.ref,y.__c||d,y)),null==_&&null!=d&&(_=d),65536&y.__u||p.__k===y.__k?e=S(y,e,n):"function"==typeof y.type&&void 0!==y.__d?e=y.__d:d&&(e=d.nextSibling),y.__d=void 0,y.__u&=-196609);u.__d=e,u.__e=_;}function P(n,l,u){var t,i,o,r,f,e=l.length,c=u.length,s=c,a=0;for(n.__k=[],t=0;t<e;t++)r=t+a,null!=(i=n.__k[t]=null==(i=l[t])||"boolean"==typeof i||"function"==typeof i?null:"string"==typeof i||"number"==typeof i||"bigint"==typeof i||i.constructor==String?d$1(null,i,null,null,null):h$1(i)?d$1(g,{children:i},null,null,null):void 0===i.constructor&&i.__b>0?d$1(i.type,i.props,i.key,i.ref?i.ref:null,i.__v):i)?(i.__=n,i.__b=n.__b+1,f=H(i,u,r,s),i.__i=f,o=null,-1!==f&&(s--,(o=u[f])&&(o.__u|=131072)),null==o||null===o.__v?(-1==f&&a--,"function"!=typeof i.type&&(i.__u|=65536)):f!==r&&(f===r+1?a++:f>r?s>e-r?a+=f-r:a--:f<r?f==r-1&&(a=f-r):a=0,f!==t+a&&(i.__u|=65536))):(o=u[r])&&null==o.key&&o.__e&&0==(131072&o.__u)&&(o.__e==n.__d&&(n.__d=m$2(o)),N(o,o,!1),u[r]=null,s--);if(s)for(t=0;t<c;t++)null!=(o=u[t])&&0==(131072&o.__u)&&(o.__e==n.__d&&(n.__d=m$2(o)),N(o,o));}function S(n,l,u){var t,i;if("function"==typeof n.type){for(t=n.__k,i=0;t&&i<t.length;i++)t[i]&&(t[i].__=n,l=S(t[i],l,u));return l}n.__e!=l&&(u.insertBefore(n.__e,l||null),l=n.__e);do{l=l&&l.nextSibling;}while(null!=l&&8===l.nodeType);return l}function H(n,l,u,t){var i=n.key,o=n.type,r=u-1,f=u+1,e=l[u];if(null===e||e&&i==e.key&&o===e.type&&0==(131072&e.__u))return u;if(t>(null!=e&&0==(131072&e.__u)?1:0))for(;r>=0||f<l.length;){if(r>=0){if((e=l[r])&&0==(131072&e.__u)&&i==e.key&&o===e.type)return r;r--;}if(f<l.length){if((e=l[f])&&0==(131072&e.__u)&&i==e.key&&o===e.type)return f;f++;}}return -1}function I(n,l,u){"-"===l[0]?n.setProperty(l,null==u?"":u):n[l]=null==u?"":"number"!=typeof u||a$1.test(l)?u:u+"px";}function T(n,l,u,t,i){var o;n:if("style"===l)if("string"==typeof u)n.style.cssText=u;else {if("string"==typeof t&&(n.style.cssText=t=""),t)for(l in t)u&&l in u||I(n.style,l,"");if(u)for(l in u)t&&u[l]===t[l]||I(n.style,l,u[l]);}else if("o"===l[0]&&"n"===l[1])o=l!==(l=l.replace(/(PointerCapture)$|Capture$/i,"$1")),l=l.toLowerCase()in n?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+o]=u,u?t?u.u=t.u:(u.u=Date.now(),n.addEventListener(l,o?D$1:A$1,o)):n.removeEventListener(l,o?D$1:A$1,o);else {if(i)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!==l&&"height"!==l&&"href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&"rowSpan"!==l&&"colSpan"!==l&&"role"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null==u||!1===u&&"-"!==l[4]?n.removeAttribute(l):n.setAttribute(l,u));}}function A$1(n){if(this.l){var u=this.l[n.type+!1];if(n.t){if(n.t<=u.u)return}else n.t=Date.now();return u(l$1.event?l$1.event(n):n)}}function D$1(n){if(this.l)return this.l[n.type+!0](l$1.event?l$1.event(n):n)}function L(n,u,t,i,o,r,f,e,c,s){var a,p,y,d,_,m,w,k,x,P,S,$,H,I,T,A=u.type;if(void 0!==u.constructor)return null;128&t.__u&&(c=!!(32&t.__u),r=[e=u.__e=t.__e]),(a=l$1.__b)&&a(u);n:if("function"==typeof A)try{if(k=u.props,x=(a=A.contextType)&&i[a.__c],P=a?x?x.props.value:a.__:i,t.__c?w=(p=u.__c=t.__c).__=p.__E:("prototype"in A&&A.prototype.render?u.__c=p=new A(k,P):(u.__c=p=new b(k,P),p.constructor=A,p.render=O),x&&x.sub(p),p.props=k,p.state||(p.state={}),p.context=P,p.__n=i,y=p.__d=!0,p.__h=[],p._sb=[]),null==p.__s&&(p.__s=p.state),null!=A.getDerivedStateFromProps&&(p.__s==p.state&&(p.__s=v$1({},p.__s)),v$1(p.__s,A.getDerivedStateFromProps(k,p.__s))),d=p.props,_=p.state,p.__v=u,y)null==A.getDerivedStateFromProps&&null!=p.componentWillMount&&p.componentWillMount(),null!=p.componentDidMount&&p.__h.push(p.componentDidMount);else {if(null==A.getDerivedStateFromProps&&k!==d&&null!=p.componentWillReceiveProps&&p.componentWillReceiveProps(k,P),!p.__e&&(null!=p.shouldComponentUpdate&&!1===p.shouldComponentUpdate(k,p.__s,P)||u.__v===t.__v)){for(u.__v!==t.__v&&(p.props=k,p.state=p.__s,p.__d=!1),u.__e=t.__e,u.__k=t.__k,u.__k.forEach(function(n){n&&(n.__=u);}),S=0;S<p._sb.length;S++)p.__h.push(p._sb[S]);p._sb=[],p.__h.length&&f.push(p);break n}null!=p.componentWillUpdate&&p.componentWillUpdate(k,p.__s,P),null!=p.componentDidUpdate&&p.__h.push(function(){p.componentDidUpdate(d,_,m);});}if(p.context=P,p.props=k,p.__P=n,p.__e=!1,$=l$1.__r,H=0,"prototype"in A&&A.prototype.render){for(p.state=p.__s,p.__d=!1,$&&$(u),a=p.render(p.props,p.state,p.context),I=0;I<p._sb.length;I++)p.__h.push(p._sb[I]);p._sb=[];}else do{p.__d=!1,$&&$(u),a=p.render(p.props,p.state,p.context),p.state=p.__s;}while(p.__d&&++H<25);p.state=p.__s,null!=p.getChildContext&&(i=v$1(v$1({},i),p.getChildContext())),y||null==p.getSnapshotBeforeUpdate||(m=p.getSnapshotBeforeUpdate(d,_)),C$1(n,h$1(T=null!=a&&a.type===g&&null==a.key?a.props.children:a)?T:[T],u,t,i,o,r,f,e,c,s),p.base=u.__e,u.__u&=-161,p.__h.length&&f.push(p),w&&(p.__E=p.__=null);}catch(n){u.__v=null,c||null!=r?(u.__e=e,u.__u|=c?160:32,r[r.indexOf(e)]=null):(u.__e=t.__e,u.__k=t.__k),l$1.__e(n,u,t);}else null==r&&u.__v===t.__v?(u.__k=t.__k,u.__e=t.__e):u.__e=j$1(t.__e,u,t,i,o,r,f,c,s);(a=l$1.diffed)&&a(u);}function M(n,u,t){u.__d=void 0;for(var i=0;i<t.length;i++)z$1(t[i],t[++i],t[++i]);l$1.__c&&l$1.__c(u,n),n.some(function(u){try{n=u.__h,u.__h=[],n.some(function(n){n.call(u);});}catch(n){l$1.__e(n,u.__v);}});}function j$1(l,u,t,i,o,r,f,e,s){var a,v,y,d,_,g,b,w=t.props,k=u.props,x=u.type;if("svg"===x&&(o=!0),null!=r)for(a=0;a<r.length;a++)if((_=r[a])&&"setAttribute"in _==!!x&&(x?_.localName===x:3===_.nodeType)){l=_,r[a]=null;break}if(null==l){if(null===x)return document.createTextNode(k);l=o?document.createElementNS("http://www.w3.org/2000/svg",x):document.createElement(x,k.is&&k),r=null,e=!1;}if(null===x)w===k||e&&l.data===k||(l.data=k);else {if(r=r&&n$1.call(l.childNodes),w=t.props||c$1,!e&&null!=r)for(w={},a=0;a<l.attributes.length;a++)w[(_=l.attributes[a]).name]=_.value;for(a in w)_=w[a],"children"==a||("dangerouslySetInnerHTML"==a?y=_:"key"===a||a in k||T(l,a,null,_,o));for(a in k)_=k[a],"children"==a?d=_:"dangerouslySetInnerHTML"==a?v=_:"value"==a?g=_:"checked"==a?b=_:"key"===a||e&&"function"!=typeof _||w[a]===_||T(l,a,_,w[a],o);if(v)e||y&&(v.__html===y.__html||v.__html===l.innerHTML)||(l.innerHTML=v.__html),u.__k=[];else if(y&&(l.innerHTML=""),C$1(l,h$1(d)?d:[d],u,t,i,o&&"foreignObject"!==x,r,f,r?r[0]:t.__k&&m$2(t,0),e,s),null!=r)for(a=r.length;a--;)null!=r[a]&&p$1(r[a]);e||(a="value",void 0!==g&&(g!==l[a]||"progress"===x&&!g||"option"===x&&g!==w[a])&&T(l,a,g,w[a],!1),a="checked",void 0!==b&&b!==l[a]&&T(l,a,b,w[a],!1));}return l}function z$1(n,u,t){try{"function"==typeof n?n(u):n.current=u;}catch(n){l$1.__e(n,t);}}function N(n,u,t){var i,o;if(l$1.unmount&&l$1.unmount(n),(i=n.ref)&&(i.current&&i.current!==n.__e||z$1(i,null,u)),null!=(i=n.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount();}catch(n){l$1.__e(n,u);}i.base=i.__P=null,n.__c=void 0;}if(i=n.__k)for(o=0;o<i.length;o++)i[o]&&N(i[o],u,t||"function"!=typeof n.type);t||null==n.__e||p$1(n.__e),n.__=n.__e=n.__d=void 0;}function O(n,l,u){return this.constructor(n,u)}function q$1(u,t,i){var o,r,f,e;l$1.__&&l$1.__(u,t),r=(o="function"==typeof i)?null:i&&i.__k||t.__k,f=[],e=[],L(t,u=(!o&&i||t).__k=y$1(g,null,[u]),r||c$1,c$1,void 0!==t.ownerSVGElement,!o&&i?[i]:r?null:t.firstChild?n$1.call(t.childNodes):null,f,!o&&i?i:r?r.__e:t.firstChild,o,e),M(f,u,e);}n$1=s$1.slice,l$1={__e:function(n,l,u,t){for(var i,o,r;l=l.__;)if((i=l.__c)&&!i.__)try{if((o=i.constructor)&&null!=o.getDerivedStateFromError&&(i.setState(o.getDerivedStateFromError(n)),r=i.__d),null!=i.componentDidCatch&&(i.componentDidCatch(n,t||{}),r=i.__d),r)return i.__E=i}catch(l){n=l;}throw n}},u$1=0,b.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=v$1({},this.state),"function"==typeof n&&(n=n(v$1({},u),this.props)),n&&v$1(u,n),null!=n&&this.__v&&(l&&this._sb.push(l),k$1(this));},b.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),k$1(this));},b.prototype.render=g,i$1=[],r$2="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,f$1=function(n,l){return n.__v.__b-l.__v.__b},x$1.__r=0;
+  var n$1,l$1,u$1,i$1,o$1,r$2,f$1,c$1={},s$1=[],a$1=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,h$1=Array.isArray;function v$1(n,l){for(var u in l)n[u]=l[u];return n}function p$1(n){var l=n.parentNode;l&&l.removeChild(n);}function y$1(l,u,t){var i,o,r,f={};for(r in u)"key"==r?i=u[r]:"ref"==r?o=u[r]:f[r]=u[r];if(arguments.length>2&&(f.children=arguments.length>3?n$1.call(arguments,2):t),"function"==typeof l&&null!=l.defaultProps)for(r in l.defaultProps)void 0===f[r]&&(f[r]=l.defaultProps[r]);return d$1(l,f,i,o,null)}function d$1(n,t,i,o,r){var f={type:n,props:t,key:i,ref:o,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,constructor:void 0,__v:null==r?++u$1:r,__i:-1,__u:0};return null==r&&null!=l$1.vnode&&l$1.vnode(f),f}function g(n){return n.children}function b(n,l){this.props=n,this.context=l;}function m$2(n,l){if(null==l)return n.__?m$2(n.__,n.__i+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?m$2(n):null}function w$1(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return w$1(n)}}function k$1(n){(!n.__d&&(n.__d=!0)&&i$1.push(n)&&!x$1.__r++||o$1!==l$1.debounceRendering)&&((o$1=l$1.debounceRendering)||r$2)(x$1);}function x$1(){var n,u,t,o,r,e,c,s,a;for(i$1.sort(f$1);n=i$1.shift();)n.__d&&(u=i$1.length,o=void 0,e=(r=(t=n).__v).__e,s=[],a=[],(c=t.__P)&&((o=v$1({},r)).__v=r.__v+1,l$1.vnode&&l$1.vnode(o),L(c,o,r,t.__n,void 0!==c.ownerSVGElement,32&r.__u?[e]:null,s,null==e?m$2(r):e,!!(32&r.__u),a),o.__v=r.__v,o.__.__k[o.__i]=o,M(s,o,a),o.__e!=e&&w$1(o)),i$1.length>u&&i$1.sort(f$1));x$1.__r=0;}function C$1(n,l,u,t,i,o,r,f,e,a,h){var v,p,y,d,_,g=t&&t.__k||s$1,b=l.length;for(u.__d=e,P(u,l,g),e=u.__d,v=0;v<b;v++)null!=(y=u.__k[v])&&"boolean"!=typeof y&&"function"!=typeof y&&(p=-1===y.__i?c$1:g[y.__i]||c$1,y.__i=v,L(n,y,p,i,o,r,f,e,a,h),d=y.__e,y.ref&&p.ref!=y.ref&&(p.ref&&z$1(p.ref,null,y),h.push(y.ref,y.__c||d,y)),null==_&&null!=d&&(_=d),65536&y.__u||p.__k===y.__k?e=S(y,e,n):"function"==typeof y.type&&void 0!==y.__d?e=y.__d:d&&(e=d.nextSibling),y.__d=void 0,y.__u&=-196609);u.__d=e,u.__e=_;}function P(n,l,u){var t,i,o,r,f,e=l.length,c=u.length,s=c,a=0;for(n.__k=[],t=0;t<e;t++)r=t+a,null!=(i=n.__k[t]=null==(i=l[t])||"boolean"==typeof i||"function"==typeof i?null:"string"==typeof i||"number"==typeof i||"bigint"==typeof i||i.constructor==String?d$1(null,i,null,null,null):h$1(i)?d$1(g,{children:i},null,null,null):void 0===i.constructor&&i.__b>0?d$1(i.type,i.props,i.key,i.ref?i.ref:null,i.__v):i)?(i.__=n,i.__b=n.__b+1,f=H(i,u,r,s),i.__i=f,o=null,-1!==f&&(s--,(o=u[f])&&(o.__u|=131072)),null==o||null===o.__v?(-1==f&&a--,"function"!=typeof i.type&&(i.__u|=65536)):f!==r&&(f===r+1?a++:f>r?s>e-r?a+=f-r:a--:f<r?f==r-1&&(a=f-r):a=0,f!==t+a&&(i.__u|=65536))):(o=u[r])&&null==o.key&&o.__e&&0==(131072&o.__u)&&(o.__e==n.__d&&(n.__d=m$2(o)),N(o,o,!1),u[r]=null,s--);if(s)for(t=0;t<c;t++)null!=(o=u[t])&&0==(131072&o.__u)&&(o.__e==n.__d&&(n.__d=m$2(o)),N(o,o));}function S(n,l,u){var t,i;if("function"==typeof n.type){for(t=n.__k,i=0;t&&i<t.length;i++)t[i]&&(t[i].__=n,l=S(t[i],l,u));return l}n.__e!=l&&(u.insertBefore(n.__e,l||null),l=n.__e);do{l=l&&l.nextSibling;}while(null!=l&&8===l.nodeType);return l}function H(n,l,u,t){var i=n.key,o=n.type,r=u-1,f=u+1,e=l[u];if(null===e||e&&i==e.key&&o===e.type&&0==(131072&e.__u))return u;if(t>(null!=e&&0==(131072&e.__u)?1:0))for(;r>=0||f<l.length;){if(r>=0){if((e=l[r])&&0==(131072&e.__u)&&i==e.key&&o===e.type)return r;r--;}if(f<l.length){if((e=l[f])&&0==(131072&e.__u)&&i==e.key&&o===e.type)return f;f++;}}return -1}function I(n,l,u){"-"===l[0]?n.setProperty(l,null==u?"":u):n[l]=null==u?"":"number"!=typeof u||a$1.test(l)?u:u+"px";}function T(n,l,u,t,i){var o;n:if("style"===l)if("string"==typeof u)n.style.cssText=u;else {if("string"==typeof t&&(n.style.cssText=t=""),t)for(l in t)u&&l in u||I(n.style,l,"");if(u)for(l in u)t&&u[l]===t[l]||I(n.style,l,u[l]);}else if("o"===l[0]&&"n"===l[1])o=l!==(l=l.replace(/(PointerCapture)$|Capture$/i,"$1")),l=l.toLowerCase()in n?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+o]=u,u?t?u.u=t.u:(u.u=Date.now(),n.addEventListener(l,o?D$1:A$1,o)):n.removeEventListener(l,o?D$1:A$1,o);else {if(i)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!==l&&"height"!==l&&"href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&"rowSpan"!==l&&"colSpan"!==l&&"role"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null==u||!1===u&&"-"!==l[4]?n.removeAttribute(l):n.setAttribute(l,u));}}function A$1(n){if(this.l){var u=this.l[n.type+!1];if(n.t){if(n.t<=u.u)return}else n.t=Date.now();return u(l$1.event?l$1.event(n):n)}}function D$1(n){if(this.l)return this.l[n.type+!0](l$1.event?l$1.event(n):n)}function L(n,u,t,i,o,r,f,e,c,s){var a,p,y,d,_,m,w,k,x,P,S,$,H,I,T,A=u.type;if(void 0!==u.constructor)return null;128&t.__u&&(c=!!(32&t.__u),r=[e=u.__e=t.__e]),(a=l$1.__b)&&a(u);n:if("function"==typeof A)try{if(k=u.props,x=(a=A.contextType)&&i[a.__c],P=a?x?x.props.value:a.__:i,t.__c?w=(p=u.__c=t.__c).__=p.__E:("prototype"in A&&A.prototype.render?u.__c=p=new A(k,P):(u.__c=p=new b(k,P),p.constructor=A,p.render=O),x&&x.sub(p),p.props=k,p.state||(p.state={}),p.context=P,p.__n=i,y=p.__d=!0,p.__h=[],p._sb=[]),null==p.__s&&(p.__s=p.state),null!=A.getDerivedStateFromProps&&(p.__s==p.state&&(p.__s=v$1({},p.__s)),v$1(p.__s,A.getDerivedStateFromProps(k,p.__s))),d=p.props,_=p.state,p.__v=u,y)null==A.getDerivedStateFromProps&&null!=p.componentWillMount&&p.componentWillMount(),null!=p.componentDidMount&&p.__h.push(p.componentDidMount);else {if(null==A.getDerivedStateFromProps&&k!==d&&null!=p.componentWillReceiveProps&&p.componentWillReceiveProps(k,P),!p.__e&&(null!=p.shouldComponentUpdate&&!1===p.shouldComponentUpdate(k,p.__s,P)||u.__v===t.__v)){for(u.__v!==t.__v&&(p.props=k,p.state=p.__s,p.__d=!1),u.__e=t.__e,u.__k=t.__k,u.__k.forEach(function(n){n&&(n.__=u);}),S=0;S<p._sb.length;S++)p.__h.push(p._sb[S]);p._sb=[],p.__h.length&&f.push(p);break n}null!=p.componentWillUpdate&&p.componentWillUpdate(k,p.__s,P),null!=p.componentDidUpdate&&p.__h.push(function(){p.componentDidUpdate(d,_,m);});}if(p.context=P,p.props=k,p.__P=n,p.__e=!1,$=l$1.__r,H=0,"prototype"in A&&A.prototype.render){for(p.state=p.__s,p.__d=!1,$&&$(u),a=p.render(p.props,p.state,p.context),I=0;I<p._sb.length;I++)p.__h.push(p._sb[I]);p._sb=[];}else do{p.__d=!1,$&&$(u),a=p.render(p.props,p.state,p.context),p.state=p.__s;}while(p.__d&&++H<25);p.state=p.__s,null!=p.getChildContext&&(i=v$1(v$1({},i),p.getChildContext())),y||null==p.getSnapshotBeforeUpdate||(m=p.getSnapshotBeforeUpdate(d,_)),C$1(n,h$1(T=null!=a&&a.type===g&&null==a.key?a.props.children:a)?T:[T],u,t,i,o,r,f,e,c,s),p.base=u.__e,u.__u&=-161,p.__h.length&&f.push(p),w&&(p.__E=p.__=null);}catch(n){u.__v=null,c||null!=r?(u.__e=e,u.__u|=c?160:32,r[r.indexOf(e)]=null):(u.__e=t.__e,u.__k=t.__k),l$1.__e(n,u,t);}else null==r&&u.__v===t.__v?(u.__k=t.__k,u.__e=t.__e):u.__e=j$1(t.__e,u,t,i,o,r,f,c,s);(a=l$1.diffed)&&a(u);}function M(n,u,t){u.__d=void 0;for(var i=0;i<t.length;i++)z$1(t[i],t[++i],t[++i]);l$1.__c&&l$1.__c(u,n),n.some(function(u){try{n=u.__h,u.__h=[],n.some(function(n){n.call(u);});}catch(n){l$1.__e(n,u.__v);}});}function j$1(l,u,t,i,o,r,f,e,s){var a,v,y,d,_,g,b,w=t.props,k=u.props,x=u.type;if("svg"===x&&(o=!0),null!=r)for(a=0;a<r.length;a++)if((_=r[a])&&"setAttribute"in _==!!x&&(x?_.localName===x:3===_.nodeType)){l=_,r[a]=null;break}if(null==l){if(null===x)return document.createTextNode(k);l=o?document.createElementNS("http://www.w3.org/2000/svg",x):document.createElement(x,k.is&&k),r=null,e=!1;}if(null===x)w===k||e&&l.data===k||(l.data=k);else {if(r=r&&n$1.call(l.childNodes),w=t.props||c$1,!e&&null!=r)for(w={},a=0;a<l.attributes.length;a++)w[(_=l.attributes[a]).name]=_.value;for(a in w)_=w[a],"children"==a||("dangerouslySetInnerHTML"==a?y=_:"key"===a||a in k||T(l,a,null,_,o));for(a in k)_=k[a],"children"==a?d=_:"dangerouslySetInnerHTML"==a?v=_:"value"==a?g=_:"checked"==a?b=_:"key"===a||e&&"function"!=typeof _||w[a]===_||T(l,a,_,w[a],o);if(v)e||y&&(v.__html===y.__html||v.__html===l.innerHTML)||(l.innerHTML=v.__html),u.__k=[];else if(y&&(l.innerHTML=""),C$1(l,h$1(d)?d:[d],u,t,i,o&&"foreignObject"!==x,r,f,r?r[0]:t.__k&&m$2(t,0),e,s),null!=r)for(a=r.length;a--;)null!=r[a]&&p$1(r[a]);e||(a="value",void 0!==g&&(g!==l[a]||"progress"===x&&!g||"option"===x&&g!==w[a])&&T(l,a,g,w[a],!1),a="checked",void 0!==b&&b!==l[a]&&T(l,a,b,w[a],!1));}return l}function z$1(n,u,t){try{"function"==typeof n?n(u):n.current=u;}catch(n){l$1.__e(n,t);}}function N(n,u,t){var i,o;if(l$1.unmount&&l$1.unmount(n),(i=n.ref)&&(i.current&&i.current!==n.__e||z$1(i,null,u)),null!=(i=n.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount();}catch(n){l$1.__e(n,u);}i.base=i.__P=null,n.__c=void 0;}if(i=n.__k)for(o=0;o<i.length;o++)i[o]&&N(i[o],u,t||"function"!=typeof n.type);t||null==n.__e||p$1(n.__e),n.__=n.__e=n.__d=void 0;}function O(n,l,u){return this.constructor(n,u)}function q$1(u,t,i){var o,r,f,e;l$1.__&&l$1.__(u,t),r=(o="function"==typeof i)?null:t.__k,f=[],e=[],L(t,u=(!o&&i||t).__k=y$1(g,null,[u]),r||c$1,c$1,void 0!==t.ownerSVGElement,!o&&i?[i]:r?null:t.firstChild?n$1.call(t.childNodes):null,f,!o&&i?i:r?r.__e:t.firstChild,o,e),M(f,u,e);}n$1=s$1.slice,l$1={__e:function(n,l,u,t){for(var i,o,r;l=l.__;)if((i=l.__c)&&!i.__)try{if((o=i.constructor)&&null!=o.getDerivedStateFromError&&(i.setState(o.getDerivedStateFromError(n)),r=i.__d),null!=i.componentDidCatch&&(i.componentDidCatch(n,t||{}),r=i.__d),r)return i.__E=i}catch(l){n=l;}throw n}},u$1=0,b.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=v$1({},this.state),"function"==typeof n&&(n=n(v$1({},u),this.props)),n&&v$1(u,n),null!=n&&this.__v&&(l&&this._sb.push(l),k$1(this));},b.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),k$1(this));},b.prototype.render=g,i$1=[],r$2="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,f$1=function(n,l){return n.__v.__b-l.__v.__b},x$1.__r=0;
 
   var n=function(t,s,r,e){var u;s[0]=0;for(var h=1;h<s.length;h++){var p=s[h++],a=s[h]?(s[0]|=p?1:2,r[s[h++]]):s[++h];3===p?e[0]=a:4===p?e[1]=Object.assign(e[1]||{},a):5===p?(e[1]=e[1]||{})[s[++h]]=a:6===p?e[1][s[++h]]+=a+"":p?(u=t.apply(a,n(t,a,r,["",null])),e.push(u),a[0]?s[0]|=2:(s[h-2]=0,s[h]=u)):e.push(a);}return e},t$1=new Map;function e$1(s){var r=t$1.get(this);return r||(r=new Map,t$1.set(this,r)),(r=n(this,r.get(s)||(r.set(s,r=function(n){for(var t,s,r=1,e="",u="",h=[0],p=function(n){1===r&&(n||(e=e.replace(/^\s*\n\s*|\s*\n\s*$/g,"")))?h.push(0,n,e):3===r&&(n||e)?(h.push(3,n,e),r=2):2===r&&"..."===e&&n?h.push(4,n,0):2===r&&e&&!n?h.push(5,0,!0,e):r>=5&&((e||!n&&5===r)&&(h.push(r,0,e,s),r=6),n&&(h.push(r,n,0,s),r=6)),e="";},a=0;a<n.length;a++){a&&(1===r&&p(),p(a));for(var l=0;l<n[a].length;l++)t=n[a][l],1===r?"<"===t?(p(),h=[h],r=3):e+=t:4===r?"--"===e&&">"===t?(r=1,e=""):e=t+e[0]:u?t===u?u="":e+=t:'"'===t||"'"===t?u=t:">"===t?(p(),r=1):r&&("="===t?(r=5,s=e,e=""):"/"===t&&(r<5||">"===n[a][l+1])?(p(),3===r&&(h=h[0]),r=h,(h=h[0]).push(2,0,r),r=0):" "===t||"\t"===t||"\n"===t||"\r"===t?(p(),r=2):e+=t),3===r&&"!--"===e&&(r=4,h=h[0]);}return p(),h}(s)),r),arguments,[])).length>1?r:r[0]}
 
   var m$1=e$1.bind(y$1);
 
-  var t,r$1,u,i,o=0,f=[],c=[],e=l$1,a=e.__b,v=e.__r,l=e.diffed,m=e.__c,s=e.unmount,d=e.__;function h(n,t){e.__h&&e.__h(r$1,n,o||t),o=0;var u=r$1.__H||(r$1.__H={__:[],__h:[]});return n>=u.__.length&&u.__.push({__V:c}),u.__[n]}function p(n){return o=1,y(D,n)}function y(n,u,i){var o=h(t++,2);if(o.t=n,!o.__c&&(o.__=[i?i(u):D(void 0,u),function(n){var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}));}],o.__c=r$1,!r$1.u)){var f=function(n,t,r){if(!o.__c.__H)return !0;var u=o.__c.__H.__.filter(function(n){return !!n.__c});if(u.every(function(n){return !n.__N}))return !c||c.call(this,n,t,r);var i=!1;return u.forEach(function(n){if(n.__N){var t=n.__[0];n.__=n.__N,n.__N=void 0,t!==n.__[0]&&(i=!0);}}),!(!i&&o.__c.props===n)&&(!c||c.call(this,n,t,r))};r$1.u=!0;var c=r$1.shouldComponentUpdate,e=r$1.componentWillUpdate;r$1.componentWillUpdate=function(n,t,r){if(this.__e){var u=c;c=void 0,f(n,t,r),c=u;}e&&e.call(this,n,t,r);},r$1.shouldComponentUpdate=f;}return o.__N||o.__}function _(n,u){var i=h(t++,3);!e.__s&&C(i.__H,u)&&(i.__=n,i.i=u,r$1.__H.__h.push(i));}function A(n,u){var i=h(t++,4);!e.__s&&C(i.__H,u)&&(i.__=n,i.i=u,r$1.__h.push(i));}function F(n){return o=5,q(function(){return {current:n}},[])}function q(n,r){var u=h(t++,7);return C(u.__H,r)?(u.__V=n(),u.i=r,u.__h=n,u.__V):u.__}function x(n,t){return o=8,q(function(){return n},t)}function j(){for(var n;n=f.shift();)if(n.__P&&n.__H)try{n.__H.__h.forEach(z),n.__H.__h.forEach(B),n.__H.__h=[];}catch(t){n.__H.__h=[],e.__e(t,n.__v);}}e.__b=function(n){r$1=null,a&&a(n);},e.__=function(n,t){n&&t.__k&&t.__k.__m&&(n.__m=t.__k.__m),d&&d(n,t);},e.__r=function(n){v&&v(n),t=0;var i=(r$1=n.__c).__H;i&&(u===r$1?(i.__h=[],r$1.__h=[],i.__.forEach(function(n){n.__N&&(n.__=n.__N),n.__V=c,n.__N=n.i=void 0;})):(i.__h.forEach(z),i.__h.forEach(B),i.__h=[],t=0)),u=r$1;},e.diffed=function(n){l&&l(n);var t=n.__c;t&&t.__H&&(t.__H.__h.length&&(1!==f.push(t)&&i===e.requestAnimationFrame||((i=e.requestAnimationFrame)||w)(j)),t.__H.__.forEach(function(n){n.i&&(n.__H=n.i),n.__V!==c&&(n.__=n.__V),n.i=void 0,n.__V=c;})),u=r$1=null;},e.__c=function(n,t){t.some(function(n){try{n.__h.forEach(z),n.__h=n.__h.filter(function(n){return !n.__||B(n)});}catch(r){t.some(function(n){n.__h&&(n.__h=[]);}),t=[],e.__e(r,n.__v);}}),m&&m(n,t);},e.unmount=function(n){s&&s(n);var t,r=n.__c;r&&r.__H&&(r.__H.__.forEach(function(n){try{z(n);}catch(n){t=n;}}),r.__H=void 0,t&&e.__e(t,r.__v));};var k="function"==typeof requestAnimationFrame;function w(n){var t,r=function(){clearTimeout(u),k&&cancelAnimationFrame(t),setTimeout(n);},u=setTimeout(r,100);k&&(t=requestAnimationFrame(r));}function z(n){var t=r$1,u=n.__c;"function"==typeof u&&(n.__c=void 0,u()),r$1=t;}function B(n){var t=r$1;n.__c=n.__(),r$1=t;}function C(n,t){return !n||n.length!==t.length||t.some(function(t,r){return t!==n[r]})}function D(n,t){return "function"==typeof t?t(n):t}
+  var t,r$1,u,i,o=0,f=[],c=[],e=l$1,a=e.__b,v=e.__r,l=e.diffed,m=e.__c,s=e.unmount,d=e.__;function h(n,t){e.__h&&e.__h(r$1,n,o||t),o=0;var u=r$1.__H||(r$1.__H={__:[],__h:[]});return n>=u.__.length&&u.__.push({__V:c}),u.__[n]}function p(n){return o=1,y(D,n)}function y(n,u,i){var o=h(t++,2);if(o.t=n,!o.__c&&(o.__=[D(void 0,u),function(n){var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}));}],o.__c=r$1,!r$1.u)){var f=function(n,t,r){if(!o.__c.__H)return !0;var u=o.__c.__H.__.filter(function(n){return !!n.__c});if(u.every(function(n){return !n.__N}))return !c||c.call(this,n,t,r);var i=!1;return u.forEach(function(n){if(n.__N){var t=n.__[0];n.__=n.__N,n.__N=void 0,t!==n.__[0]&&(i=!0);}}),!(!i&&o.__c.props===n)&&(!c||c.call(this,n,t,r))};r$1.u=!0;var c=r$1.shouldComponentUpdate,e=r$1.componentWillUpdate;r$1.componentWillUpdate=function(n,t,r){if(this.__e){var u=c;c=void 0,f(n,t,r),c=u;}e&&e.call(this,n,t,r);},r$1.shouldComponentUpdate=f;}return o.__N||o.__}function _(n,u){var i=h(t++,3);!e.__s&&C(i.__H,u)&&(i.__=n,i.i=u,r$1.__H.__h.push(i));}function A(n,u){var i=h(t++,4);!e.__s&&C(i.__H,u)&&(i.__=n,i.i=u,r$1.__h.push(i));}function F(n){return o=5,q(function(){return {current:n}},[])}function q(n,r){var u=h(t++,7);return C(u.__H,r)?(u.__V=n(),u.i=r,u.__h=n,u.__V):u.__}function x(n,t){return o=8,q(function(){return n},t)}function j(){for(var n;n=f.shift();)if(n.__P&&n.__H)try{n.__H.__h.forEach(z),n.__H.__h.forEach(B),n.__H.__h=[];}catch(t){n.__H.__h=[],e.__e(t,n.__v);}}e.__b=function(n){r$1=null,a&&a(n);},e.__=function(n,t){n&&t.__k&&t.__k.__m&&(n.__m=t.__k.__m),d&&d(n,t);},e.__r=function(n){v&&v(n),t=0;var i=(r$1=n.__c).__H;i&&(u===r$1?(i.__h=[],r$1.__h=[],i.__.forEach(function(n){n.__N&&(n.__=n.__N),n.__V=c,n.__N=n.i=void 0;})):(i.__h.forEach(z),i.__h.forEach(B),i.__h=[],t=0)),u=r$1;},e.diffed=function(n){l&&l(n);var t=n.__c;t&&t.__H&&(t.__H.__h.length&&(1!==f.push(t)&&i===e.requestAnimationFrame||((i=e.requestAnimationFrame)||w)(j)),t.__H.__.forEach(function(n){n.i&&(n.__H=n.i),n.__V!==c&&(n.__=n.__V),n.i=void 0,n.__V=c;})),u=r$1=null;},e.__c=function(n,t){t.some(function(n){try{n.__h.forEach(z),n.__h=n.__h.filter(function(n){return !n.__||B(n)});}catch(r){t.some(function(n){n.__h&&(n.__h=[]);}),t=[],e.__e(r,n.__v);}}),m&&m(n,t);},e.unmount=function(n){s&&s(n);var t,r=n.__c;r&&r.__H&&(r.__H.__.forEach(function(n){try{z(n);}catch(n){t=n;}}),r.__H=void 0,t&&e.__e(t,r.__v));};var k="function"==typeof requestAnimationFrame;function w(n){var t,r=function(){clearTimeout(u),k&&cancelAnimationFrame(t),setTimeout(n);},u=setTimeout(r,100);k&&(t=requestAnimationFrame(r));}function z(n){var t=r$1,u=n.__c;"function"==typeof u&&(n.__c=void 0,u()),r$1=t;}function B(n){var t=r$1;n.__c=n.__(),r$1=t;}function C(n,t){return !n||n.length!==t.length||t.some(function(t,r){return t!==n[r]})}function D(n,t){return "function"==typeof t?t(n):t}
 
   function r(e){var t,f,n="";if("string"==typeof e||"number"==typeof e)n+=e;else if("object"==typeof e)if(Array.isArray(e)){var o=e.length;for(t=0;t<o;t++)e[t]&&(f=r(e[t]))&&(n&&(n+=" "),n+=f);}else for(f in e)e[f]&&(n&&(n+=" "),n+=f);return n}function clsx(){for(var e,t,f=0,n="",o=arguments.length;f<o;f++)(e=arguments[f])&&(t=r(e))&&(n&&(n+=" "),n+=t);return n}
 
@@ -28921,8 +28883,6 @@
           </svg>`
   };
 
-  var ICONS$1 = icons$1;
-
   /**
    * @typedef {import('diagram-js/lib/core/Canvas').default} Canvas
    * @typedef {import('diagram-js/lib/features/context-pad/ContextPad').default} ContextPad
@@ -28989,7 +28949,7 @@
       'align-elements': {
         group: 'align-elements',
         title: self._translate('Align elements'),
-        html: `<div class="entry">${ICONS$1['align']}</div>`,
+        html: `<div class="entry">${icons$1['align']}</div>`,
         action: {
           click: function(event, target) {
             var position = self._getMenuPosition(target);
@@ -29106,7 +29066,7 @@
         group: 'align',
         title: translate('Align elements ' + alignment),
         className: 'bjs-align-elements-menu-entry',
-        imageHtml: ICONS$1[ alignment ],
+        imageHtml: icons$1[ alignment ],
         action: function() {
           alignElements.trigger(target, alignment);
           popupMenu.close();
@@ -34043,6 +34003,8 @@
    * @typedef {import('../../draw/Styles').default} Styles
    */
 
+  const cloneIds = new IdGenerator('ps');
+
   var MARKER_TYPES = [
     'marker-start',
     'marker-mid',
@@ -34073,14 +34035,6 @@
     this._elementRegistry = elementRegistry;
     this._canvas = canvas;
     this._styles = styles;
-
-    this._clonedMarkers = {};
-
-    var self = this;
-
-    eventBus.on('drag.cleanup', function() {
-      self.cleanUp();
-    });
   }
 
   PreviewSupport.$inject = [
@@ -34090,14 +34044,10 @@
     'styles'
   ];
 
+  // Markers are cleaned up with visuals, keep stub for compatibility
+  // cf. https://github.com/camunda/camunda-modeler/issues/4307
   PreviewSupport.prototype.cleanUp = function() {
-    var self = this;
-
-    forEach$1(self._clonedMarkers, function(clonedMarker) {
-      remove$1(clonedMarker);
-    });
-
-    self._clonedMarkers = {};
+    console.warn('PreviewSupport#cleanUp is deprecated and will be removed in future versions. You do not need to manually clean up previews anymore. cf. https://github.com/bpmn-io/diagram-js/pull/906');
   };
 
   /**
@@ -34172,7 +34122,7 @@
    * @param {SVGElement} gfx
    * @param {string} [className="djs-dragger"]
    */
-  PreviewSupport.prototype._cloneMarkers = function(gfx, className = 'djs-dragger') {
+  PreviewSupport.prototype._cloneMarkers = function(gfx, className = 'djs-dragger', rootGfx = gfx) {
     var self = this;
 
     if (gfx.childNodes) {
@@ -34181,7 +34131,7 @@
       for (var i = 0; i < gfx.childNodes.length; i++) {
 
         // recursively clone markers of child nodes
-        self._cloneMarkers(gfx.childNodes[ i ], className);
+        self._cloneMarkers(gfx.childNodes[ i ], className, rootGfx);
       }
     }
 
@@ -34193,7 +34143,8 @@
       if (attr(gfx, markerType)) {
         var marker = getMarker(gfx, markerType, self._canvas.getContainer());
 
-        self._cloneMarker(gfx, marker, markerType, className);
+        // Only clone marker if it is already present on the DOM
+        marker && self._cloneMarker(rootGfx, gfx, marker, markerType, className);
       }
     });
   };
@@ -34206,34 +34157,33 @@
    * @param {string} markerType
    * @param {string} [className="djs-dragger"]
    */
-  PreviewSupport.prototype._cloneMarker = function(gfx, marker, markerType, className = 'djs-dragger') {
-    var markerId = marker.id + '-' + className;
+  PreviewSupport.prototype._cloneMarker = function(parentGfx, gfx, marker, markerType, className = 'djs-dragger') {
 
-    var clonedMarker = this._clonedMarkers[ markerId ];
+    // Add a random suffix to the marker ID in case the same marker is previewed multiple times
+    var clonedMarkerId = [ marker.id, className, cloneIds.next() ].join('-');
 
-    if (!clonedMarker) {
-      clonedMarker = clone$1(marker);
+    // reuse marker if it was part of original gfx
+    var copiedMarker = query('marker#' + marker.id, parentGfx);
 
-      var clonedMarkerId = markerId + '-clone';
+    parentGfx = parentGfx || this._canvas._svg;
 
-      clonedMarker.id = clonedMarkerId;
+    var clonedMarker = copiedMarker || clone$1(marker);
 
-      classes(clonedMarker).add(className);
+    clonedMarker.id = clonedMarkerId;
 
-      this._clonedMarkers[ markerId ] = clonedMarker;
+    classes(clonedMarker).add(className);
 
-      var defs = query('defs', this._canvas._svg);
+    var defs = query(':scope > defs', parentGfx);
 
-      if (!defs) {
-        defs = create$1('defs');
+    if (!defs) {
+      defs = create$1('defs');
 
-        append(this._canvas._svg, defs);
-      }
-
-      append(defs, clonedMarker);
+      append(parentGfx, defs);
     }
 
-    var reference = idToReference(this._clonedMarkers[ markerId ].id);
+    append(defs, clonedMarker);
+
+    var reference = idToReference(clonedMarker.id);
 
     attr(gfx, markerType, reference);
   };
@@ -34419,8 +34369,6 @@
       this._markers.forEach(([ element, marker ]) => this._canvas.removeMarker(element, marker));
 
       this._markers = [];
-
-      this._previewSupport.cleanUp();
     }
 
     show() {
@@ -39020,7 +38968,12 @@
       if (collaborationRoot && !collaborationRoot.businessObject.participants.length) {
 
         // replace empty collaboration with process diagram
-        modeling.makeProcess();
+        var process = modeling.makeProcess();
+
+        // move all root elements from collaboration to process
+        var children = collaborationRoot.children.slice();
+
+        modeling.moveElements(children, { x: 0, y: 0 }, process);
       }
     }, true);
 
@@ -45033,6 +44986,7 @@
    * @typedef {import('../../util/Types').Point} Point
    * @typedef {import('../../util/Types').Rect} Rect
    */
+
 
   /**
    * Return direction given axis and delta.
@@ -52935,6 +52889,8 @@
     };
 
     this._commandStack.execute('canvas.updateRoot', context);
+
+    return processElement;
   };
 
   /**
@@ -53008,6 +52964,7 @@
    *   target?: Element;
    * } } LayoutConnectionHints
    */
+
 
 
   /**
@@ -57627,8 +57584,6 @@
             </svg>`
   };
 
-  var ICONS = icons;
-
   /**
    * @typedef {import('diagram-js/lib/features/popup-menu/PopupMenu').default} PopupMenu
    * @typedef {import('./BpmnDistributeElements').default} DistributeElements
@@ -57698,7 +57653,7 @@
         group: 'distribute',
         title: translate('Distribute elements horizontally'),
         className: 'bjs-align-elements-menu-entry',
-        imageHtml: ICONS['horizontal'],
+        imageHtml: icons['horizontal'],
         action: function(event, entry) {
           distributeElements.trigger(elements, 'horizontal');
           popupMenu.close();
@@ -57707,7 +57662,7 @@
       'distribute-elements-vertical': {
         group: 'distribute',
         title: translate('Distribute elements vertically'),
-        imageHtml: ICONS['vertical'],
+        imageHtml: icons['vertical'],
         action: function(event, entry) {
           distributeElements.trigger(elements, 'vertical');
           popupMenu.close();
@@ -61217,7 +61172,7 @@
           y: position.y + 5
         },
         type: 'error',
-        timeout: timeout || 2000,
+        timeout: 2000,
         html: '<div>' + message + '</div>'
       });
     }
@@ -61551,11 +61506,14 @@
     function getAllDraggedElements(shapes) {
       var allShapes = selfAndAllChildren(shapes, true);
 
-      var allConnections = map$1(allShapes, function(shape) {
-        return (shape.incoming || []).concat(shape.outgoing || []);
-      });
+      var allConnections = allShapes.flatMap(shape =>
+        (shape.incoming || []).concat(shape.outgoing || [])
+      );
 
-      return flatten(allShapes.concat(allConnections));
+      var allElements = allShapes.concat(allConnections);
+      var uniqueElements = [ ...new Set(allElements) ];
+
+      return uniqueElements;
     }
 
     /**
@@ -65106,7 +65064,7 @@
    * @return {SearchResult[]}
    */
   BpmnSearchProvider.prototype.find = function(pattern) {
-    var rootElement = this._canvas.getRootElement();
+    var rootElements = this._canvas.getRootElements();
 
     var elements = this._elementRegistry.filter(function(element) {
       if (element.labelTarget) {
@@ -65117,7 +65075,7 @@
 
     // do not include root element
     elements = filter(elements, function(element) {
-      return element !== rootElement;
+      return !rootElements.includes(element);
     });
 
     elements = map$1(elements, function(element) {

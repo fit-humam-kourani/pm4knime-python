@@ -698,13 +698,7 @@
             
             
             
-            
-            
-            
-            <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>
-                                                                                                                                    
-            
-             
+            <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>   
             <webDependency webResourceBundleID="Viz"> </webDependency>
                                                                                                                                     
             
@@ -774,20 +768,9 @@
             
             
             <importResource relativePath="js-libs/variantExplorer.css" type="CSS"/>
-                                                                        
-            
-            
-            
-            
-            <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>
-                                                                        
-            
-            
-        
-        
-        
-        
-        
+            <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>                                                       
+
+    
         </webResourceBundle>
                                                                                         
         
@@ -811,6 +794,8 @@
                                                                        
             
             <importResource relativePath="js-libs/dagre.min.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/dagre-d3.min.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/d3.min.js" type="JAVASCRIPT"> </importResource>
             <importResource relativePath="js-libs/smil.user.min.js" type="JAVASCRIPT"> </importResource>
 		    <importResource relativePath="js-libs/jquery.js" type="JAVASCRIPT"> </importResource>
 		    <importResource relativePath="js-libs/lodash.js" type="JAVASCRIPT"> </importResource>
@@ -822,6 +807,7 @@
             <importResource relativePath="js-libs/diagram-js.css" type="CSS"/>
             <importResource relativePath="js-libs/bpmn-embedded.css" type="CSS"/>
             <importResource relativePath="js-libs/bpmn-modeler.development.js" type="JAVASCRIPT"> </importResource>
+                
             
             <importResource relativePath="js-libs/bpmn-layouter.js" type="JAVASCRIPT"> </importResource>
             

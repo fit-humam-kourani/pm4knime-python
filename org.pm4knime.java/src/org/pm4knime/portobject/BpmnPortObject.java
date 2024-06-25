@@ -6,11 +6,16 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JComponent;
@@ -24,9 +29,14 @@ import org.knime.core.node.port.PortObjectZipOutputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.pm4knime.node.visualizations.jsgraphviz.util.GraphvizBPMN;
+import org.processmining.models.graphbased.EdgeID;
+import org.processmining.models.graphbased.NodeID;
 import org.processmining.models.graphbased.directed.bpmn.BPMNDiagram;
 import org.processmining.models.graphbased.directed.bpmn.BPMNDiagramFactory;
+import org.processmining.models.graphbased.directed.bpmn.BPMNEdge;
 import org.processmining.models.graphbased.directed.bpmn.BPMNNode;
+import org.processmining.models.graphbased.directed.bpmn.elements.Flow;
+import org.processmining.models.graphbased.directed.bpmn.elements.Gateway;
 import org.processmining.models.graphbased.directed.bpmn.elements.Swimlane;
 import org.processmining.plugins.bpmn.Bpmn;
 import org.processmining.plugins.bpmn.parameters.BpmnSelectDiagramParameters;
@@ -134,6 +144,7 @@ public class BpmnPortObject extends AbstractJSONPortObject {
 	}
 
 	public static String exportBPMNDiagram(final BPMNDiagram diagram) throws Exception {
+		   
 		final UIContext context = new UIContext();
 		final UIPluginContext uiPluginContext = context.getMainPluginContext();
 		SwingUtilities.invokeLater(new Runnable() {
@@ -159,8 +170,72 @@ public class BpmnPortObject extends AbstractJSONPortObject {
 		result = result.replaceAll(">&#10;", ">\n");
 		result = result.replaceAll("\"&#10;", "\"\n");
 		result = result.replaceFirst("<bpmndi:BPMNDiagram>.*</bpmndi:BPMNDiagram>", "");
-		return result;
+		result = result.replaceAll("<[a-zA-Z]+:[a-zA-Z]+/>", "");
+		
+		
+		List<String> tags = Arrays.asList("task", "endEvent", "startEvent"); 
+		String enhancedXML = add_missing_connections(result, tags);
+
+		System.out.println("enhancedXML");
+		System.out.println(enhancedXML);
+		
+
+		return enhancedXML;
 	}
+
+	public static String add_missing_connections(String originalXML, List<String> tags) {
+		    
+		
+		Map<String, List<String>> incomingConnections = new HashMap<>();
+	    Map<String, List<String>> outgoingConnections = new HashMap<>();
+		
+	    Pattern pattern0 = Pattern.compile("<sequenceFlow\\s+(?:[^>]*?\\s+)?id=\"([^\"]+)\"(?:\\s+[^>]*?)?name=\"([^\\\"]*)\"(?:\\s+[^>]*?)?sourceRef=\"([^\\\"]+)\"(?:\\s+[^>]*?)?targetRef=\"([^\\\"]+)\"\\s*\\/\\>");
+        Matcher matcher0 = pattern0.matcher(originalXML);
+
+        while (matcher0.find()) {
+        	String id = matcher0.group(1);
+            String sourceRef = matcher0.group(3);
+            String targetRef = matcher0.group(4);
+
+            outgoingConnections.computeIfAbsent(sourceRef, k -> new ArrayList<>()).add(id);
+	        incomingConnections.computeIfAbsent(targetRef, k -> new ArrayList<>()).add(id);
+        }
+		
+        
+        String res = originalXML;
+        
+        for (String tag : tags) {
+        	String regex = "<"+ tag + "\\s+([^>]*?)id=\"(node_[a-f0-9\\-]+)\"([^>]*?)\\/>";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(res);
+            StringBuffer enhancedXML = new StringBuffer();
+      
+        	while (matcher.find()) {
+                String beforeId = matcher.group(1);
+                String nodeId = matcher.group(2);
+                String afterId = matcher.group(3);
+
+                // Constructing incoming and outgoing connection tags
+                StringBuilder connections = new StringBuilder();
+                List<String> outgoings = outgoingConnections.getOrDefault(nodeId, List.of());
+                List<String> incomings = incomingConnections.getOrDefault(nodeId, List.of());
+                incomings.forEach(incoming -> connections.append("<incoming>").append(incoming).append("</incoming>"));
+                outgoings.forEach(outgoing -> connections.append("<outgoing>").append(outgoing).append("</outgoing>"));
+
+                // Reconstruct the task element with the new connection details
+                String replacement = "<"+ tag + " " + beforeId + "id=\"" + nodeId + "\"" + afterId + ">"
+                                     + connections + "</"+ tag + ">";
+                matcher.appendReplacement(enhancedXML, replacement);
+            }
+
+            matcher.appendTail(enhancedXML);
+            res = enhancedXML.toString();
+        }
+        
+
+        return res;
+    }
+	
 
 	@Override
 	protected void load(PortObjectZipInputStream in, PortObjectSpec spec, ExecutionMonitor exec)
@@ -244,7 +319,7 @@ public class BpmnPortObject extends AbstractJSONPortObject {
 		bw.close();
 
 	}
-
+	
 	@Override
 	public Map<String, List<?>> getJSON() {
 		
@@ -252,8 +327,8 @@ public class BpmnPortObject extends AbstractJSONPortObject {
 		
 		try {
 			String value = BpmnPortObject.exportBPMNDiagram(model);
-			String key = "xml";     
-		    result.put(key, Collections.singletonList(value));
+			String key = "xml"; 
+			result.put(key, Collections.singletonList(value));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
