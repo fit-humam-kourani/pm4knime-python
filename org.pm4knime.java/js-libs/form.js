@@ -1,3 +1,5 @@
+let tb_flag = 0;
+
 (jsgraphviz = function() {
 
 	let _representation;
@@ -35,7 +37,7 @@
 		try {
 			xmlString = await bpmnLayoutWithDagre(xmlString);
 		} catch (err) { }
-		
+
 		modelXmlString = xmlString;
 
 		const mainContainer = document.createElement("div");
@@ -49,21 +51,21 @@
 		mainContainer.style.height = "100vh";
 
 		appendHiddenBpmnContent(mainContainer);
-		
+
 		document.body.appendChild(mainContainer);
-	
-		
+
+
 		try {
 			xmlString = await bpmnLayoutWithDagre(xmlString);
 			console.error('no err ');
-		} catch (err) { 
+		} catch (err) {
 			console.error('err: ', err.stack);
 		}
-		
+
 		modelXmlString = xmlString;
 		const viewer = new BpmnJS({
 			container: mainContainer,
-		
+
 		});
 
 		await viewer.importXML(modelXmlString);
@@ -73,60 +75,60 @@
 	}
 
 	function appendHiddenBpmnContent(mainContainer) {
-    	const hiddenDiv1 = document.createElement('div');
-        hiddenDiv1.style.visibility = 'hidden';
-        hiddenDiv1.style.position = 'absolute';
+		const hiddenDiv1 = document.createElement('div');
+		hiddenDiv1.style.visibility = 'hidden';
+		hiddenDiv1.style.position = 'absolute';
 
-        const svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg1.setAttribute('width', '90%');
-        svg1.setAttribute('height', '90%');
+		const svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		svg1.setAttribute('width', '90%');
+		svg1.setAttribute('height', '90%');
 
-        const g = document.createElement('g');
-        svg1.appendChild(g);
-        hiddenDiv1.appendChild(svg1);
+		const g = document.createElement('g');
+		svg1.appendChild(g);
+		hiddenDiv1.appendChild(svg1);
 
-        // Create the canvas div
-        const canvasDiv = document.createElement('div');
-        canvasDiv.id = 'canvas';
-        canvasDiv.style.height = '90%';
-        canvasDiv.style.width = '90%';
-        canvasDiv.style.padding = '0';
-        canvasDiv.style.margin = '0';
-        canvasDiv.style.position = 'absolute';
+		// Create the canvas div
+		const canvasDiv = document.createElement('div');
+		canvasDiv.id = 'canvas';
+		canvasDiv.style.height = '90%';
+		canvasDiv.style.width = '90%';
+		canvasDiv.style.padding = '0';
+		canvasDiv.style.margin = '0';
+		canvasDiv.style.position = 'absolute';
 
-        // Create the second hidden div
-        const hiddenDiv2 = document.createElement('div');
-        hiddenDiv2.style.visibility = 'hidden';
+		// Create the second hidden div
+		const hiddenDiv2 = document.createElement('div');
+		hiddenDiv2.style.visibility = 'hidden';
 
-        const fixedDiv = document.createElement('div');
-        fixedDiv.style.position = 'fixed';
-        fixedDiv.style.top = '0px';
-        fixedDiv.style.left = '0px';
+		const fixedDiv = document.createElement('div');
+		fixedDiv.style.position = 'fixed';
+		fixedDiv.style.top = '0px';
+		fixedDiv.style.left = '0px';
 
-        const svg2 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg2.id = 'internalSvg';
-        svg2.style.width = '0%';
-        svg2.style.height = '0%';
-        fixedDiv.appendChild(svg2);
-        hiddenDiv2.appendChild(fixedDiv);
+		const svg2 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		svg2.id = 'internalSvg';
+		svg2.style.width = '0%';
+		svg2.style.height = '0%';
+		fixedDiv.appendChild(svg2);
+		hiddenDiv2.appendChild(fixedDiv);
 
-        const internalCanvasDiv = document.createElement('div');
-        internalCanvasDiv.id = 'internalCanvas';
-        internalCanvasDiv.style.height = '0%';
-        internalCanvasDiv.style.width = '0%';
-        internalCanvasDiv.style.padding = '0';
-        internalCanvasDiv.style.margin = '0';
-        internalCanvasDiv.style.top = '0px';
-        internalCanvasDiv.style.left = '0px';
-        internalCanvasDiv.style.position = 'fixed';
-        hiddenDiv2.appendChild(internalCanvasDiv);
+		const internalCanvasDiv = document.createElement('div');
+		internalCanvasDiv.id = 'internalCanvas';
+		internalCanvasDiv.style.height = '0%';
+		internalCanvasDiv.style.width = '0%';
+		internalCanvasDiv.style.padding = '0';
+		internalCanvasDiv.style.margin = '0';
+		internalCanvasDiv.style.top = '0px';
+		internalCanvasDiv.style.left = '0px';
+		internalCanvasDiv.style.position = 'fixed';
+		hiddenDiv2.appendChild(internalCanvasDiv);
 
-        // Append the created elements to the mainContainer
-        mainContainer.appendChild(hiddenDiv1);
-        mainContainer.appendChild(canvasDiv);
-        mainContainer.appendChild(hiddenDiv2);
+		// Append the created elements to the mainContainer
+		mainContainer.appendChild(hiddenDiv1);
+		mainContainer.appendChild(canvasDiv);
+		mainContainer.appendChild(hiddenDiv2);
 	}
-	
+
 	function createGraphElements() {
 
 		const mainContainer = document.createElement("div");
@@ -296,6 +298,10 @@
 
 		// Add nodes
 		nodes.forEach(function(node) {
+
+			if (node.type === "activity")
+				tb_flag = 1;
+
 			var element;
 			if (node.type === "place") {
 				let attrs = {
@@ -469,6 +475,7 @@
 			if (edge.frequency > 0) {
 				link.attr('.connection', { stroke: '#000f80' });
 				link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+				tb_flag = 1;
 			}
 
 			if (edge.type === 'SureEdge' || edge.type === 'HybridDirectedSureGraphEdge') {
@@ -485,6 +492,7 @@
 
 			graph.addCell(link);
 		});
+
 		applyAutoLayout(nodes, edges, elements);
 
 		adjustPaperSize(graph, paper);
@@ -541,11 +549,20 @@
 
 			var g = new dagre.graphlib.Graph();
 
-			g.setGraph({
-				rankdir: "LR",
-				marginx: 20,
-				marginy: 20,
-			});
+			if (tb_flag == 0) { 
+				g.setGraph({
+					rankdir: "LR",
+					marginx: 20,
+					marginy: 20,
+				});
+			}
+			else { //for causal graphs and DFGs
+				g.setGraph({
+					rankdir: "TB",
+					marginx: 20,
+					marginy: 20,
+				});
+			}
 
 			g.setDefaultEdgeLabel(function() {
 				return {};
