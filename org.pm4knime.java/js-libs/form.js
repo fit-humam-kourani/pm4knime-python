@@ -22,7 +22,6 @@ let tb_flag = 0;
 
 		if (xml) {
 			let xmlString = xml[0];
-			//console.error('XML: ', xmlString);
 			createBpmn(xmlString);
 		} else {
 			createGraphElements();
@@ -31,15 +30,7 @@ let tb_flag = 0;
 
 	};
 
-
 	async function createBpmn(xmlString) {
-
-		try {
-			xmlString = await bpmnLayoutWithDagre(xmlString);
-		} catch (err) { }
-
-		modelXmlString = xmlString;
-
 		const mainContainer = document.createElement("div");
 		mainContainer.id = "main";
 		mainContainer.style.display = "flex";
@@ -49,11 +40,53 @@ let tb_flag = 0;
 		mainContainer.style.border = "1px solid #ccc";
 		mainContainer.style.width = "100vw";
 		mainContainer.style.height = "100vh";
+		mainContainer.style.background = "white";
 
-		appendHiddenBpmnContent(mainContainer);
+		const controlBar = document.createElement("div");
+		controlBar.style.background = "#e0e0e0";
+		controlBar.style.color = "#fff";
+		controlBar.style.padding = "5px";
+		controlBar.style.width = "100%";
+		controlBar.style.fontFamily = "Arial, sans-serif";
+
+		const controlsDiv = document.createElement("div");
+		controlsDiv.id = "zoom-controls";
+
+		const zoomInButton = document.createElement("button");
+		zoomInButton.className = "zoom-button";
+		zoomInButton.id = "zoom-in";
+		zoomInButton.textContent = "Zoom In";
+
+		const zoomOutButton = document.createElement("button");
+		zoomOutButton.className = "zoom-button";
+		zoomOutButton.id = "zoom-out";
+		zoomOutButton.textContent = "Zoom Out";
+
+		const resetButton = document.createElement("button");
+		resetButton.className = "reset-button";
+		resetButton.id = "reset-button";
+		resetButton.textContent = "Reset";
+
+		controlsDiv.appendChild(zoomInButton);
+		controlsDiv.appendChild(zoomOutButton);	
+		controlsDiv.appendChild(resetButton);
+
+		controlBar.appendChild(controlsDiv);
+		mainContainer.appendChild(controlBar);
+
+		const bpmnDiv = document.createElement("div");
+		bpmnDiv.id = "bpmn-container";
+		bpmnDiv.style.width = "100%"; // Fixed width
+		bpmnDiv.style.height = `calc(100vh - 55px)`;
+		bpmnDiv.style.overflow = "auto"; // Enables scrollbars if content overflows
+		bpmnDiv.style.margin = "auto";
+
+		//mainContainer.appendChild(controlBar);
+		//appendHiddenBpmnContent(mainContainer);
+		appendHiddenBpmnContent(bpmnDiv);
+		mainContainer.appendChild(bpmnDiv);
 
 		document.body.appendChild(mainContainer);
-
 
 		try {
 			xmlString = await bpmnLayoutWithDagre(xmlString);
@@ -64,13 +97,51 @@ let tb_flag = 0;
 
 		modelXmlString = xmlString;
 		const viewer = new BpmnJS({
-			container: mainContainer,
-
+			container: bpmnDiv,
 		});
 
 		await viewer.importXML(modelXmlString);
+		viewer.get("canvas").zoom("fit-viewport", "auto");
 
-		viewer.get("canvas").zoom("fit-viewport");
+		const addZoomListeners = (viewer) => {
+			let zoomLevel = 1;
+
+			const zoom = (zoomLevel) => {
+				viewer.get("canvas").zoom(zoomLevel);
+			};
+
+			zoomInButton.addEventListener("click", () => {
+				zoomLevel = Math.min(3, zoomLevel + 0.2);
+				zoom(zoomLevel);
+			});
+
+			zoomOutButton.addEventListener("click", () => {
+				zoomLevel = Math.max(0.2, zoomLevel - 0.2);
+				zoom(zoomLevel);
+			});
+
+
+			resetButton.addEventListener("click", () => {
+				viewer.importXML(modelXmlString);
+				viewer.get("canvas").zoom("fit-viewport", "auto");
+			});
+
+			// Mouse wheel listener for zooming
+			mainContainer.addEventListener("wheel", (event) => {
+				event.preventDefault(); // Prevent scrolling
+				const delta = event.deltaY;
+				if (delta > 0) {
+					// Zoom out
+					zoomLevel = Math.max(0.2, zoomLevel - 0.2);
+				} else if (delta < 0) {
+					// Zoom in
+					zoomLevel = Math.min(3, zoomLevel + 0.2);
+				}
+				zoom(zoomLevel);
+			});
+		};
+
+		addZoomListeners(viewer);
 
 	}
 
@@ -80,8 +151,8 @@ let tb_flag = 0;
 		hiddenDiv1.style.position = 'absolute';
 
 		const svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		svg1.setAttribute('width', '90%');
-		svg1.setAttribute('height', '90%');
+		/*svg1.setAttribute('width', '90%');
+		svg1.setAttribute('height', '90%');*/
 
 		const g = document.createElement('g');
 		svg1.appendChild(g);
@@ -90,8 +161,8 @@ let tb_flag = 0;
 		// Create the canvas div
 		const canvasDiv = document.createElement('div');
 		canvasDiv.id = 'canvas';
-		canvasDiv.style.height = '90%';
-		canvasDiv.style.width = '90%';
+		/*canvasDiv.style.height = '90%';
+		canvasDiv.style.width = '90%';*/
 		canvasDiv.style.padding = '0';
 		canvasDiv.style.margin = '0';
 		canvasDiv.style.position = 'absolute';
@@ -169,23 +240,27 @@ let tb_flag = 0;
 		paperDiv.style.width = "100%"; // Fixed width
 		paperDiv.style.height = "100%";
 
-		// Create zoom controls div
-		const zoomControlsDiv = document.createElement("div");
-		zoomControlsDiv.id = "zoom-controls";
+		// Create controls div
+		const controlsDiv = document.createElement("div");
+		controlsDiv.id = "zoom-controls";
 
 		// Create zoom in and zoom out buttons
 		const zoomInButton = document.createElement("button");
 		zoomInButton.className = "zoom-button";
 		zoomInButton.id = "zoom-in";
-		zoomInButton.textContent = "Zoom In";
 
 		const zoomOutButton = document.createElement("button");
 		zoomOutButton.className = "zoom-button";
 		zoomOutButton.id = "zoom-out";
+
+		zoomInButton.textContent = "Zoom In";
 		zoomOutButton.textContent = "Zoom Out";
 
-		zoomInButton.textContent = "+";
-		zoomOutButton.textContent = "-";
+		// Create reset button 
+		const resetButton = document.createElement("button");
+		resetButton.className = "reset-button";
+		resetButton.id = "reset-button";
+		resetButton.textContent = "Reset";
 
 		// // Apply CSS styles for cool shapes
 		// zoomInButton.style.fontSize = "24px"; // Large text size makes the "+" look more like a shape
@@ -203,13 +278,14 @@ let tb_flag = 0;
 		// zoomOutButton.style = zoomInButton.style.cssText; // Copy styles from zoomInButton
 		// zoomOutButton.textContent = "-";
 
-		zoomControlsDiv.appendChild(zoomInButton);
-		zoomControlsDiv.appendChild(zoomOutButton);
+		controlsDiv.appendChild(zoomInButton);
+		controlsDiv.appendChild(zoomOutButton);
+		controlsDiv.appendChild(resetButton);
 
 		// document.body.appendChild(zoomControlsDiv);
 		// document.body.appendChild(paperDiv);
 
-		controlBar.appendChild(zoomControlsDiv);
+		controlBar.appendChild(controlsDiv);
 
 		graphContainer.appendChild(paperDiv);
 
@@ -519,6 +595,13 @@ let tb_flag = 0;
 				zoom(zoomLevel);
 			});
 
+			document.getElementById("reset-button").addEventListener("click", () => {
+				document.body.innerHTML = "";
+				createGraphElements();
+				createPaper(nodes, edges);
+
+			});
+
 			// Mouse wheel listener for zooming
 			paper.el.addEventListener("wheel", (event) => {
 				event.preventDefault(); // Prevent scrolling
@@ -549,7 +632,7 @@ let tb_flag = 0;
 
 			var g = new dagre.graphlib.Graph();
 
-			if (tb_flag == 0) { 
+			if (tb_flag == 0) {
 				g.setGraph({
 					rankdir: "LR",
 					marginx: 20,
