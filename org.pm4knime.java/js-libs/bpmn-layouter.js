@@ -49,14 +49,16 @@ function renderGraph(
       if (isProperName && desideredWidth != null) {
         g.setNode(n.id, {
           label: n.name.replaceAll(" ", "\n"),
-          width: desideredWidth,
+          //width: desideredWidth,
+          width: (n.name.length) * 6,
           height: desideredHeight,
         });
       } else if (desideredWidth != null) {
         g.setNode(n.id, {
           label: n.name.replaceAll(" ", "\n"),
-          width: Math.min(desideredWidth, desideredHeight) * 0.28,
-          height: Math.min(desideredWidth, desideredHeight) * 0.28,
+          width: (n.name.length) * 6,
+          //width: Math.min(desideredWidth, desideredHeight) * 0.28,
+          height: Math.min(desideredWidth, desideredHeight) * 0.002,
         });
       } else {
         g.setNode(n.id, {
@@ -157,6 +159,7 @@ async function bpmnLayoutWithDagre(xmlString) {
     let height = parseInt(elemStr.split('height="')[1].split('"')[0]);
     desideredWidth = Math.max(desideredWidth, width);
     desideredHeight = Math.max(desideredHeight, height);
+    console.error(nodeId + " " + width + " " + height)
   }
 
   g = renderGraph(
@@ -167,8 +170,8 @@ async function bpmnLayoutWithDagre(xmlString) {
     edgesep,
     ranksep,
     targetDivDagre,
-    desideredWidth * 1.7,
-    desideredHeight * 0.87
+    desideredWidth * 2.2,
+    desideredHeight * 0.7
   );
 
   for (let nodeId in g._nodes) {
