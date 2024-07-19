@@ -1,3 +1,40 @@
+/*
+    Disable BPMN editing
+*/
+
+.djs-context-pad .entry {
+    display: none !important;
+}
+
+.djs-palette .separator {
+    display: none !important;
+}
+
+.djs-palette {
+    display: none !important;
+}
+
+.djs-bendpoint {
+    display: none !important;
+}
+
+.djs-bendpoint .djs-hit {
+    display: none !important;
+}
+
+.djs-direct-editing-content {
+    display: none !important;
+}
+
+.djs-direct-editing-parent {
+    display: none !important;
+}
+
+
+
+
+
+
 .tool-remove {
 	display: none !important;
   }
