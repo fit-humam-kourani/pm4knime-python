@@ -96,9 +96,9 @@ final class PetrinetWriterNodeModel extends WebUINodeModel<PetrinetWriterNodeSet
 
     
 
-    private static String pathWithExtension(final String path, String ext) {
+    private String pathWithExtension(final String path, String ext) {
         if (!path.toLowerCase(Locale.US).endsWith(ext)) {
-            LOGGER.warn(
+        	setWarningMessage(
                 String.format("Output file path did not have the correct file extension, appending \"%s\".", ext));
             return path + ext;
         }

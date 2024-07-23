@@ -20,7 +20,7 @@ public final class PetrinetWriterNodeSettings extends WriterNodeSettings {
 
 	public String getExtension() {
 		// TODO Auto-generated method stub
-		return "pnml";
+		return ".pnml";
 	}
 	
 }
