@@ -68,8 +68,15 @@ let tb_flag = 0;
 		resetButton.id = "reset-button";
 		resetButton.textContent = "Reset";
 
+		// Create zoom to fit button 
+		const zoomToFitButton = document.createElement("button");
+		zoomToFitButton.className = "zoom-button";
+		zoomToFitButton.id = "zoom-to-fit";
+		zoomToFitButton.textContent = "Zoom To Fit";
+
 		controlsDiv.appendChild(zoomInButton);
 		controlsDiv.appendChild(zoomOutButton);
+		controlsDiv.appendChild(zoomToFitButton);
 		controlsDiv.appendChild(resetButton);
 
 		controlBar.appendChild(controlsDiv);
@@ -104,10 +111,6 @@ let tb_flag = 0;
 		await viewer.importXML(modelXmlString);
 		viewer.get("canvas").zoom("fit-viewport", "auto");
 
-		// TO DO - Experimental
-	
-		// TO DO - Experimental END
-
 		const addZoomListeners = (viewer) => {
 			let zoomLevel = 1;
 
@@ -124,7 +127,15 @@ let tb_flag = 0;
 				zoomLevel = Math.max(0.2, zoomLevel - 0.2);
 				zoom(zoomLevel);
 			});
-
+			
+			document.getElementById("zoom-to-fit").addEventListener("click", () => {
+				let zoomLevel = 0;
+				if (tb_flag === 1)
+					zoomLevel = 0.6;
+				else
+					zoomLevel = 0.45;
+				zoom(zoomLevel);
+			});
 
 			resetButton.addEventListener("click", () => {
 				viewer.importXML(modelXmlString);
@@ -244,6 +255,7 @@ let tb_flag = 0;
 		paperDiv.id = "paper";
 		paperDiv.style.width = "100%"; // Fixed width
 		paperDiv.style.height = "100%";
+		paperDiv.style.margin = "auto";
 
 		// Create controls div
 		const controlsDiv = document.createElement("div");
@@ -267,6 +279,12 @@ let tb_flag = 0;
 		resetButton.id = "reset-button";
 		resetButton.textContent = "Reset";
 
+		// Create zoom to fit button 
+		const zoomToFitButton = document.createElement("button");
+		zoomToFitButton.className = "zoom-button";
+		zoomToFitButton.id = "zoom-to-fit";
+		zoomToFitButton.textContent = "Zoom To Fit";
+
 		// // Apply CSS styles for cool shapes
 		// zoomInButton.style.fontSize = "24px"; // Large text size makes the "+" look more like a shape
 		// zoomInButton.style.width = "50px"; // Square shape
@@ -285,6 +303,7 @@ let tb_flag = 0;
 
 		controlsDiv.appendChild(zoomInButton);
 		controlsDiv.appendChild(zoomOutButton);
+		controlsDiv.appendChild(zoomToFitButton);
 		controlsDiv.appendChild(resetButton);
 
 		// document.body.appendChild(zoomControlsDiv);
@@ -372,6 +391,15 @@ let tb_flag = 0;
 			defaultConnectionPoint: { name: "boundary" },
 			model: graph,
 		});
+
+		const zoom = (zoomLevel) => {
+			paper.scale(zoomLevel);
+			paper.fitToContent({
+				useModelGeometry: true,
+				padding: 100 * zoomLevel,
+				allowNewOrigin: "any",
+			});
+		};
 
 		var pn = joint.shapes.pn;
 
@@ -599,6 +627,15 @@ let tb_flag = 0;
 				zoomLevel = Math.max(0.2, zoomLevel - 0.2);
 				zoom(zoomLevel);
 			});
+			
+			document.getElementById("zoom-to-fit").addEventListener("click", () => {
+				let zoomLevel = 0;
+				if (tb_flag === 1)
+					zoomLevel = 0.6;
+				else
+					zoomLevel = 0.45;
+				zoom(zoomLevel);
+			});
 
 			document.getElementById("reset-button").addEventListener("click", () => {
 				document.body.innerHTML = "";
@@ -714,6 +751,12 @@ let tb_flag = 0;
 					);
 				}
 			});
+
+			if (tb_flag === 1)
+				zoomLevel = 0.6;
+			else
+				zoomLevel = 0.45;
+			zoom(zoomLevel);
 		}
 
 	};
