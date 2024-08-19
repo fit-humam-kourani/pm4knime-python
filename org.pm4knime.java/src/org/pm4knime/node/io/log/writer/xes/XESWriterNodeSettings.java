@@ -20,7 +20,7 @@ public final class XESWriterNodeSettings extends WriterNodeSettings {
 
 	public String getExtension() {
 		// TODO Auto-generated method stub
-		return ".gz";
+		return "";
 	}
 	
 }
