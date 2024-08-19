@@ -56,23 +56,32 @@ let tb_flag = 0;
 		const zoomInButton = document.createElement("button");
 		zoomInButton.className = "zoom-button";
 		zoomInButton.id = "zoom-in";
-		zoomInButton.textContent = "Zoom In";
+		const iconZoomIn = document.createElement("i");
+		iconZoomIn.className = "fa-solid fa-magnifying-glass-plus";
+		zoomInButton.appendChild(iconZoomIn);
 
 		const zoomOutButton = document.createElement("button");
 		zoomOutButton.className = "zoom-button";
 		zoomOutButton.id = "zoom-out";
-		zoomOutButton.textContent = "Zoom Out";
+		const iconZoomOut = document.createElement("i");
+		iconZoomOut.className = "fa-solid fa-magnifying-glass-minus";
+		zoomOutButton.appendChild(iconZoomOut);
 
 		const resetButton = document.createElement("button");
 		resetButton.className = "reset-button";
 		resetButton.id = "reset-button";
-		resetButton.textContent = "Reset";
+		const iconReset = document.createElement("i");
+		iconReset.className = "fa-solid fa-rotate-left";
+		resetButton.appendChild(iconReset);
 
 		// Create zoom to fit button 
 		const zoomToFitButton = document.createElement("button");
 		zoomToFitButton.className = "zoom-button";
 		zoomToFitButton.id = "zoom-to-fit";
-		zoomToFitButton.textContent = "Zoom To Fit";
+		const iconZoomToFit = document.createElement("i");
+		iconZoomToFit.className = "fa-solid fa-arrows-to-circle";
+		zoomToFitButton.appendChild(iconZoomToFit);
+		
 
 		controlsDiv.appendChild(zoomInButton);
 		controlsDiv.appendChild(zoomOutButton);
@@ -127,7 +136,7 @@ let tb_flag = 0;
 				zoomLevel = Math.max(0.2, zoomLevel - 0.2);
 				zoom(zoomLevel);
 			});
-			
+
 			document.getElementById("zoom-to-fit").addEventListener("click", () => {
 				let zoomLevel = 0;
 				if (tb_flag === 1)
@@ -627,7 +636,7 @@ let tb_flag = 0;
 				zoomLevel = Math.max(0.2, zoomLevel - 0.2);
 				zoom(zoomLevel);
 			});
-			
+
 			document.getElementById("zoom-to-fit").addEventListener("click", () => {
 				let zoomLevel = 0;
 				if (tb_flag === 1)
