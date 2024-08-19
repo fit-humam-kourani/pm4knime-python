@@ -1,11 +1,17 @@
 package org.pm4knime.node.io.log.writer.xes;
 
+import java.io.IOException;
+import org.deckfour.xes.model.XLog;
+import org.deckfour.xes.out.XSerializer;
+import org.deckfour.xes.out.XesXmlGZIPSerializer;
+import org.deckfour.xes.out.XesXmlSerializer;
 import java.io.OutputStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
+import org.deckfour.xes.model.XLog;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -74,6 +80,7 @@ final class XESWriterNodeModel extends WebUINodeModel<XESWriterNodeSettings> {
             	OutputStream outStream;            
             	try {
                     outStream = FSFiles.newOutputStream(path);
+                    writeToFile(outStream, logData.getLog());
                 } catch (final FileAlreadyExistsException e) {
                     throw new InvalidSettingsException(
                         "Output file '" + e.getFile() + "' exists and must not be overwritten due to user settings.", e);
@@ -90,7 +97,21 @@ final class XESWriterNodeModel extends WebUINodeModel<XESWriterNodeSettings> {
 
         return new PortObject[0];
     }
-
+    
+    protected void writeToFile(OutputStream outputStream, XLog log) throws IOException {
+    	XSerializer logSerializer = new XesXmlSerializer();
+		logSerializer.serialize(log, outputStream);
+		outputStream.close();
+//    	if(m_compressWithGzipChecker.isSelected()) {       	
+//    		XSerializer logSerializer = new XesXmlGZIPSerializer();
+//    		logSerializer.serialize(log, outputStream);
+//    		outputStream.close();
+//    	} else {
+//    		XSerializer logSerializer = new XesXmlSerializer();
+//    		logSerializer.serialize(log, outputStream);
+//    		outputStream.close();
+//    	}   	 	
+    }
     
 
     private String pathWithExtension(final String path, String ext) {
