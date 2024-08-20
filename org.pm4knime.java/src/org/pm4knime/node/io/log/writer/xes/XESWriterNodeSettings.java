@@ -15,11 +15,13 @@ public final class XESWriterNodeSettings extends WriterNodeSettings {
                 The folder or workflow group in which the output file shall be written has to exist.
                 """ 
     )
-	@LocalFileWriterWidget(fileExtension = "gz")
-	String m_outputFile = NodeSettingsUtils.getPathInUserHomeDir("xes.gz");
+	@LocalFileWriterWidget()
+	String m_outputFile = NodeSettingsUtils.getPathInUserHomeDir("xes_file");
+	
+	@Widget(title = "Compress output file (gz)", description = "")
+	boolean m_compressWithGzipChecker = false;
 
 	public String getExtension() {
-		// TODO Auto-generated method stub
 		return "";
 	}
 	
