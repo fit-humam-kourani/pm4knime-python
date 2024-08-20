@@ -1,4 +1,4 @@
-package org.pm4knime.node.io.log.writer.xes;
+package org.pm4knime.node.io.log.writer.mxml;
 
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -6,7 +6,7 @@ import org.pm4knime.util.NodeSettingsUtils;
 import org.pm4knime.util.defaultnode.WriterNodeSettings;
 
 @SuppressWarnings("restriction")
-public final class XESWriterNodeSettings extends WriterNodeSettings {
+public final class MXMLWriterNodeSettings extends WriterNodeSettings {
 
 	@Widget( 
         title = "Output location (path and file name)", 
@@ -16,7 +16,7 @@ public final class XESWriterNodeSettings extends WriterNodeSettings {
                 """ 
     )
 	@LocalFileWriterWidget()
-	String m_outputFile = NodeSettingsUtils.getPathInUserHomeDir("xes_file.xes");
+	String m_outputFile = NodeSettingsUtils.getPathInUserHomeDir("mxml_file.mxml");
 	
 	@Widget(title = "Compress output file (gz)", description = "Choose whether to compress the output file or not. This option is disabled by default.")
 	boolean m_compressWithGzipChecker = false;

@@ -93,9 +93,6 @@ final class XESWriterNodeModel extends WebUINodeModel<XESWriterNodeSettings> {
 
 	protected void writeToFile(OutputStream outputStream, XLog log, final XESWriterNodeSettings settings)
 			throws IOException {
-		// XSerializer logSerializer = new XesXmlSerializer();
-		// logSerializer.serialize(log, outputStream);
-		// outputStream.close();
 		if (settings.m_compressWithGzipChecker) {
 			XSerializer logSerializer = new XesXmlGZIPSerializer();
 			logSerializer.serialize(log, outputStream);

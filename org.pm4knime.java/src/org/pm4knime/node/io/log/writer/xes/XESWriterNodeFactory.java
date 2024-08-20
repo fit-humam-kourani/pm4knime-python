@@ -15,7 +15,7 @@ public class XESWriterNodeFactory extends WebUINodeFactory<XESWriterNodeModel> {
         .shortDescription("This node exports an event log into an XES file.") //
         .fullDescription("""
                 <p>
-                This node exports an event log into an XES file.
+                This node exports an event log into an XES file or a compressed XES file (gz).
                 </p>
                 """) //
         .modelSettingsClass(XESWriterNodeSettings.class) //
