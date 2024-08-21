@@ -66,6 +66,8 @@ public class RepResultPortObjectTable implements PortObject {
 	TableEventLog log;
 	DataTable tableLog;
 	AcceptingPetriNet anet;
+	private int[] default_move_costs;
+	private Map<String, Integer>[] move_cost_maps;
 	
 	public RepResultPortObjectTable(PNRepResult repResult,TableEventLog log, DataTable tableLog, AcceptingPetriNet anet) { // PetriNetPortObject pnPO,
 		this.repResult = repResult;
@@ -173,9 +175,23 @@ public class RepResultPortObjectTable implements PortObject {
 			objOut.writeUTF(classifier);
 			objOut.writeUTF(traceClassifier);
 			objOut.writeUTF(timeClassifier);
-			// how to make sure the object stored in infoMap is serializable?? No secure way!!
-			// so we need to remember only the names for the class, after this, we will recover it.
+
+			for (int i = 0; i < 3; i++) {
+		        objOut.writeInt(portObject.default_move_costs[i]);
+		    }
+		    
+		    for (int i = 0; i < 3; i++) {
+		        Map<String, Integer> map = portObject.move_cost_maps[i];
+		        objOut.writeInt(map.size());  
+		        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+		            objOut.writeUTF(entry.getKey());  
+		            objOut.writeInt(entry.getValue()); 
+		        }
+		    }
+			
 			objOut.writeObject(infoMap);
+			
+			
 			// to mark the end of the elements
 			objOut.writeInt(repResult.size());
 			Map<Transition, Integer> transOrderMap = new HashMap<Transition, Integer>();
@@ -222,6 +238,7 @@ public class RepResultPortObjectTable implements PortObject {
 				objOut.writeObject(alignment.getTraceIndex());
 				objOut.writeBoolean(alignment.isReliable());
 				objOut.writeObject(alignment.getInfo());
+				
 			}
 			out.closeEntry();
 			
@@ -287,6 +304,23 @@ public class RepResultPortObjectTable implements PortObject {
 			String classifier = objIn.readUTF();
 			String traceClassifier = objIn.readUTF();
 			String timeClassifier = objIn.readUTF();
+			
+			int[] default_move_costs = new int[3];
+		    for (int i = 0; i < 3; i++) {
+		        default_move_costs[i] = objIn.readInt();
+		    }
+		    
+		    Map<String, Integer>[] move_cost_maps = new HashMap[3];
+		    for (int i = 0; i < 3; i++) {
+		        int mapSize = objIn.readInt();  
+		        Map<String, Integer> map = new HashMap<>();
+		        for (int j = 0; j < mapSize; j++) {
+		            String key = objIn.readUTF(); 
+		            int value = objIn.readInt(); 
+		            map.put(key, value);
+		        }
+		        move_cost_maps[i] = map;
+		    }
 			
 			try {
 				infoMap = (Map<String, Object>) objIn.readObject();
@@ -369,6 +403,8 @@ public class RepResultPortObjectTable implements PortObject {
 			repResultPO.setRepResult(new PNRepResultImpl(col));
 			repResultPO.setLog(log,classifier, traceClassifier, timeClassifier);
 			repResultPO.setNet(anet);
+			repResultPO.setDefaultMoveCosts(default_move_costs);
+			repResultPO.setMoveCostMaps(move_cost_maps);
 			// when they use the Impl, it creates the info by itselves. So we don't need to store it here.
 			// but about the other infoMap, it could be not so lucky!! So, we still read the map and store it here
 			repResultPO.getRepResult().setInfo(infoMap);
@@ -385,4 +421,25 @@ public class RepResultPortObjectTable implements PortObject {
 	public void setSpec(RepResultPortObjectSpecTable m_rSpec2) {
 		m_rSpec = m_rSpec2;
 	}
+
+	public int[] getDefaultMoveCosts() {
+		// TODO Auto-generated method stub
+		return default_move_costs;
+	}
+
+	public Map<String, Integer>[] getMoveCostMaps() {
+		// TODO Auto-generated method stub
+		return move_cost_maps;
+	}
+	
+	public void setDefaultMoveCosts(int[] costs) {
+		// TODO Auto-generated method stub
+		default_move_costs = costs;
+	}
+
+	public void setMoveCostMaps(Map<String, Integer>[] maps) {
+		// TODO Auto-generated method stub
+		move_cost_maps = maps;
+	}
+	
 }
