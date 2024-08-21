@@ -27,41 +27,23 @@ import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.inductiveVisualMiner.plugins.EfficientTreeVisualisationPlugin;
 import org.processmining.plugins.inductiveVisualMiner.plugins.GraphvizPetriNet;
 
-/**
- * this class defines PetriNetPortObject. It includes models as Petrinet + InitialMarking, FinalMarking, FinalMarkings[].
- * Serializer load and save Petrinet with PromPlugin for accepting Petri net. 
- * Views uses the Accepting Petri Net to show it
- * @author kefang-pads
- *
- */
+
 public class PetriNetPortObject extends AbstractDotPanelPortObject {
 
-	/**
-	 * Define port type of objects of this class when used as PortObjects.
-	 */
 	public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(PetriNetPortObject.class);
 	public static final PortType TYPE_OPTIONAL =
 			PortTypeRegistry.getInstance().getPortType(PetriNetPortObject.class, true);
 	
 	private static final String ZIP_ENTRY_NAME = "PetriNetPortObject";
 	
-	// use AcceptingPetriNet as the model
-	// m_anet: a field that carries anet
-	AcceptingPetriNet m_anet ;
+	AcceptingPetriNet m_anet;
 	PetriNetPortObjectSpec m_spec;
-	private EfficientTree effTree;
 	public PetriNetPortObject() {}
 	
 	public PetriNetPortObject(AcceptingPetriNet anet) {
 		m_anet = anet;
-		this.effTree = null;
 	}
-	
-	public PetriNetPortObject(AcceptingPetriNet anet,EfficientTree effTree) throws UnknownTreeNodeException, ReductionFailedException {
-		this.effTree = effTree;
-		this.m_anet =  anet;
-	}
-	
+
 	
 	public AcceptingPetriNet getANet() {
 		return m_anet;
@@ -83,52 +65,27 @@ public class PetriNetPortObject extends AbstractDotPanelPortObject {
 	
 	@Override
 	public PetriNetPortObjectSpec getSpec() {
-		// here we need to create a POSpec for Petri net
-		if(m_spec!=null)
+		if(m_spec!=null) {
+			m_spec.setTransitions(m_anet.getNet().getTransitions());
 			return m_spec;
-		return new PetriNetPortObjectSpec();
+		}
+		PetriNetPortObjectSpec spec = new PetriNetPortObjectSpec();
+		spec.setTransitions(m_anet.getNet().getTransitions());
+		return spec;
 	}
 
 	public void setSpec(PortObjectSpec spec) {
 		m_spec = (PetriNetPortObjectSpec) spec;
 	}
-	/**
-	 * If we show the Petri net as the AcceptingPetriNet, better to use AcceptingPetrinet as model.
-	 * If there are no finalMarking, we can assign them. That's all the important stuff here.
-	 * 
-	 */
+
 	@Override
 	public JComponent[] getViews() {
-//		if(effTree != null) {
-//			JComponent viewPanel = getDotPanel();
-//			viewPanel.setName("Petri net");
-//			return new JComponent[] { viewPanel };	
-//		}
-//		
-//		if (m_anet != null) {
-//			
-//			PluginContext context = PM4KNIMEGlobalContext.instance().getPluginContext();
-//			JComponent view = VisualizeAcceptingPetriNetPlugin.visualize(context, m_anet);
-//			view.setName("Petri net");
-//			return new JComponent[] {view};
-//		}
-		
 		return new JComponent[] {};
 	}
 	
 	@Override
 	public DotPanel getDotPanel() {
-		
-		if(effTree != null) {
-			Dot dot = EfficientTreeVisualisationPlugin.fancy(effTree);
-			DotPanel navDot = new DotPanel(dot);
-			
-			navDot.setName("Generated petri net");
-			return navDot;
-			
-		}
-		
-		
+				
 	    if(m_anet != null) {
 			
 			DotPanel navDot;

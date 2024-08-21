@@ -2,6 +2,8 @@ package org.pm4knime.portobject;
 
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JComponent;
@@ -9,6 +11,7 @@ import javax.swing.JComponent;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortObjectSpecZipInputStream;
 import org.knime.core.node.port.PortObjectSpecZipOutputStream;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 /**
  * when there is no need to serialize the Spec, we don't give it 
  * @author dkf
@@ -18,6 +21,7 @@ public class PetriNetPortObjectSpec implements PortObjectSpec   {
 	
 	private static final String ZIP_ENTRY_NAME = "PetriNetPortObjectSpec";
 	String fileName = "PetrinetSpec.txt";
+	Collection<Transition> activities;
 	
 	public PetriNetPortObjectSpec() {}
 
@@ -51,7 +55,6 @@ public class PetriNetPortObjectSpec implements PortObjectSpec   {
 	}
 	
 	public String getFileName() {
-		// TODO Auto-generated method stub
 		return fileName;
 	}
 	
@@ -59,5 +62,12 @@ public class PetriNetPortObjectSpec implements PortObjectSpec   {
 		fileName = name;
 	}
 	
+	public Collection<Transition> getTransitions() {
+		return activities;
+	}
 	
+	public void setTransitions(Collection<Transition> collection) {
+		activities = collection;
+	}
+		
 }
