@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsWO;
@@ -22,13 +23,12 @@ import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.node.visualizations.jsgraphviz.util.WebUIJSViewNodeModel;
 import org.pm4knime.portobject.AbstractJSONPortObject;
 
-
-
 @SuppressWarnings("restriction")
 public abstract class ReaderNodeModel extends WebUIJSViewNodeModel<ReaderNodeSettings, JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	
 	
 	private ReaderNodeSettings m_settings;
+	String[] extensions;
     
 	PortObjectSpec m_spec;
 	protected AbstractJSONPortObject m_Port;
@@ -37,10 +37,10 @@ public abstract class ReaderNodeModel extends WebUIJSViewNodeModel<ReaderNodeSet
     
     	super(null, portTypes, view_name, class1);
     	m_spec = portObjectSpec; 
+    	extensions = types;
     }
 
-    
-    @Override
+	@Override
     protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView,
         final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         return new PortObject[]{m_Port};
@@ -78,10 +78,21 @@ public abstract class ReaderNodeModel extends WebUIJSViewNodeModel<ReaderNodeSet
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs, final ReaderNodeSettings modelSettings) throws InvalidSettingsException {
 		m_settings = modelSettings;
-		m_settings.validate();
+		validate();
 		return configureOutSpec();
 	}
 	
+	public void validate() throws InvalidSettingsException {
+
+		if (StringUtils.isEmpty(m_settings.m_file.getFSLocation().getPath())) {
+			throw new InvalidSettingsException("Please specify a path to the file to read!");
+		}
+
+		if (!StringUtils.endsWith(m_settings.m_file.getFSLocation().getPath(), extensions[0])) {
+			throw new InvalidSettingsException("Unsupported file type: Please select a " + extensions[0] + " file");
+		}
+
+	}
 	
 	protected abstract PortObjectSpec[] configureOutSpec();
 

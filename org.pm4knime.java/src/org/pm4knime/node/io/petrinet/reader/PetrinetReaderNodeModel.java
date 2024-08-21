@@ -12,15 +12,12 @@ import org.pm4knime.util.defaultnode.ReaderNodeModel;
 import org.pm4knime.util.defaultnode.ReaderNodeSettings;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 
-
 public class PetrinetReaderNodeModel extends ReaderNodeModel {
-    
-    
-    
-	
-    public PetrinetReaderNodeModel(Class<ReaderNodeSettings> class1) {
-        super(class1, new String[] {".pnml"}, new PetriNetPortObjectSpec(), new PortType[] {PetriNetPortObject.TYPE}, "Petri Net JS View");
-    }
+
+	public PetrinetReaderNodeModel(Class<ReaderNodeSettings> class1) {
+		super(class1, new String[] { ".pnml" }, new PetriNetPortObjectSpec(),
+				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
+	}
 
 	@Override
 	protected AbstractJSONPortObject write_file_from_stream(InputStream inputStream) {
@@ -31,9 +28,7 @@ public class PetrinetReaderNodeModel extends ReaderNodeModel {
 
 	@Override
 	protected PortObjectSpec[] configureOutSpec() {
-		return new PortObjectSpec[]{new PetriNetPortObjectSpec()};
+		return new PortObjectSpec[] { new PetriNetPortObjectSpec() };
 	}
 
-	
 }
-
