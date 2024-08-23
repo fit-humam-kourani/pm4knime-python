@@ -1,71 +1,38 @@
 package org.pm4knime.node.io.processtree.reader;
 
-import java.util.Optional;
-
-import org.knime.core.node.ConfigurableNodeFactory;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.context.NodeCreationConfiguration;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.filehandling.core.port.FileSystemPortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.portobject.ProcessTreePortObject;
+import org.pm4knime.util.defaultnode.ReaderNodeSettings;
 
+@SuppressWarnings("restriction")
+public class ProcessTreeReaderNodeFactory extends WebUINodeFactory<ProcessTreeReaderNodeModel> implements
+		WizardNodeFactoryExtension<ProcessTreeReaderNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
 
-public class ProcessTreeReaderNodeFactory extends ConfigurableNodeFactory<ProcessTreeReaderNodeModel> implements WizardNodeFactoryExtension<ProcessTreeReaderNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+	ProcessTreeReaderNodeModel node;
 
-	private static final String VARIABLE_OUTPUT_PORT_GRP_NAME = "Variable Output Port";
-    static final String CONNECTION_INPUT_PORT_GRP_NAME = "File System Connection";
-    
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("ProcessTree Reader").icon("../../read.png")
+			.shortDescription("Import a process tree from a PTML file.")
+			.fullDescription("Import a process tree from a PTML file.")
+			.modelSettingsClass(ReaderNodeSettings.class)
+			.addOutputPort("Process Tree", ProcessTreePortObject.TYPE, "a process tree")
+			.nodeType(NodeType.Source).build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-        return 0;
-    }
+	public ProcessTreeReaderNodeFactory() {
+		super(CONFIG);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ProcessTreeReaderNodeModel> createNodeView(final int viewIndex,
-            final ProcessTreeReaderNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-        return true;
-    }
-    
-	@Override
-	protected Optional<PortsConfigurationBuilder> createPortsConfigBuilder() {
-		final PortsConfigurationBuilder builder = new PortsConfigurationBuilder();
-        builder.addOptionalInputPortGroup(CONNECTION_INPUT_PORT_GRP_NAME, FileSystemPortObject.TYPE);
-		builder.addFixedOutputPortGroup(VARIABLE_OUTPUT_PORT_GRP_NAME, new PortType[] { PortTypeRegistry.getInstance().getPortType(ProcessTreePortObject.class, false) });
-		return Optional.of(builder);
+	protected ProcessTreeReaderNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
 	}
 
 	@Override
-	protected ProcessTreeReaderNodeModel createNodeModel(NodeCreationConfiguration creationConfig) {
-		// TODO Auto-generated method stub
-		return new ProcessTreeReaderNodeModel((creationConfig.getPortConfig().orElseThrow(IllegalStateException::new)));
+	public ProcessTreeReaderNodeModel createNodeModel() {
+		node = new ProcessTreeReaderNodeModel(ReaderNodeSettings.class);
+		return node;
 	}
-
-	@Override
-	protected NodeDialogPane createNodeDialogPane(NodeCreationConfiguration creationConfig) {
-		// TODO Auto-generated method stub
-		return new ProcessTreeReaderNodeDialog(creationConfig.getPortConfig().orElseThrow(IllegalStateException::new));
-	}
-
-
 }
-

@@ -18,7 +18,7 @@ public class HybridPetrinetReaderNodeModel extends ReaderNodeModel {
 
 	public HybridPetrinetReaderNodeModel(Class<ReaderNodeSettings> class1) {
 		super(class1, new String[] { ".pnml" }, new HybridPetriNetPortObjectSpec(),
-				new PortType[] { HybridPetriNetPortObject.TYPE }, "Petri Net JS View");
+				new PortType[] { HybridPetriNetPortObject.TYPE }, "Hybrid Petri Net JS View");
 	}
 
 	@Override
