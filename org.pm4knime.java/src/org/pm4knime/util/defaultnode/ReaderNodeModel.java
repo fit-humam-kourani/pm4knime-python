@@ -22,6 +22,7 @@ import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.node.visualizations.jsgraphviz.util.WebUIJSViewNodeModel;
 import org.pm4knime.portobject.AbstractJSONPortObject;
+import org.pm4knime.portobject.XLogPortObject;
 
 @SuppressWarnings("restriction")
 public abstract class ReaderNodeModel extends WebUIJSViewNodeModel<ReaderNodeSettings, JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
@@ -32,6 +33,7 @@ public abstract class ReaderNodeModel extends WebUIJSViewNodeModel<ReaderNodeSet
     
 	PortObjectSpec m_spec;
 	protected AbstractJSONPortObject m_Port;
+	protected XLogPortObject m_logPO;
 	
     public ReaderNodeModel(Class<ReaderNodeSettings> class1, String[] types, PortObjectSpec portObjectSpec, PortType[] portTypes, String view_name) {
     
@@ -60,6 +62,7 @@ public abstract class ReaderNodeModel extends WebUIJSViewNodeModel<ReaderNodeSet
 			InputStream inputStream = FSFiles.newInputStream(filePath);
 			
 			m_Port = write_file_from_stream(inputStream);
+			
 			JSGraphVizViewRepresentation representation = getViewRepresentation();
 			representation.setJSONString(m_Port.getJSON());
 			
@@ -73,7 +76,6 @@ public abstract class ReaderNodeModel extends WebUIJSViewNodeModel<ReaderNodeSet
      } 
  
 	protected abstract AbstractJSONPortObject write_file_from_stream(InputStream inputStream);
-	
 	
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs, final ReaderNodeSettings modelSettings) throws InvalidSettingsException {

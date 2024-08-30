@@ -171,7 +171,7 @@ public class StreamImport extends AbstractImportPlugin {
 	}
 
 	@Override
-	protected Object importFromStream(PluginContext context, InputStream input, String filename, long fileSizeInBytes)
+	public Object importFromStream(PluginContext context, InputStream input, String filename, long fileSizeInBytes)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return importFromStream(context, input, filename, fileSizeInBytes,

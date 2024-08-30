@@ -37,5 +37,5 @@ public class ProcessTreeReaderNodeModel extends ReaderNodeModel {
 	protected PortObjectSpec[] configureOutSpec() {
 		return new PortObjectSpec[] { new ProcessTreePortObjectSpec() };
 	}
-	
+
 }
