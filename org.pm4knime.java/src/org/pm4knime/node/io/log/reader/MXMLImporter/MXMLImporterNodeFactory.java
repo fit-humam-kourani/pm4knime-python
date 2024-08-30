@@ -1,12 +1,8 @@
 package org.pm4knime.node.io.log.reader.MXMLImporter;
 
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeFactory;
-import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
-import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.portobject.XLogPortObject;
-import org.pm4knime.util.defaultnode.ReaderNodeSettings;
 
 @SuppressWarnings("restriction")
 public class MXMLImporterNodeFactory extends WebUINodeFactory<MXMLImporterNodeModel>  {
