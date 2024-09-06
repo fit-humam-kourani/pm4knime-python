@@ -1,115 +1,74 @@
 package org.pm4knime.node.io.log.reader.XesImporter;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumSet;
+import java.nio.file.Path;
+import java.util.Optional;
 
+import org.processmining.framework.plugin.PluginContext;
+import org.apache.commons.lang3.StringUtils;
 import org.deckfour.xes.model.XLog;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.context.ports.PortsConfiguration;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
-import org.knime.filehandling.core.connections.FSCategory;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.filehandling.core.connections.FSConnection;
+import org.knime.filehandling.core.connections.FSFileSystem;
 import org.knime.filehandling.core.connections.FSFiles;
-import org.knime.filehandling.core.connections.FSPath;
-import org.knime.filehandling.core.defaultnodesettings.EnumConfig;
-import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.ReadPathAccessor;
-import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.SettingsModelReaderFileChooser;
-import org.knime.filehandling.core.defaultnodesettings.filtermode.SettingsModelFilterMode.FilterMode;
-import org.knime.filehandling.core.defaultnodesettings.status.NodeModelStatusConsumer;
-import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.MessageType;
+import org.knime.filehandling.core.defaultnodesettings.FileSystemHelper;
 import org.pm4knime.node.io.log.reader.StreamImport;
 import org.pm4knime.node.io.log.reader.XesConvertToXLogAlgorithm;
 import org.pm4knime.portobject.XLogPortObject;
 import org.pm4knime.portobject.XLogPortObjectSpec;
 import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
-import org.pm4knime.util.defaultnode.DefaultNodeModel;
-import org.processmining.framework.plugin.PluginContext;
 import org.processmining.plugins.log.OpenNaiveLogFilePlugin;
 import org.xesstandard.model.XesLog;
 import org.xesstandard.xml.XesXmlParserLenient;
 
-/**
- * This is an example implementation of the node model of the "XesImporter"
- * node.
- * 
- * This example node performs simple number formatting
- * ({@link String#format(String, Object...)}) using a user defined format string
- * on all double columns of its input table.
- *
- * @author tbd
- */
-public class XesImporterNodeModel extends DefaultNodeModel {
 
-	/**
-	 * The logger is used to print info/warning/error messages to the KNIME console
-	 * and to the KNIME log file. Retrieve it via 'NodeLogger.getLogger' providing
-	 * the class of this node model.
-	 */
-	private static final NodeLogger LOGGER = NodeLogger.getLogger(XesImporterNodeModel.class);
-	private static final EnumConfig<FilterMode> mode = EnumConfig.create(FilterMode.FILE);
-	private static final EnumSet<FSCategory> DEFAULT_FS = //
-			EnumSet.of(FSCategory.LOCAL, FSCategory.MOUNTPOINT, FSCategory.RELATIVE, FSCategory.CUSTOM_URL, FSCategory.HUB_SPACE);
+@SuppressWarnings("restriction")
+public class XesImporterNodeModel extends NodeModel {
 
-	private final static String[] CFG_METHODS = { "OPEN NAIVE", "IEEE Lenient" };
-	private SettingsModelString m_method = createMethodModel();
-	private static final String SOURCE_FILE = "sourcefile";
-	private final SettingsModelReaderFileChooser m_sourceModel;
-	// transport errors / warning to node
-	private final NodeModelStatusConsumer m_statusConsumer = new NodeModelStatusConsumer(
-			EnumSet.of(MessageType.ERROR, MessageType.WARNING));
+	PortObjectSpec m_spec;
+	final static String[] CFG_METHODS = { "OPEN NAIVE", "IEEE Lenient" };
 
-	/**
-	 * Constructor for the node model.
-	 */
-	XesImporterNodeModel(final PortsConfiguration portsConfig) {
-		/**
-		 * Here we specify how many data input and output tables the node should have.
-		 * In this case its one input and one output table.
-		 */
+	private XesImporterNodeSettings m_settings = new XesImporterNodeSettings();
 
-		super(portsConfig.getInputPorts(), portsConfig.getOutputPorts());
-		m_sourceModel = createSourceModel(portsConfig);
+	private final Class<XesImporterNodeSettings> m_settingsClass;
 
+	XLogPortObject m_Port;
+
+	public XesImporterNodeModel(Class<XesImporterNodeSettings> class1) {
+		super(new PortType[] {}, new PortType[] { XLogPortObject.TYPE });
+		m_settingsClass = class1;
 	}
 
-	public static SettingsModelString createMethodModel() {
-		return new SettingsModelString("Read Method", CFG_METHODS[0]);
-	}
+	protected XLogPortObject write_file_from_stream(InputStream inputStream, ExecutionContext exec) throws Exception {
 
-	public static SettingsModelString createFileNameModel() {
-		return new SettingsModelString("File Name", "");
-	}
-
-	@Override
-	protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-		LOGGER.info("start: import event log");
-		// check the reading type and method for it??
-		// Are they 1-1 relation?? One method only corresponds to one reading methods??
-		// if there is 1 -n , we can choose them!!
-		final ReadPathAccessor readAccessor = m_sourceModel.createReadPathAccessor();
-		final File file = readAccessor.getFSPaths(m_statusConsumer).get(0).toFile();
-		final FSPath inputPath = readAccessor.getFSPaths(m_statusConsumer).get(0);
-		m_statusConsumer.setWarningsIfRequired(this::setWarningMessage);
 		StreamImport streams = new StreamImport();
-		InputStream inputStream = FSFiles.newInputStream(inputPath);
-		// the difference of format and then later the read plugin should also change
+
+		var fsLocation = m_settings.m_file.getFSLocation();
+        FSConnection connection = FileSystemHelper.retrieveFSConnection(Optional.empty(), fsLocation)
+                .orElseThrow(() -> new IOException("File system is not available"));
+        FSFileSystem<?> fileSystem = connection.getFileSystem();
+		final Path filePath = fileSystem.getPath(fsLocation);
+		File file = filePath.toFile();
+
 		XLog result = null;
-		if (m_method.getStringValue().equals(CFG_METHODS[0])) {
+		if (m_settings.readMethod.equals(CFG_METHODS[0])) {
 			// Open Naive can read multiple types of event log!!
-			PluginContext context = PM4KNIMEGlobalContext.instance()
-					.getFutureResultAwarePluginContext(OpenNaiveLogFilePlugin.class);
-			checkCanceled(context, exec);
+			PluginContext context = PM4KNIMEGlobalContext.instance().getFutureResultAwarePluginContext(OpenNaiveLogFilePlugin.class);
 			result = (XLog) streams.importFileStream(context, inputStream, file.getName(), file.length(), file);
 
-		} else if (m_method.getStringValue().equals(CFG_METHODS[1])) {
+		} else if (m_settings.readMethod.equals(CFG_METHODS[1])) {
 			// this parser imports all extensions in event log.
 			XesXmlParserLenient lenientParser = new XesXmlParserLenient();
 			if (lenientParser.canParse(file)) {
@@ -119,50 +78,97 @@ public class XesImporterNodeModel extends DefaultNodeModel {
 			}
 		}
 
-		XLogPortObject logPO = new XLogPortObject();
 
+		XLogPortObject logPO = new XLogPortObject();
 		logPO.setLog(result);
 
-		// how to use this classifiers??
-		LOGGER.info("end: import event log");
-		return new PortObject[] { logPO };
+		return logPO;
 	}
 
-	/**
-	 * Create source model
-	 */
-	static final SettingsModelReaderFileChooser createSourceModel(final PortsConfiguration portsConfig) {
-		return new SettingsModelReaderFileChooser(SOURCE_FILE, portsConfig, XesImporterNodeFactory.CONNECTION_INPUT_PORT_GRP_NAME, mode, DEFAULT_FS,  new String[]{".xes", ".xes.gz"});
-	}
 
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-		XLogPortObjectSpec outSpec = new XLogPortObjectSpec();
-		m_sourceModel.configureInModel(inSpecs, m_statusConsumer);
-		
-		return new PortObjectSpec[] { outSpec };
+		validate();
+		return configureOutSpec();
+	}
+
+	protected PortObjectSpec[] configureOutSpec() {
+		return new PortObjectSpec[] { new XLogPortObjectSpec() };
+	}
+
+	@Override
+	protected PortObject[]  execute(PortObject[] inObjects, ExecutionContext exec) throws Exception {
+
+		exec.checkCanceled();
+		try {
+
+			var fsLocation = m_settings.m_file.getFSLocation();
+			FSConnection connection = FileSystemHelper.retrieveFSConnection(Optional.empty(), fsLocation)
+					.orElseThrow(() -> new IOException("File system is not available"));
+			FSFileSystem<?> fileSystem = connection.getFileSystem();
+			final Path filePath = fileSystem.getPath(fsLocation);
+			InputStream inputStream = FSFiles.newInputStream(filePath);
+
+			m_Port = write_file_from_stream(inputStream, exec);
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		exec.checkCanceled();
+		return new PortObject[]{m_Port};
+
+	}
+
+	public void validate() throws InvalidSettingsException {
+
+		System.out.println(m_settings.m_file.getFSLocation());
+		if (StringUtils.isEmpty(m_settings.m_file.getFSLocation().getPath())) {
+			throw new InvalidSettingsException("Please specify a path to the file to read!");
+		}
+
+		if (!StringUtils.endsWithAny(m_settings.m_file.getFSLocation().getPath(), "xes", "xes.gz")) {
+			throw new InvalidSettingsException("Unsupported file type: Please select a .xes or .xes.gz file");
+		}
+
+	}
+
+	@Override
+	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void saveInternals(File nodeInternDir, ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings) {
-		m_method.saveSettingsTo(settings);
-		m_sourceModel.saveSettingsTo(settings);
+		if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
 	}
 
 	@Override
 	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
-		m_method.validateSettings(settings);
-		m_sourceModel.validateSettings(settings);
 
 	}
 
 	@Override
 	protected void loadValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
-		m_method.loadSettingsFrom(settings);
-		m_sourceModel.loadSettingsFrom(settings);
+		m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+
 	}
 
-	public static String[] getCFG_METHODS() {
-		return CFG_METHODS;
+	@Override
+	protected void reset() {
+		// TODO Auto-generated method stub
+
 	}
+
 }

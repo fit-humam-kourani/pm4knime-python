@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.EnumSet;
 import java.util.Optional;
 
 import org.processmining.framework.plugin.PluginContext;
@@ -25,7 +24,6 @@ import org.knime.filehandling.core.connections.FSConnection;
 import org.knime.filehandling.core.connections.FSFileSystem;
 import org.knime.filehandling.core.connections.FSFiles;
 import org.knime.filehandling.core.defaultnodesettings.FileSystemHelper;
-import org.knime.filehandling.core.defaultnodesettings.status.NodeModelStatusConsumer;
 import org.pm4knime.node.io.log.reader.StreamImport;
 import org.pm4knime.node.io.log.reader.XesConvertToXLogAlgorithm;
 import org.pm4knime.portobject.XLogPortObject;
@@ -35,15 +33,13 @@ import org.processmining.plugins.log.OpenNaiveLogFilePlugin;
 import org.xesstandard.model.XesLog;
 import org.xesstandard.xml.XesXmlParserLenient;
 
-import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.MessageType;
-
 
 @SuppressWarnings("restriction")
 public class MXMLImporterNodeModel extends NodeModel {
 
 
 	PortObjectSpec m_spec;
-	private final static String[] CFG_METHODS = { "OPEN NAIVE", "IEEE Lenient" };
+	final static String[] CFG_METHODS = { "OPEN NAIVE", "IEEE Lenient" };
 
 	private MXMLImporterNodeSettings m_settings = new MXMLImporterNodeSettings();
 
@@ -51,15 +47,9 @@ public class MXMLImporterNodeModel extends NodeModel {
 
 	XLogPortObject m_Port;
 
-	private final NodeModelStatusConsumer m_statusConsumer = new NodeModelStatusConsumer(
-			EnumSet.of(MessageType.ERROR, MessageType.WARNING));
-
-
 	public MXMLImporterNodeModel(Class<MXMLImporterNodeSettings> class1) {
-		// TODO Auto-generated constructor stub
 		super(new PortType[] {}, new PortType[] { XLogPortObject.TYPE });
 		m_settingsClass = class1;
-//		m_sourceModel = createSourceModel(portsConfig);
 	}
 
 	protected XLogPortObject write_file_from_stream(InputStream inputStream, ExecutionContext exec) throws Exception {
@@ -75,10 +65,8 @@ public class MXMLImporterNodeModel extends NodeModel {
 
 		XLog result = null;
 		if (m_settings.readMethod.equals(CFG_METHODS[0])) {
-			// Open Naive can read multiple types of event log!!
-			
+			// Open Naive can read multiple types of event log!!		
 			PluginContext context = PM4KNIMEGlobalContext.instance().getFutureResultAwarePluginContext(OpenNaiveLogFilePlugin.class);
-//			checkCanceled(context, exec);
 			result = (XLog) streams.importFileStream(context, inputStream, file.getName(), file.length(), file);
 
 		} else if (m_settings.readMethod.equals(CFG_METHODS[1])) {
@@ -123,11 +111,7 @@ public class MXMLImporterNodeModel extends NodeModel {
 			InputStream inputStream = FSFiles.newInputStream(filePath);
 
 			m_Port = write_file_from_stream(inputStream, exec);
-			// JSGraphVizViewRepresentation representation = getViewRepresentation();
-			// representation.setJSONString(m_Port.getJSON());
-
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -143,8 +127,8 @@ public class MXMLImporterNodeModel extends NodeModel {
 			throw new InvalidSettingsException("Please specify a path to the file to read!");
 		}
 
-		if (!StringUtils.endsWith(m_settings.m_file.getFSLocation().getPath(), "mxml")) {
-			throw new InvalidSettingsException("Unsupported file type: Please select a " + ".mxml" + " file");
+		if (!StringUtils.endsWithAny(m_settings.m_file.getFSLocation().getPath(), "mxml", "mxml.gz")) {
+			throw new InvalidSettingsException("Unsupported file type: Please select a .mxml or .mxml.gz file");
 		}
 
 	}

@@ -33,15 +33,15 @@ import org.knime.filehandling.core.defaultnodesettings.filtermode.SettingsModelF
 @SuppressWarnings("restriction") // uses the restricted WebUI API
 final class MXMLWriterNodeModel extends WebUINodeModel<MXMLWriterNodeSettings> {
 
-	final SettingsModelWriterFileChooser m_fileChooserModel;
+	//final SettingsModelWriterFileChooser m_fileChooserModel;
 	protected final String[] FILE_SUFFIXES = new String[] { ".mxml", ".mxml.gz" };
 
-	MXMLWriterNodeModel(final WebUINodeConfiguration config, final NodeCreationConfiguration creationConfig) {
+	MXMLWriterNodeModel(final WebUINodeConfiguration config) {
 		super(config, MXMLWriterNodeSettings.class);
-		PortsConfiguration portsConfig = creationConfig.getPortConfig().orElseThrow(IllegalStateException::new);
-		m_fileChooserModel = new SettingsModelWriterFileChooser("file_chooser_settings", portsConfig,
-				"File System Connection", EnumConfig.create(FilterMode.FILE),
-				EnumConfig.create(FileOverwritePolicy.FAIL, FileOverwritePolicy.OVERWRITE), FILE_SUFFIXES);
+//		PortsConfiguration portsConfig = creationConfig.getPortConfig().orElseThrow(IllegalStateException::new);
+//		m_fileChooserModel = new SettingsModelWriterFileChooser("file_chooser_settings", portsConfig,
+//				"File System Connection", EnumConfig.create(FilterMode.FILE),
+//				EnumConfig.create(FileOverwritePolicy.FAIL, FileOverwritePolicy.OVERWRITE), FILE_SUFFIXES);
 	}
 
 	@Override
@@ -85,7 +85,8 @@ final class MXMLWriterNodeModel extends WebUINodeModel<MXMLWriterNodeSettings> {
 				Path path = Paths.get(outputURI);
 				OutputStream outStream;
 				try {
-					outStream = FSFiles.newOutputStream(path, m_fileChooserModel.getFileOverwritePolicy().getOpenOptions());
+					//outStream = FSFiles.newOutputStream(path, m_fileChooserModel.getFileOverwritePolicy().getOpenOptions());
+					outStream = FSFiles.newOutputStream(path);
 					writeToFile(outStream, logData.getLog(), settings);
 				} catch (final FileAlreadyExistsException e) {
 					throw new InvalidSettingsException("Output file '" + e.getFile()
