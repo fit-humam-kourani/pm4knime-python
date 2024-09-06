@@ -25,13 +25,10 @@ import org.knime.filehandling.core.connections.FSFileSystem;
 import org.knime.filehandling.core.connections.FSFiles;
 import org.knime.filehandling.core.defaultnodesettings.FileSystemHelper;
 import org.pm4knime.node.io.log.reader.StreamImport;
-import org.pm4knime.node.io.log.reader.XesConvertToXLogAlgorithm;
 import org.pm4knime.portobject.XLogPortObject;
 import org.pm4knime.portobject.XLogPortObjectSpec;
 import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
 import org.processmining.plugins.log.OpenNaiveLogFilePlugin;
-import org.xesstandard.model.XesLog;
-import org.xesstandard.xml.XesXmlParserLenient;
 
 
 @SuppressWarnings("restriction")
@@ -39,7 +36,6 @@ public class MXMLImporterNodeModel extends NodeModel {
 
 
 	PortObjectSpec m_spec;
-	final static String[] CFG_METHODS = { "OPEN NAIVE", "IEEE Lenient" };
 
 	private MXMLImporterNodeSettings m_settings = new MXMLImporterNodeSettings();
 
@@ -64,21 +60,9 @@ public class MXMLImporterNodeModel extends NodeModel {
 		File file = filePath.toFile();
 
 		XLog result = null;
-		if (m_settings.readMethod.equals(CFG_METHODS[0])) {
-			// Open Naive can read multiple types of event log!!		
-			PluginContext context = PM4KNIMEGlobalContext.instance().getFutureResultAwarePluginContext(OpenNaiveLogFilePlugin.class);
-			result = (XLog) streams.importFileStream(context, inputStream, file.getName(), file.length(), file);
-
-		} else if (m_settings.readMethod.equals(CFG_METHODS[1])) {
-			// this parser imports all extensions in event log.
-			XesXmlParserLenient lenientParser = new XesXmlParserLenient();
-			if (lenientParser.canParse(file)) {
-				XesLog xlog = lenientParser.parse(inputStream);
-				XesConvertToXLogAlgorithm convertor = new XesConvertToXLogAlgorithm();
-				result = convertor.convertToLog(xlog, exec);
-			}
-		}
-
+		
+		PluginContext context = PM4KNIMEGlobalContext.instance().getFutureResultAwarePluginContext(OpenNaiveLogFilePlugin.class);
+		result = (XLog) streams.importFileStream(context, inputStream, file.getName(), file.length(), file);
 
 		XLogPortObject logPO = new XLogPortObject();
 		logPO.setLog(result);
