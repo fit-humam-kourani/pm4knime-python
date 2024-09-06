@@ -1,4 +1,5 @@
 let initialGraphState;
+let padding_inside_paper = 10;
 
 function createGraphElements() {
 
@@ -17,7 +18,6 @@ function createGraphElements() {
 	const controlBar = document.createElement("div");
 	controlBar.style.background = "#e0e0e0";
 	controlBar.style.color = "#fff";
-	controlBar.style.padding = "5px";
 	controlBar.style.width = "100%"; // Fixed width
 	//controlBar.style.height = "35px";
 	// controlBar.textContent = "Control Bar";
@@ -32,10 +32,10 @@ function createGraphElements() {
 	graphContainer.style.height = `calc(100vh - 55px)`;
 
 	// graphContainer.style.border = "1px solid #ccc";
-	// graphContainer.style.padding = "10px";
 	mainContainer.style.background = "white";
 	graphContainer.style.overflow = "auto"; // Enables scrollbars if content overflows
 	graphContainer.style.margin = "auto";
+	
 
 	const paperDiv = document.createElement("div");
 	paperDiv.id = "paper";
@@ -123,7 +123,7 @@ function adjustPaperSize(graph, paper) {
 
 	paper.fitToContent({
 		useModelGeometry: true,
-		padding: 50 * 1,
+		padding: padding_inside_paper,
 		allowNewOrigin: "any",
 	});
 }
@@ -177,7 +177,7 @@ function createPaper(nodes, edges) {
 		paper.scale(zoomLevel);
 		paper.fitToContent({
 			useModelGeometry: true,
-			padding: 50,
+			padding: padding_inside_paper,
 			allowNewOrigin: "any",
 		});
 	};
@@ -401,7 +401,7 @@ function createPaper(nodes, edges) {
 				paper.scale(zoomLevel);
 				paper.fitToContent({
 					useModelGeometry: true,
-					padding: 50,
+					padding:padding_inside_paper,
 					allowNewOrigin: "any",
 				});
 		};
@@ -418,16 +418,20 @@ function createPaper(nodes, edges) {
 		});
 
 		document.getElementById("zoom-to-fit").addEventListener("click", () => {
-		    let graphContainer = document.getElementById('graphContainer');
-
-		    let containerWidth = (graphContainer.getBoundingClientRect().width * 0.9)-100;
-		    let containerHeight = (graphContainer.getBoundingClientRect().height * 0.9)-100;
 		    
-		    let scaleX = containerWidth / graphWidth;
-		    let scaleY = containerHeight / graphHeight;
+		    let graphContainer = document.getElementById('graphContainer');
+		    let containerWidth = graphContainer.getBoundingClientRect().width - (3 * padding_inside_paper);		   
+		    let containerHeight = graphContainer.getBoundingClientRect().height - (3 * padding_inside_paper);
+		    
+		    
+		    let paperContainer = document.getElementById('paper');
+		    let paperWidth = paper.getContentBBox().width;	    
+		    let paperHeight = paper.getContentBBox().height;
+			
+		    let scaleX = containerWidth / paperWidth;
+		    let scaleY = containerHeight / paperHeight;
 		 
-		    zoomLevel = Math.min(scaleX, scaleY);
-		
+		    zoomLevel = zoomLevel * Math.min(scaleX, scaleY);		
 		    zoom(zoomLevel);
 
 
@@ -460,7 +464,7 @@ function createPaper(nodes, edges) {
 		paper.on("element:pointerup link:pointerup", (cellView) => {
 			paper.fitToContent({
 				useModelGeometry: true,
-				padding: 50,
+				padding: padding_inside_paper,
 				allowNewOrigin: "any",
 			});
 		});

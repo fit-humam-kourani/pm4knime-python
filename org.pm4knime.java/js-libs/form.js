@@ -35,7 +35,14 @@ let tb_flag = 0;
 	};
 
 	view.getSVG = () => {
-		return createSVG(_paper);
+		if (_paper) {
+			return createSVG(_paper);
+    	} else {
+	        // not supported for BPMN as we don't have a BPMN to image node
+        	return null;  
+	    }
+	    
+		
 	};
 
 	
