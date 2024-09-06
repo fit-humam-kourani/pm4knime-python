@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.zip.GZIPInputStream;
 
 import org.processmining.framework.plugin.PluginContext;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +34,6 @@ import org.processmining.plugins.log.OpenNaiveLogFilePlugin;
 import org.xesstandard.model.XesLog;
 import org.xesstandard.xml.XesXmlParserLenient;
 
-
 @SuppressWarnings("restriction")
 public class XesImporterNodeModel extends NodeModel {
 
@@ -56,35 +56,36 @@ public class XesImporterNodeModel extends NodeModel {
 		StreamImport streams = new StreamImport();
 
 		var fsLocation = m_settings.m_file.getFSLocation();
-        FSConnection connection = FileSystemHelper.retrieveFSConnection(Optional.empty(), fsLocation)
-                .orElseThrow(() -> new IOException("File system is not available"));
-        FSFileSystem<?> fileSystem = connection.getFileSystem();
+		FSConnection connection = FileSystemHelper.retrieveFSConnection(Optional.empty(), fsLocation)
+				.orElseThrow(() -> new IOException("File system is not available"));
+		FSFileSystem<?> fileSystem = connection.getFileSystem();
 		final Path filePath = fileSystem.getPath(fsLocation);
 		File file = filePath.toFile();
 
 		XLog result = null;
 		if (m_settings.readMethod.equals(CFG_METHODS[0])) {
 			// Open Naive can read multiple types of event log!!
-			PluginContext context = PM4KNIMEGlobalContext.instance().getFutureResultAwarePluginContext(OpenNaiveLogFilePlugin.class);
+			PluginContext context = PM4KNIMEGlobalContext.instance()
+					.getFutureResultAwarePluginContext(OpenNaiveLogFilePlugin.class);
 			result = (XLog) streams.importFileStream(context, inputStream, file.getName(), file.length(), file);
 
 		} else if (m_settings.readMethod.equals(CFG_METHODS[1])) {
 			// this parser imports all extensions in event log.
 			XesXmlParserLenient lenientParser = new XesXmlParserLenient();
-			if (lenientParser.canParse(file)) {
-				XesLog xlog = lenientParser.parse(inputStream);
-				XesConvertToXLogAlgorithm convertor = new XesConvertToXLogAlgorithm();
-				result = convertor.convertToLog(xlog, exec);
+			if (file.getName().endsWith(".gz") || file.getName().endsWith(".xez")) {
+				inputStream = new GZIPInputStream(inputStream);
 			}
-		}
+			XesLog xlog = lenientParser.parse(inputStream);
+			XesConvertToXLogAlgorithm convertor = new XesConvertToXLogAlgorithm();
+			result = convertor.convertToLog(xlog, exec);
 
+		}
 
 		XLogPortObject logPO = new XLogPortObject();
 		logPO.setLog(result);
 
 		return logPO;
 	}
-
 
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
@@ -97,7 +98,7 @@ public class XesImporterNodeModel extends NodeModel {
 	}
 
 	@Override
-	protected PortObject[]  execute(PortObject[] inObjects, ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception {
 
 		exec.checkCanceled();
 		try {
@@ -116,7 +117,7 @@ public class XesImporterNodeModel extends NodeModel {
 		}
 
 		exec.checkCanceled();
-		return new PortObject[]{m_Port};
+		return new PortObject[] { m_Port };
 
 	}
 
@@ -150,8 +151,8 @@ public class XesImporterNodeModel extends NodeModel {
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings) {
 		if (m_settings != null) {
-            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
-        }
+			DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+		}
 	}
 
 	@Override
