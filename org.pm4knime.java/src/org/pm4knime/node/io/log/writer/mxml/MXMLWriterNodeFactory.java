@@ -1,7 +1,5 @@
 package org.pm4knime.node.io.log.writer.mxml;
 
-import java.util.Optional;
-
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.portobject.XLogPortObject;

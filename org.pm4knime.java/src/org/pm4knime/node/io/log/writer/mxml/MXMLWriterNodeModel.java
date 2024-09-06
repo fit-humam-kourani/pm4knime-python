@@ -18,30 +18,19 @@ import org.knime.core.util.FileUtil;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeModel;
 import org.knime.filehandling.core.connections.FSFiles;
-import org.knime.filehandling.core.defaultnodesettings.filechooser.writer.SettingsModelWriterFileChooser;
 import org.pm4knime.portobject.XLogPortObject;
 import org.pm4knime.util.NodeSettingsUtils.ExistingOutputFileHandlingMode;
 import org.pm4knime.util.WriterUtil;
 import org.deckfour.xes.out.XMxmlGZIPSerializer;
 import org.deckfour.xes.out.XMxmlSerializer;
-import org.knime.core.node.context.NodeCreationConfiguration;
-import org.knime.core.node.context.ports.PortsConfiguration;
-import org.knime.filehandling.core.defaultnodesettings.EnumConfig;
-import org.knime.filehandling.core.defaultnodesettings.filechooser.writer.FileOverwritePolicy;
-import org.knime.filehandling.core.defaultnodesettings.filtermode.SettingsModelFilterMode.FilterMode;
 
 @SuppressWarnings("restriction") // uses the restricted WebUI API
 final class MXMLWriterNodeModel extends WebUINodeModel<MXMLWriterNodeSettings> {
 
-	//final SettingsModelWriterFileChooser m_fileChooserModel;
 	protected final String[] FILE_SUFFIXES = new String[] { ".mxml", ".mxml.gz" };
 
 	MXMLWriterNodeModel(final WebUINodeConfiguration config) {
 		super(config, MXMLWriterNodeSettings.class);
-//		PortsConfiguration portsConfig = creationConfig.getPortConfig().orElseThrow(IllegalStateException::new);
-//		m_fileChooserModel = new SettingsModelWriterFileChooser("file_chooser_settings", portsConfig,
-//				"File System Connection", EnumConfig.create(FilterMode.FILE),
-//				EnumConfig.create(FileOverwritePolicy.FAIL, FileOverwritePolicy.OVERWRITE), FILE_SUFFIXES);
 	}
 
 	@Override
@@ -85,7 +74,6 @@ final class MXMLWriterNodeModel extends WebUINodeModel<MXMLWriterNodeSettings> {
 				Path path = Paths.get(outputURI);
 				OutputStream outStream;
 				try {
-					//outStream = FSFiles.newOutputStream(path, m_fileChooserModel.getFileOverwritePolicy().getOpenOptions());
 					outStream = FSFiles.newOutputStream(path);
 					writeToFile(outStream, logData.getLog(), settings);
 				} catch (final FileAlreadyExistsException e) {
@@ -101,38 +89,7 @@ final class MXMLWriterNodeModel extends WebUINodeModel<MXMLWriterNodeSettings> {
 		}
 
 		return new PortObject[0];
-
-//		XLogPortObject logData = (XLogPortObject) inData[0];
-//		Path path = Paths.get(outputURI);
-//		
-//		System.out.println("++++++++");
-//		System.out.println(logData);
-//		System.out.println(logData.getLog().size());
-//		
-//		if (logData.getLog() != null) {
-//			if (logData.getLog().size() < 1) {
-//				setWarningMessage("No log");
-//			}
-//			writeToFile(createOutputStream(path), logData.getLog(), settings);
-//		}
-//
-//		return new PortObject[] {};
-
 	}
-
-//	private OutputStream createOutputStream(final Path outputPath) throws IOException, InvalidSettingsException {
-//
-//		OutputStream outStream;
-//		try {
-//			outStream = FSFiles.newOutputStream(outputPath,
-//					m_fileChooserModel.getFileOverwritePolicy().getOpenOptions());
-//		} catch (final FileAlreadyExistsException e) {
-//			throw new InvalidSettingsException(
-//					"Output file '" + e.getFile() + "' exists and must not be overwritten due to user settings.", e);
-//		}
-//
-//		return outStream;
-//	}
 
 	protected void writeToFile(OutputStream outputStream, XLog log, final MXMLWriterNodeSettings settings)
 			throws IOException {
