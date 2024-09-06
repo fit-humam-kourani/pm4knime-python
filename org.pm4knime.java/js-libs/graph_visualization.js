@@ -74,12 +74,21 @@ function createGraphElements() {
 	const iconZoomToFit = document.createElement("i");
 	iconZoomToFit.className = "fa-solid fa-arrows-to-circle";
 	zoomToFitButton.appendChild(iconZoomToFit);
+	
+	const downloadSvgButton = document.createElement("button");
+	downloadSvgButton.className = "zoom-button";
+	downloadSvgButton.id = "download-svg";
+	const iconDownload = document.createElement("i");
+	iconDownload.className = "fa-solid fa-download";
+	downloadSvgButton.appendChild(iconDownload); 
 
 
 	controlsDiv.appendChild(zoomInButton);
 	controlsDiv.appendChild(zoomOutButton);
 	controlsDiv.appendChild(zoomToFitButton);
 	controlsDiv.appendChild(resetButton);
+	controlsDiv.appendChild(downloadSvgButton);
+	
 	controlBar.appendChild(controlsDiv);
 
 	graphContainer.appendChild(paperDiv);
@@ -454,6 +463,42 @@ function createPaper(nodes, edges) {
 				padding: 50,
 				allowNewOrigin: "any",
 			});
+		});
+		
+		document.getElementById("download-svg").addEventListener("click", async () => {
+		        const svgElement = paper.svg.cloneNode(true);
+			    svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+			
+			    // Create a style element for the SVG
+			    const cssStyle = document.createElement('style');
+			    cssStyle.setAttribute('type', 'text/css');
+			    const sheets = document.styleSheets;
+			    let cssText = '';
+			
+			    // Loop through all stylesheets and extract relevant CSS
+			    for (let i = 0; i < sheets.length; i++) {
+			        const rules = sheets[i].cssRules || sheets[i].rules;
+			        for (let j = 0; j < rules.length; j++) {
+			            const rule = rules[j];
+			            if (rule.type === CSSRule.STYLE_RULE) {
+			                cssText += rule.cssText;
+			            }
+			        }
+			    }
+			
+			    cssStyle.textContent = cssText;
+			    svgElement.prepend(cssStyle); // Prepend the style element to the SVG
+			
+			    const serializedSVG = (new XMLSerializer()).serializeToString(svgElement);
+			    const blob = new Blob([serializedSVG], { type: 'image/svg+xml' });
+			    const url = URL.createObjectURL(blob);
+			    const a = document.createElement('a');
+			    a.href = url;
+			    a.download = 'graph.svg'; 
+			    document.body.appendChild(a); 
+			    a.click();
+			    document.body.removeChild(a); 
+			    URL.revokeObjectURL(url); 
 		});
 	};
 

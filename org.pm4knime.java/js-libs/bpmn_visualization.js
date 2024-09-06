@@ -48,11 +48,19 @@ async function createBpmn(xmlString) {
 	iconZoomToFit.className = "fa-solid fa-arrows-to-circle";
 	zoomToFitButton.appendChild(iconZoomToFit);
 	
+	const downloadSvgButton = document.createElement("button");
+	downloadSvgButton.className = "zoom-button";
+	downloadSvgButton.id = "download-svg";
+	const iconDownload = document.createElement("i");
+	iconDownload.className = "fa-solid fa-download";
+	downloadSvgButton.appendChild(iconDownload); 
+	
 
 	controlsDiv.appendChild(zoomInButton);
 	controlsDiv.appendChild(zoomOutButton);
 	controlsDiv.appendChild(zoomToFitButton);
 	controlsDiv.appendChild(resetButton);
+	controlsDiv.appendChild(downloadSvgButton);
 
 	controlBar.appendChild(controlsDiv);
 	mainContainer.appendChild(controlBar);
@@ -83,7 +91,6 @@ async function createBpmn(xmlString) {
 
 	await viewer.importXML(modelXmlString);
 	viewer.get("canvas").zoom("fit-viewport", "auto");
-	const init_zoom_level = viewer.get("canvas").zoom();
 
 	const addZoomListeners = (viewer) => {
 		let zoomLevel = 1;
@@ -131,6 +138,23 @@ async function createBpmn(xmlString) {
 				zoomLevel = zoomLevel + 0.2;
 			}
 			zoom(zoomLevel);
+		});
+		
+		downloadSvgButton.addEventListener("click", async () => {
+		    try {
+		        const { svg } = await viewer.saveSVG(); 
+		        const blob = new Blob([svg], { type: 'image/svg+xml' });
+		        const url = URL.createObjectURL(blob);
+		        const a = document.createElement('a');
+		        a.href = url;
+		        a.download = 'diagram.svg'; 
+		        document.body.appendChild(a);
+		        a.click(); 
+		        document.body.removeChild(a); 
+		        URL.revokeObjectURL(url); 
+		    } catch (err) {
+		        console.error('Failed to save SVG:', err);
+		    }
 		});
 	};
 
