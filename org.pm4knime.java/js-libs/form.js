@@ -4,7 +4,7 @@ let tb_flag = 0;
 
 	let _representation;
 	let _value;
-	let _svg;
+	let _paper;
 
 	let view = {}; 
 	
@@ -23,7 +23,7 @@ let tb_flag = 0;
 			createBpmn(xmlString);
 		} else {
 			createGraphElements();
-			createPaper(nodes, edges);
+			_paper = createPaper(nodes, edges);
 		}
 	};
 
@@ -35,8 +35,10 @@ let tb_flag = 0;
 	};
 
 	view.getSVG = () => {
-		return (new XMLSerializer()).serializeToString(_svg);;
+		return createSVG(_paper);
 	};
+
+	
 
 
 	return view;

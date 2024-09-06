@@ -2,41 +2,30 @@ package org.pm4knime.node.visualizations.jsgraphviz;
 
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
-import org.knime.js.core.node.AbstractSVGWizardNodeModel;
-import org.processmining.plugins.graphviz.dot.Dot;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.base.data.xml.SvgCell;
+import org.pm4knime.node.visualizations.jsgraphviz.util.WebUIJSViewNodeModel;
 import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 
 
-public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
-
+public class JSGraphVizAbstractModel extends WebUIJSViewNodeModel<EmptyNodeSettings, JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
+	
 	private static PortType[] OUT_TYPES = {ImagePortObject.TYPE};
 	private static PortType IN_TYPE;
 	AbstractJSONPortObject port_obj;
 	
 
-//	public JSGraphVizAbstractModel(PortType[] in_types, String view_name) {
-//		super(in_types, OUT_TYPES, view_name);
-//		IN_TYPE = in_types[0];
-//	}
-	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
-
-	private final Class<EmptyNodeSettings> m_settingsClass;
-
 	public JSGraphVizAbstractModel(PortType[] in_types, String view_name, Class<EmptyNodeSettings> modelSettingsClass) {
 		// TODO Auto-generated constructor stub
-		super(in_types, OUT_TYPES, view_name);
-		m_settingsClass = modelSettingsClass;
+		super(in_types, OUT_TYPES, view_name, modelSettingsClass);
 		IN_TYPE = in_types[0];	
 	}
 
@@ -75,8 +64,8 @@ public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphV
 	}
 
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs, final EmptyNodeSettings modelSettings) throws InvalidSettingsException {
+		
 		PortObjectSpec imageSpec = new ImagePortObjectSpec(SvgCell.TYPE);
         
         return new PortObjectSpec[]{imageSpec};
@@ -104,17 +93,6 @@ public class JSGraphVizAbstractModel extends AbstractSVGWizardNodeModel<JSGraphV
 	protected void useCurrentValueAsDefault() {
 	}
 
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO settings) {
-	}
-
-	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
-	}
-
-	@Override
-	protected void loadValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
-	}
 	
 	public PortObject[] getInternalPortObjects() {
 		return new PortObject[] {port_obj};

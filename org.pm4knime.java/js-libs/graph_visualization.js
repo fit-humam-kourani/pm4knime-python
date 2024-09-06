@@ -387,11 +387,11 @@ function createPaper(nodes, edges) {
 
 	adjustPaperSize(graph, paper);
 	
-	
 	initialGraphState = JSON.parse(JSON.stringify(graph.toJSON()));
 	let bbox = paper.getContentBBox(); 
     let graphWidth = bbox.width;
     let graphHeight = bbox.height;
+    
 	
 
 		const addZoomListeners = (paper) => {
@@ -466,30 +466,8 @@ function createPaper(nodes, edges) {
 		});
 		
 		document.getElementById("download-svg").addEventListener("click", async () => {
-		        const svgElement = paper.svg.cloneNode(true);
-			    svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-			
-			    // Create a style element for the SVG
-			    const cssStyle = document.createElement('style');
-			    cssStyle.setAttribute('type', 'text/css');
-			    const sheets = document.styleSheets;
-			    let cssText = '';
-			
-			    // Loop through all stylesheets and extract relevant CSS
-			    for (let i = 0; i < sheets.length; i++) {
-			        const rules = sheets[i].cssRules || sheets[i].rules;
-			        for (let j = 0; j < rules.length; j++) {
-			            const rule = rules[j];
-			            if (rule.type === CSSRule.STYLE_RULE) {
-			                cssText += rule.cssText;
-			            }
-			        }
-			    }
-			
-			    cssStyle.textContent = cssText;
-			    svgElement.prepend(cssStyle); // Prepend the style element to the SVG
-			
-			    const serializedSVG = (new XMLSerializer()).serializeToString(svgElement);
+
+			    const serializedSVG = createSVG(paper);
 			    const blob = new Blob([serializedSVG], { type: 'image/svg+xml' });
 			    const url = URL.createObjectURL(blob);
 			    const a = document.createElement('a');
@@ -590,5 +568,21 @@ function createPaper(nodes, edges) {
 		zoom(zoomLevel);
 	}
 	
-	init_graph = graph;
+	return paper;
 };
+
+
+
+function createSVG(paper) {		
+    const svgElement = paper.svg.cloneNode(true);
+    svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+    // Create a style element for the SVG
+    const cssStyle = document.createElement('style');
+    cssStyle.setAttribute('type', 'text/css');
+ 
+    cssStyle.textContent = graphCSSText;
+    svgElement.prepend(cssStyle); // Prepend the style element to the SVG
+
+    return (new XMLSerializer()).serializeToString(svgElement);
+}

@@ -678,7 +678,7 @@
             
             
             
-            
+            <importResource relativePath="js-libs/graph_css_text.js" type="JAVASCRIPT"/>
             <importResource relativePath="js-libs/graph_visualization.js" type="JAVASCRIPT"/>
             <importResource relativePath="js-libs/bpmn_visualization.js" type="JAVASCRIPT"/>
             <importResource relativePath="js-libs/form.js" type="JAVASCRIPT"/>
