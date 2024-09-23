@@ -22,8 +22,8 @@ let tb_flag = 0;
 			let xmlString = xml[0];
 			createBpmn(xmlString);
 		} else {
-			createGraphElements();
-			_paper = createPaper(nodes, edges);
+			 createGraphElements();
+			 _paper = createPaper(nodes, edges);
 		}
 	};
 

@@ -331,6 +331,93 @@ function createPaper(nodes, edges) {
 
 			});
 		}
+		else if (node.type === "manual") {
+			const fontSize = 22;
+			const textWidth = estimateTextWidth(node.label, fontSize);
+			const transitionWidth = Math.max(textWidth + 10, 20);
+			node.width = transitionWidth;
+			node.height = 50;
+
+			var element = new pn.Transition({
+				position: node.position,
+				size: { width: transitionWidth, height: 50 },
+				attrs: {
+					".label": {
+						text: node.label || "",
+						"fill": "black",
+						"ref-x": 0.5,
+						"ref-y": 0.5,
+						"text-anchor": "middle",
+						"y-alignment": "middle",
+					},
+					".root": {
+						fill: "#e0e0e0",
+						stroke: "#999999",
+						"stroke-width": 2,
+					},
+
+				},
+
+			});
+		}
+		else if (node.type === "automatic") {
+			const fontSize = 22;
+			const textWidth = estimateTextWidth(node.label, fontSize);
+			const transitionWidth = Math.max(textWidth + 10, 20);
+			node.width = transitionWidth;
+			node.height = 50;
+
+			var element = new pn.Transition({
+				position: node.position,
+				size: { width: transitionWidth, height: 50 },
+				attrs: {
+					".label": {
+						text: node.label || "",
+						"fill": "black",
+						"ref-x": 0.5,
+						"ref-y": 0.5,
+						"text-anchor": "middle",
+						"y-alignment": "middle",
+					},
+					".root": {
+						fill: "#e0e0e0",
+						stroke: "#999999",
+						"stroke-width": 2,
+					},
+
+				},
+
+			});
+		}
+		else if (node.type === "operator") {
+			const fontSize = 22;
+			const textWidth = estimateTextWidth(node.label, fontSize);
+			const transitionWidth = Math.max(textWidth + 10, 20);
+			node.width = transitionWidth;
+			node.height = 50;
+
+			var element = new pn.Transition({
+				position: node.position,
+				size: { width: transitionWidth, height: 50 },
+				attrs: {
+					".label": {
+						text: node.label || "",
+						"fill": "black",
+						"ref-x": 0.5,
+						"ref-y": 0.5,
+						"text-anchor": "middle",
+						"y-alignment": "middle",
+					},
+					".root": {
+						fill: "#add8e6",
+						stroke: "#87ceeb",
+						"stroke-width": 2,
+					},
+
+				},
+
+			});
+		}
 
 		graph.addCell(element);
 
@@ -378,6 +465,11 @@ function createPaper(nodes, edges) {
 		else if (edge.type === 'LongDepEdge' || edge.type === 'HybridDirectedLongDepGraphEdge') {
 			link.attr('.connection', { stroke: 'orange' });
 			link.attr('.marker-target', { fill: 'orange', stroke: 'orange' });
+		}
+		else if (edge.type === 'EdgeImpl') {
+			link.attr('.connection', { stroke: 'black' });
+			link.attr('.marker-target', { fill: 'black', stroke: 'black' });
+			tb_flag = 1;
 		}
 
 		graph.addCell(link);
