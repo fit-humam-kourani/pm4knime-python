@@ -119,7 +119,7 @@ public class HybridMinerNodeModel extends WebUIJSViewNodeModel<HybridMinerNodeSe
     
     HybridPNMinerSettings getConfiguration() {
 		HybridPNMinerSettings settings = new HybridPNMinerSettings();
-    	settings.setThresholdEarlyCancelationIterator(m_settings.t_cancel);
+    	// settings.setThresholdEarlyCancelationIterator(m_settings.t_cancel);
 		settings.setPlaceEvalThreshold(m_settings.t_fitness);
 		try {
 			settings.setFitnessType(getFitnessType());
