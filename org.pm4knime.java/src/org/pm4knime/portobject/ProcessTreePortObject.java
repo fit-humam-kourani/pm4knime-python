@@ -4,10 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,25 +21,16 @@ import org.knime.core.node.port.PortObjectZipInputStream;
 import org.knime.core.node.port.PortObjectZipOutputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
-import org.pm4knime.portobject.AbstractJSONPortObject.Link;
 import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
 import org.processmining.framework.plugin.PluginContext;
-import org.processmining.models.graphbased.NodeID;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.inductiveVisualMiner.plugins.GraphvizProcessTree;
 import org.processmining.plugins.inductiveVisualMiner.plugins.GraphvizProcessTree.NotYetImplementedException;
-import org.processmining.plugins.properties.processmodel.Property;
-import org.processmining.processtree.Block;
-import org.processmining.processtree.Edge;
-import org.processmining.processtree.Expression;
 import org.processmining.processtree.ProcessTree;
-import org.processmining.processtree.ProcessTreeElement;
 import org.processmining.processtree.impl.AbstractBlock;
 import org.processmining.processtree.impl.ProcessTreeImpl;
 import org.processmining.processtree.ptml.Ptml;
 import org.processmining.processtree.ptml.importing.PtmlImportTree;
-
-import org.processmining.processtree.Node;
 
 public class ProcessTreePortObject extends AbstractJSONPortObject {
 
@@ -49,7 +38,6 @@ public class ProcessTreePortObject extends AbstractJSONPortObject {
 	public static final PortType TYPE_OPTIONAL =
 			PortTypeRegistry.getInstance().getPortType(ProcessTreePortObject.class, true);
 	
-	private static final String ZIP_ENTRY_NAME = "ProcessTreePortObject";
 	String FILE_NAME = "ProcessTreeObject.ptml";
 	
 	ProcessTree tree;
@@ -266,43 +254,35 @@ public class ProcessTreePortObject extends AbstractJSONPortObject {
 			
 			
 			if (node.getClass().getSimpleName().toString().equals("Manual")) {
-				nodes.add(new PlaceNode(node.getID().toString(), "manual", node.getName(), false, false));
+				nodes.add(new Node(node.getID().toString(), "manual", node.getName()));
 			}
 			
 			else if (node.getClass().getSimpleName().toString().equals("Automatic")) {
-				nodes.add(new PlaceNode(node.getID().toString(), "automatic", "", false, false));
+				nodes.add(new Node(node.getID().toString(), "automatic", ""));
 			}
 			
 			else if (node instanceof AbstractBlock) {
+				
 				if (node instanceof AbstractBlock.XorLoop) {
-					nodes.add(new PlaceNode(node.getID().toString(), "operator", "xor loop", false, false));
-					System.out.println(((AbstractBlock.XorLoop) node).getOutgoingEdges());
-					System.out.println(((AbstractBlock.XorLoop) node).getOutgoingEdges().get(0).getName());
+					nodes.add(new Node(node.getID().toString(), "operator", "xor loop"));
 				}
 				
 				else if (node instanceof AbstractBlock.And) {
-					nodes.add(new PlaceNode(node.getID().toString(), "operator", "and", false, false));
-					System.out.println(((AbstractBlock.And) node).getOutgoingEdges());
-					System.out.println(((AbstractBlock.And) node).getOutgoingEdges().get(0).getName());
+					nodes.add(new Node(node.getID().toString(), "operator", "and"));
 				}
 				
 				else if (node instanceof AbstractBlock.Seq) {
-					nodes.add(new PlaceNode(node.getID().toString(), "operator", "seq", false, false));
-					System.out.println(((AbstractBlock.Seq) node).getOutgoingEdges());
-					System.out.println(((AbstractBlock.Seq) node).getOutgoingEdges().get(0).getName());
+					nodes.add(new Node(node.getID().toString(), "operator", "seq"));
 				}
 				
 				else if (node instanceof AbstractBlock.Xor) {
-					nodes.add(new PlaceNode(node.getID().toString(), "operator", "xor", false, false));
-					System.out.println(((AbstractBlock.Xor) node).getOutgoingEdges());
-					System.out.println(((AbstractBlock.Xor) node).getOutgoingEdges().get(0).getName());
+					nodes.add(new Node(node.getID().toString(), "operator", "xor"));
 				}
 				
 				AbstractBlock block_node = ((AbstractBlock) node);
 				int order = 1;
 				
 				for(org.processmining.processtree.Node child : block_node.getChildren()) {
-
 					links.add(new LinkWithFrequency(block_node.getID().toString(), child.getID().toString(), order));
 					order = order + 1;
 				}

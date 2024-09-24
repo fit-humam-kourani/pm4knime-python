@@ -191,6 +191,9 @@ function createPaper(nodes, edges) {
 
 		if (node.type === "activity")
 			tb_flag = 1;
+			
+		if (node.type === "operator")
+			process_tree_flag = 1;
 
 		var element;
 		if (node.type === "place") {
@@ -466,11 +469,6 @@ function createPaper(nodes, edges) {
 			link.attr('.connection', { stroke: 'orange' });
 			link.attr('.marker-target', { fill: 'orange', stroke: 'orange' });
 		}
-		else if (edge.type === 'EdgeImpl') {
-			link.attr('.connection', { stroke: 'black' });
-			link.attr('.marker-target', { fill: 'black', stroke: 'black' });
-			tb_flag = 1;
-		}
 
 		graph.addCell(link);
 	});
@@ -619,8 +617,11 @@ function createPaper(nodes, edges) {
 				height: 0,
 			});
 		});
-
-		dagre.layout(g);
+		
+		if (process_tree_flag === 1)
+			dagre.layout(g, { disableOrder: true });
+		else
+			dagre.layout(g);
 
 		g.nodes().forEach(function(v) {
 			let node = g.node(v);
