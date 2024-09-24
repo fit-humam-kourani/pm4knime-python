@@ -457,11 +457,30 @@ function createPaper(nodes, edges) {
 			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
 			tb_flag = 1;
 		}
+		else if (edge.frequency === 0) {
+			link.attr('.connection', { stroke: '#000f80' });
+			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+			link.label(0, { attrs: { text: { text: '' } } });
+			tb_flag = 1;
+		}
+		else if (edge.frequency === -1) {
+			link.attr('.connection', { stroke: '#000f80' });
+			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+			link.label(0, { attrs: { text: { text: 'do' } } });
+			tb_flag = 1;
+		}
+		else if (edge.frequency < -1) {
+			link.attr('.connection', { stroke: '#000f80' });
+			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+			link.label(0, { attrs: { text: { text: 'redo' } } });
+			tb_flag = 1;
+		}
 
 		if (edge.type === 'SureEdge' || edge.type === 'HybridDirectedSureGraphEdge') {
 			link.attr('.connection', { stroke: '#000f80' });
 			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
-		} else if (edge.type === 'UncertainEdge' || edge.type === 'HybridDirectedUncertainGraphEdge') {
+		} 
+		else if (edge.type === 'UncertainEdge' || edge.type === 'HybridDirectedUncertainGraphEdge') {
 			link.attr('.connection', { stroke: 'red', 'stroke-dasharray': '4,2' });
 			link.attr('.marker-target', { fill: 'red', stroke: 'red' });
 		}
