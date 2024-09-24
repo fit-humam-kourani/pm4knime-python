@@ -35,7 +35,7 @@ function createGraphElements() {
 	mainContainer.style.background = "white";
 	graphContainer.style.overflow = "auto"; // Enables scrollbars if content overflows
 	graphContainer.style.margin = "auto";
-	
+
 
 	const paperDiv = document.createElement("div");
 	paperDiv.id = "paper";
@@ -74,13 +74,13 @@ function createGraphElements() {
 	const iconZoomToFit = document.createElement("i");
 	iconZoomToFit.className = "fa-solid fa-arrows-to-circle";
 	zoomToFitButton.appendChild(iconZoomToFit);
-	
+
 	const downloadSvgButton = document.createElement("button");
 	downloadSvgButton.className = "zoom-button";
 	downloadSvgButton.id = "download-svg";
 	const iconDownload = document.createElement("i");
 	iconDownload.className = "fa-solid fa-download";
-	downloadSvgButton.appendChild(iconDownload); 
+	downloadSvgButton.appendChild(iconDownload);
 
 
 	controlsDiv.appendChild(zoomInButton);
@@ -88,7 +88,7 @@ function createGraphElements() {
 	controlsDiv.appendChild(zoomToFitButton);
 	controlsDiv.appendChild(resetButton);
 	controlsDiv.appendChild(downloadSvgButton);
-	
+
 	controlBar.appendChild(controlsDiv);
 
 	graphContainer.appendChild(paperDiv);
@@ -191,7 +191,7 @@ function createPaper(nodes, edges) {
 
 		if (node.type === "activity")
 			tb_flag = 1;
-			
+
 		if (node.type === "operator")
 			process_tree_flag = 1;
 
@@ -454,24 +454,27 @@ function createPaper(nodes, edges) {
 
 		if (edge.frequency > 0) {
 			link.attr('.connection', { stroke: '#000f80' });
-			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+			if (process_tree_flag === 1)
+				link.attr('.marker-target', { fill: 'none', stroke: 'none' });
+			else
+				link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
 			tb_flag = 1;
 		}
 		else if (edge.frequency === 0) {
 			link.attr('.connection', { stroke: '#000f80' });
-			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+			link.attr('.marker-target', { fill: 'none', stroke: 'none' });
 			link.label(0, { attrs: { text: { text: '' } } });
 			tb_flag = 1;
 		}
 		else if (edge.frequency === -1) {
 			link.attr('.connection', { stroke: '#000f80' });
-			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+			link.attr('.marker-target', { fill: 'none', stroke: 'none' });
 			link.label(0, { attrs: { text: { text: 'do' } } });
 			tb_flag = 1;
 		}
 		else if (edge.frequency < -1) {
 			link.attr('.connection', { stroke: '#000f80' });
-			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
+			link.attr('.marker-target', { fill: 'none', stroke: 'none' });
 			link.label(0, { attrs: { text: { text: 'redo' } } });
 			tb_flag = 1;
 		}
@@ -479,7 +482,7 @@ function createPaper(nodes, edges) {
 		if (edge.type === 'SureEdge' || edge.type === 'HybridDirectedSureGraphEdge') {
 			link.attr('.connection', { stroke: '#000f80' });
 			link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
-		} 
+		}
 		else if (edge.type === 'UncertainEdge' || edge.type === 'HybridDirectedUncertainGraphEdge') {
 			link.attr('.connection', { stroke: 'red', 'stroke-dasharray': '4,2' });
 			link.attr('.marker-target', { fill: 'red', stroke: 'red' });
@@ -495,24 +498,24 @@ function createPaper(nodes, edges) {
 	applyAutoLayout(nodes, edges, elements);
 
 	adjustPaperSize(graph, paper);
-	
-	initialGraphState = JSON.parse(JSON.stringify(graph.toJSON()));
-	let bbox = paper.getContentBBox(); 
-    let graphWidth = bbox.width;
-    let graphHeight = bbox.height;
-    
-	
 
-		const addZoomListeners = (paper) => {
-			let zoomLevel = 1;
-			
-			const zoom = (zoomLevel) => {
-				paper.scale(zoomLevel);
-				paper.fitToContent({
-					useModelGeometry: true,
-					padding:padding_inside_paper,
-					allowNewOrigin: "any",
-				});
+	initialGraphState = JSON.parse(JSON.stringify(graph.toJSON()));
+	let bbox = paper.getContentBBox();
+	let graphWidth = bbox.width;
+	let graphHeight = bbox.height;
+
+
+
+	const addZoomListeners = (paper) => {
+		let zoomLevel = 1;
+
+		const zoom = (zoomLevel) => {
+			paper.scale(zoomLevel);
+			paper.fitToContent({
+				useModelGeometry: true,
+				padding: padding_inside_paper,
+				allowNewOrigin: "any",
+			});
 		};
 
 
@@ -527,30 +530,30 @@ function createPaper(nodes, edges) {
 		});
 
 		document.getElementById("zoom-to-fit").addEventListener("click", () => {
-		    
-		    let graphContainer = document.getElementById('graphContainer');
-		    let containerWidth = graphContainer.getBoundingClientRect().width - (3 * padding_inside_paper);		   
-		    let containerHeight = graphContainer.getBoundingClientRect().height - (3 * padding_inside_paper);
-		    
-		    
-		    let paperContainer = document.getElementById('paper');
-		    let paperWidth = paper.getContentBBox().width;	    
-		    let paperHeight = paper.getContentBBox().height;
-			
-		    let scaleX = containerWidth / paperWidth;
-		    let scaleY = containerHeight / paperHeight;
-		 
-		    zoomLevel = zoomLevel * Math.min(scaleX, scaleY);		
-		    zoom(zoomLevel);
+
+			let graphContainer = document.getElementById('graphContainer');
+			let containerWidth = graphContainer.getBoundingClientRect().width - (3 * padding_inside_paper);
+			let containerHeight = graphContainer.getBoundingClientRect().height - (3 * padding_inside_paper);
+
+
+			let paperContainer = document.getElementById('paper');
+			let paperWidth = paper.getContentBBox().width;
+			let paperHeight = paper.getContentBBox().height;
+
+			let scaleX = containerWidth / paperWidth;
+			let scaleY = containerHeight / paperHeight;
+
+			zoomLevel = zoomLevel * Math.min(scaleX, scaleY);
+			zoom(zoomLevel);
 
 
 		});
 
 		document.getElementById("reset-button").addEventListener("click", () => {
-	
-			var graph = paper.model; 
-		    graph.clear(); 
-		    graph.fromJSON(initialGraphState); // Restore the graph from the initial saved state
+
+			var graph = paper.model;
+			graph.clear();
+			graph.fromJSON(initialGraphState); // Restore the graph from the initial saved state
 
 			zoomLevel = 1;
 			zoom(zoomLevel);
@@ -577,19 +580,19 @@ function createPaper(nodes, edges) {
 				allowNewOrigin: "any",
 			});
 		});
-		
+
 		document.getElementById("download-svg").addEventListener("click", async () => {
 
-			    const serializedSVG = createSVG(paper);
-			    const blob = new Blob([serializedSVG], { type: 'image/svg+xml' });
-			    const url = URL.createObjectURL(blob);
-			    const a = document.createElement('a');
-			    a.href = url;
-			    a.download = 'graph.svg'; 
-			    document.body.appendChild(a); 
-			    a.click();
-			    document.body.removeChild(a); 
-			    URL.revokeObjectURL(url); 
+			const serializedSVG = createSVG(paper);
+			const blob = new Blob([serializedSVG], { type: 'image/svg+xml' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = 'graph.svg';
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
 		});
 	};
 
@@ -636,7 +639,7 @@ function createPaper(nodes, edges) {
 				height: 0,
 			});
 		});
-		
+
 		if (process_tree_flag === 1)
 			dagre.layout(g, { disableOrder: true });
 		else
@@ -683,22 +686,22 @@ function createPaper(nodes, edges) {
 		zoomLevel = 1
 		zoom(zoomLevel);
 	}
-	
+
 	return paper;
 };
 
 
 
-function createSVG(paper) {		
-    const svgElement = paper.svg.cloneNode(true);
-    svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+function createSVG(paper) {
+	const svgElement = paper.svg.cloneNode(true);
+	svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
-    // Create a style element for the SVG
-    const cssStyle = document.createElement('style');
-    cssStyle.setAttribute('type', 'text/css');
- 
-    cssStyle.textContent = graphCSSText;
-    svgElement.prepend(cssStyle); // Prepend the style element to the SVG
+	// Create a style element for the SVG
+	const cssStyle = document.createElement('style');
+	cssStyle.setAttribute('type', 'text/css');
 
-    return (new XMLSerializer()).serializeToString(svgElement);
+	cssStyle.textContent = graphCSSText;
+	svgElement.prepend(cssStyle); // Prepend the style element to the SVG
+
+	return (new XMLSerializer()).serializeToString(svgElement);
 }
