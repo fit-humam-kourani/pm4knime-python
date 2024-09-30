@@ -1,62 +1,38 @@
 package org.pm4knime.node.io.petrinet.reader;
 
-import java.util.Optional;
-
-import org.knime.core.node.ConfigurableNodeFactory;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.context.NodeCreationConfiguration;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.filehandling.core.port.FileSystemPortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.portobject.PetriNetPortObject;
+import org.pm4knime.util.defaultnode.ReaderNodeSettings;
 
+@SuppressWarnings("restriction")
+public class PetrinetReaderNodeFactory extends WebUINodeFactory<PetrinetReaderNodeModel> implements
+		WizardNodeFactoryExtension<PetrinetReaderNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
 
-public class PetrinetReaderNodeFactory extends ConfigurableNodeFactory<PetrinetReaderNodeModel> implements WizardNodeFactoryExtension<PetrinetReaderNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+	PetrinetReaderNodeModel node;
 
-	
-	private static final String VARIABLE_OUTPUT_PORT_GRP_NAME = "Variable Output Port";
-    static final String CONNECTION_INPUT_PORT_GRP_NAME = "File System Connection";
-	
-	@Override
-	public boolean hasDialog() {
-		return true;
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Petri Net Reader").icon("../../read.png")
+			.shortDescription("Import a Petri net from a PNML file.")
+			.fullDescription("This node imports a Petri net from a PNML file. A Petri net is a directed bipartite graph used to model processes. It consists of places, transitions, and directed arcs connecting them. A place is enabled if it it contains at least one token. A transition can only fire if all incoming places are enabled. After firing a transition, a token is consumed from all of its incoming places, and a token is produced in all of its outgoing places. The initial marking indicates the initial state of the Petri net. Places that belong to the initial marking are marked by green tokens inside them. The final marking denotes the final state of the Petri net. Places within the final marking are highlighted with a heavier border.")
+			.modelSettingsClass(ReaderNodeSettings.class)
+			.addOutputPort("Petri net", PetriNetPortObject.TYPE, "a Petri net")
+			.nodeType(NodeType.Source).build();
+
+	public PetrinetReaderNodeFactory() {
+		super(CONFIG);
 	}
 
-
-	@Override
-	protected int getNrNodeViews() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public NodeView<PetrinetReaderNodeModel> createNodeView(int viewIndex, PetrinetReaderNodeModel nodeModel) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected Optional<PortsConfigurationBuilder> createPortsConfigBuilder() {
-		final PortsConfigurationBuilder builder = new PortsConfigurationBuilder();
-        builder.addOptionalInputPortGroup(CONNECTION_INPUT_PORT_GRP_NAME, FileSystemPortObject.TYPE);
-		builder.addFixedOutputPortGroup(VARIABLE_OUTPUT_PORT_GRP_NAME, new PortType[] { PortTypeRegistry.getInstance().getPortType(PetriNetPortObject.class, false) });
-		return Optional.of(builder);
+	protected PetrinetReaderNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
 	}
 
 	@Override
-	protected PetrinetReaderNodeModel createNodeModel(NodeCreationConfiguration creationConfig) {
-		// TODO Auto-generated method stub
-		return new PetrinetReaderNodeModel((creationConfig.getPortConfig().orElseThrow(IllegalStateException::new)));
+	public PetrinetReaderNodeModel createNodeModel() {
+		node = new PetrinetReaderNodeModel(ReaderNodeSettings.class);
+		return node;
 	}
-
-	@Override
-	protected NodeDialogPane createNodeDialogPane(NodeCreationConfiguration creationConfig) {
-		// TODO Auto-generated method stub
-		return new PetrinetReaderNodeDialog(creationConfig.getPortConfig().orElseThrow(IllegalStateException::new));
-	}
-
 }
