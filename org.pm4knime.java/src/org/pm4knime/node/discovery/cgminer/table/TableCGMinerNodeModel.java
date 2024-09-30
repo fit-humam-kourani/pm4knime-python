@@ -8,6 +8,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.CausalGraphPortObject;
 import org.pm4knime.portobject.CausalGraphPortObjectSpec;
 import org.processmining.extendedhybridminer.algorithms.HybridCGMiner;
@@ -30,7 +31,7 @@ public class TableCGMinerNodeModel extends DefaultTableMinerNodeModel<TableCGMin
     }
 
 	
-	protected PortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception{
+	protected AbstractJSONPortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception{
     	logger.info("Begin: Causal Graph Miner (Table)");
     	String tClassifier = m_settings.t_classifier;
     	String eClassifier = m_settings.e_classifier;

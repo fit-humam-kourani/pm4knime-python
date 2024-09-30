@@ -1,14 +1,16 @@
 package org.pm4knime.portobject;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 
@@ -22,9 +24,8 @@ import org.knime.core.node.port.PortObjectZipInputStream;
 import org.knime.core.node.port.PortObjectZipOutputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.pm4knime.node.io.bpmn.writer.BPMNExporter;
 import org.pm4knime.node.visualizations.jsgraphviz.util.GraphvizBPMN;
-import org.pm4knime.util.HybridPetriNetUtil;
-import org.processmining.models.connections.GraphLayoutConnection;
 import org.processmining.models.graphbased.directed.bpmn.BPMNDiagram;
 import org.processmining.models.graphbased.directed.bpmn.BPMNDiagramFactory;
 import org.processmining.models.graphbased.directed.bpmn.BPMNNode;
@@ -32,28 +33,25 @@ import org.processmining.models.graphbased.directed.bpmn.elements.Swimlane;
 import org.processmining.plugins.bpmn.Bpmn;
 import org.processmining.plugins.bpmn.parameters.BpmnSelectDiagramParameters;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
-import org.processmining.plugins.pnml.base.FullPnmlElementFactory;
-import org.processmining.plugins.pnml.base.PnmlElementFactory;
-import org.processmining.plugins.pnml.base.Pnml.PnmlType;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
+
+
 import org.processmining.contexts.uitopia.UIPluginContext;
-import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
-import org.processmining.extendedhybridminer.models.pnml.HybridPnml;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.plugins.bpmn.BpmnDefinitions;
 import javax.swing.SwingUtilities;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.processmining.contexts.uitopia.UIContext;
 
-public class BpmnPortObject extends AbstractDotPanelPortObject {
 
-	/**
-	 * Define port type of objects of this class when used as PortObjects.
-	 */
+
+
+public class BpmnPortObject extends AbstractJSONPortObject {
+
+	
 	public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(BpmnPortObject.class);
 	public static final PortType TYPE_OPTIONAL = PortTypeRegistry.getInstance().getPortType(BpmnPortObject.class, true);
 
@@ -139,6 +137,7 @@ public class BpmnPortObject extends AbstractDotPanelPortObject {
 	}
 
 	public static String exportBPMNDiagram(final BPMNDiagram diagram) throws Exception {
+		   
 		final UIContext context = new UIContext();
 		final UIPluginContext uiPluginContext = context.getMainPluginContext();
 		SwingUtilities.invokeLater(new Runnable() {
@@ -164,14 +163,16 @@ public class BpmnPortObject extends AbstractDotPanelPortObject {
 		result = result.replaceAll(">&#10;", ">\n");
 		result = result.replaceAll("\"&#10;", "\"\n");
 		result = result.replaceFirst("<bpmndi:BPMNDiagram>.*</bpmndi:BPMNDiagram>", "");
+		result = result.replaceAll("<[a-zA-Z]+:[a-zA-Z]+/>", "");
+		
+		
+		List<String> tags = Arrays.asList("task", "endEvent", "startEvent"); 
+		
 		return result;
 	}
 
 	
-	
-	
-	
-	
+
 	@Override
 	protected void load(PortObjectZipInputStream in, PortObjectSpec spec, ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
@@ -244,7 +245,7 @@ public class BpmnPortObject extends AbstractDotPanelPortObject {
 
 	}
 
-	public static void exportBPMNDiagramToFile(OutputStream outStream, BPMNDiagram bpmn) throws Exception{
+	public static void exportBPMNDiagramToFile(OutputStream outStream, BPMNDiagram bpmn) throws Exception {
 		// TODO Auto-generated method stub
 		String result = BpmnPortObject.exportBPMNDiagram(bpmn);
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outStream));
@@ -252,6 +253,24 @@ public class BpmnPortObject extends AbstractDotPanelPortObject {
 		System.out.println(result);
 		bw.write(result);
 		bw.close();
+
+	}
+	
+	@Override
+	public Map<String, List<?>> getJSON() {
+		
+		Map<String, List<?>> result = new HashMap<>();
+		
+		try {
+			
+			String xmlOutput = BPMNExporter.convertToXML(model);
+			String key = "xml"; 
+			result.put(key, Collections.singletonList(xmlOutput));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;	
 		
 	}
 }

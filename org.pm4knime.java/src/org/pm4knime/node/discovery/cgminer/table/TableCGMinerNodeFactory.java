@@ -21,10 +21,10 @@ public class TableCGMinerNodeFactory extends WebUINodeFactory<TableCGMinerNodeMo
 			.name("Causal Graph Miner")
 			.icon("../../category-discovery.png")
 			.shortDescription("This node implements the first step of the Hybrid Miner to discover a causal graph from an event table.")
-			.fullDescription("This node implements the first step of the Hybrid Miner to discover a causal graph from an event table. \r\n"
-					+ "			A causal graph consists of nodes representing activities and two types of directed edges connecting nodes. \r\n"
-					+ "			Certain edges represent strong causal dependencies and uncertain edges represent weak dependencies. \r\n"
-					+ "			A third type of edges is used to represent long-term dependencies.") 
+			.fullDescription("This node implements the first step of the Hybrid Miner to discover a causal graph from an event table. "
+					+ "A causal graph consists of nodes representing activities and directed arcs connecting them. "
+					+ "We distinguish three types of these arcs: (1) strong dependencies are represented by blue solid arcs (certain arcs); "
+					+ "(2) weak dependencies are represented by red dotted arcs (uncertain arcs); (3) long-term dependencies are represented by orange solid arcs.") 
 			.modelSettingsClass(TableCGMinerNodeSettings.class)//
 			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
 			.addOutputPort("Causal Graph", CausalGraphPortObject.TYPE, "a causal graph")//

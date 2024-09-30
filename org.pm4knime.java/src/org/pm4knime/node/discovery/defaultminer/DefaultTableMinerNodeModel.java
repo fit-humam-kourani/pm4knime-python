@@ -1,5 +1,8 @@
 package org.pm4knime.node.discovery.defaultminer;
 
+import java.util.List;
+import java.util.Map;
+
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
@@ -13,7 +16,7 @@ import org.knime.core.node.web.ValidationError;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.node.visualizations.jsgraphviz.util.WebUIJSViewNodeModel;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.processmining.plugins.graphviz.dot.Dot;
 
 
@@ -25,7 +28,7 @@ public abstract class DefaultTableMinerNodeModel<S extends DefaultTableMinerSett
 
 	
 	protected BufferedDataTable logPO;
-	protected PortObject pmPO;
+	protected AbstractJSONPortObject pmPO;
 	protected S m_settings;
 	
 	
@@ -41,20 +44,12 @@ public abstract class DefaultTableMinerNodeModel<S extends DefaultTableMinerSett
 		logPO = (BufferedDataTable)inObjects[0];
 		pmPO = mine(logPO, exec);
 		
-		final String dotstr;
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
-
-		synchronized (getLock()) {
-			AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) pmPO;
-			Dot dot =  port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
-		}
-		representation.setDotstr(dotstr);
+		representation.setJSONString(pmPO.getJSON());
 
 	}
-	
-	
-	protected abstract PortObject mine(BufferedDataTable log, final ExecutionContext exec) throws Exception; 
+
+	protected abstract AbstractJSONPortObject mine(BufferedDataTable log, final ExecutionContext exec) throws Exception; 
 	
 	
 	@Override

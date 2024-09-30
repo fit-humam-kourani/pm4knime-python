@@ -26,12 +26,10 @@ import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.Mess
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.PetriNetUtil;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
-import org.processmining.plugins.graphviz.dot.Dot;
 
 
 public class PetrinetReaderNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
@@ -77,6 +75,14 @@ public class PetrinetReaderNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 			InputStream inputStream = FSFiles.newInputStream(inputPath);
 			AcceptingPetriNet anet = PetriNetUtil.importFromStream(inputStream);
 			m_netPort = new PetriNetPortObject(anet);
+			
+			PetriNetPortObject pn_po = new PetriNetPortObject(anet);
+			
+			m_netPort = pn_po;
+			
+			JSGraphVizViewRepresentation representation = getViewRepresentation();
+			
+			representation.setJSONString(pn_po.getJSON());
 
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -88,15 +94,6 @@ public class PetrinetReaderNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
         
         exec.checkCanceled();
         
- 		final String dotstr;
-		JSGraphVizViewRepresentation representation = getViewRepresentation();
-
-		synchronized (getLock()) {
-			AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) m_netPort;
-			Dot dot =  port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
-		}
-		representation.setDotstr(dotstr);
      } 
  
     @Override

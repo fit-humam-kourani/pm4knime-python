@@ -2,33 +2,36 @@ package org.pm4knime.portobject;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JComponent;
 
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortObjectZipInputStream;
 import org.knime.core.node.port.PortObjectZipOutputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.pm4knime.util.PetriNetUtil;
-import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
-import org.processmining.acceptingpetrinet.plugins.VisualizeAcceptingPetriNetPlugin;
-import org.processmining.framework.plugin.PluginContext;
+import org.processmining.models.graphbased.directed.DirectedGraphEdge;
 import org.processmining.plugins.InductiveMiner.efficienttree.EfficientTree;
 import org.processmining.plugins.InductiveMiner.efficienttree.EfficientTreeReduce.ReductionFailedException;
 import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
-import org.processmining.plugins.graphviz.dot.Dot;
-import org.processmining.plugins.graphviz.visualisation.DotPanel;
-import org.processmining.plugins.inductiveVisualMiner.plugins.EfficientTreeVisualisationPlugin;
-import org.processmining.plugins.inductiveVisualMiner.plugins.GraphvizPetriNet;
+
+import org.processmining.models.graphbased.directed.petrinet.elements.Place;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
+import org.processmining.models.semantics.petrinet.Marking;
 
 
-public class PetriNetPortObject extends AbstractDotPanelPortObject {
+public class PetriNetPortObject extends AbstractJSONPortObject {
 
 	public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(PetriNetPortObject.class);
 	public static final PortType TYPE_OPTIONAL =
@@ -36,7 +39,16 @@ public class PetriNetPortObject extends AbstractDotPanelPortObject {
 	
 	private static final String ZIP_ENTRY_NAME = "PetriNetPortObject";
 	
-	AcceptingPetriNet m_anet;
+	public static final String PETRI_NET_TEXT = "A Petri net is a directed bipartite graph used to model processes. It consists of places, transitions, and directed arcs connecting them. "
+			+ "A place is enabled if it it contains at least one token. A transition can only fire if all incoming places are enabled. After firing a transition, "
+			+ "a token is consumed from all of its incoming places, and a token is produced in all of its outgoing places. The initial marking indicates the initial state of the Petri net. "
+			+ "Places that belong to the initial marking are marked by green tokens inside them. The final marking denotes the final state of the Petri net. "
+			+ "Places within the final marking are highlighted with a heavier border.";
+	
+	
+	// use AcceptingPetriNet as the model
+	// m_anet: a field that carries anet
+	AcceptingPetriNet m_anet ;
 	PetriNetPortObjectSpec m_spec;
 	public PetriNetPortObject() {}
 	
@@ -81,21 +93,6 @@ public class PetriNetPortObject extends AbstractDotPanelPortObject {
 	@Override
 	public JComponent[] getViews() {
 		return new JComponent[] {};
-	}
-	
-	@Override
-	public DotPanel getDotPanel() {
-				
-	    if(m_anet != null) {
-			
-			DotPanel navDot;
-			navDot = new DotPanel(GraphvizPetriNet.convert(m_anet));
-			navDot.setName("Generated petri net");
-			return navDot;
-			
-		}
-		return null;
-		
 	}
 
 	
@@ -158,4 +155,51 @@ public class PetriNetPortObject extends AbstractDotPanelPortObject {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public Map<String, List<?>> getJSON() {
+		Map<String, List<?>> result = new HashMap<>();
+		
+		Set<Place> finalMarkingPlaces = new TreeSet<Place>();
+		for (Marking setMarkings : m_anet.getFinalMarkings())
+			finalMarkingPlaces.addAll(setMarkings);	
+		
+		List<Node> nodes = new ArrayList<>();
+		
+		for(Place place : m_anet.getNet().getPlaces()) {
+			if(m_anet.getInitialMarking().contains(place))
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", true, false));
+			else if (finalMarkingPlaces.contains(place))
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", false, true));
+			else
+				nodes.add(new PlaceNode(place.getId().toString(), "place", "", false, false));
+		}
+		
+		for (Transition transition : m_anet.getNet().getTransitions())
+		{
+			String label = transition.getLabel();
+			if (transition.isInvisible())
+				nodes.add(new Node(transition.getId().toString(), "transition", ""));
+			else 
+				nodes.add(new Node(transition.getId().toString(), "transition", label));
+		}
+		
+		result.put("nodes", nodes);
+		
+		List<Link> links = new ArrayList<>();
+		
+		for (DirectedGraphEdge<?, ?> edge : m_anet.getNet().getEdges())
+		{
+			String source = edge.getSource().getId().toString();
+			String target = edge.getTarget().getId().toString();
+			links.add(new Link(source, target));
+		}
+
+		result.put("links", links);
+		
+		return result;
+		
+	}
+	
+	
+	
 }

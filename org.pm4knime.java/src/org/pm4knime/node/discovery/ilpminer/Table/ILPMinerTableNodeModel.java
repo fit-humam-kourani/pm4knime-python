@@ -5,6 +5,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
@@ -26,6 +27,10 @@ import org.processmining.hybridilpminer.parameters.NetClass;
 import org.processmining.lpengines.interfaces.LPEngine.EngineType;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
+
+import java.util.List;
+import java.util.Map;
+
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 
@@ -90,7 +95,7 @@ public class ILPMinerTableNodeModel extends DefaultTableMinerNodeModel<ILPMinerT
 	}
 	
 	@Override
-	protected PortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception {
+	protected AbstractJSONPortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception {
 		
         logger.info("Start : ILPMiner " );
         

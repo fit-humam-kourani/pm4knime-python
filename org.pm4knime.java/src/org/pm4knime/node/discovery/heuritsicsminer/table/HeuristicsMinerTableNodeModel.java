@@ -9,6 +9,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 import org.pm4knime.node.discovery.heuritsicsminer.table.util.TableFlexibleHeuristicsMiner;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
@@ -42,7 +43,7 @@ public class HeuristicsMinerTableNodeModel extends DefaultTableMinerNodeModel<He
 
     
     @Override
-	protected PortObject mine(BufferedDataTable log, final ExecutionContext exec) throws Exception{
+	protected AbstractJSONPortObject mine(BufferedDataTable log, final ExecutionContext exec) throws Exception{
     	logger.info("Begin: Heuristic Miner");
     	
     	PluginContext pluginContext = PM4KNIMEGlobalContext.instance()

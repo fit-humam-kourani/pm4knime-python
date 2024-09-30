@@ -14,7 +14,6 @@ import javax.swing.JComponent;
 import org.deckfour.xes.classification.XEventClass;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.port.AbstractPortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortObjectZipInputStream;
 import org.knime.core.node.port.PortObjectZipOutputStream;
@@ -25,7 +24,7 @@ import org.processmining.plugins.InductiveMiner.dfgOnly.DfgImpl;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.inductiveVisualMiner.plugins.GraphvizDirectlyFollowsGraph;
 
-public class DFMPortObject extends AbstractDotPanelPortObject {
+public class DFMPortObject extends AbstractJSONPortObject {
 
 	public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(DFMPortObject.class);
 	private static final String ZIP_ENTRY_NAME = "DFMPortObject";
@@ -223,6 +222,12 @@ public class DFMPortObject extends AbstractDotPanelPortObject {
 	}
 
 	public static final class DFMPortObjectSerializer extends AbstractPortObjectSerializer<DFMPortObject> {
+	}
+
+	@Override
+	public Map<String, List<?>> getJSON() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

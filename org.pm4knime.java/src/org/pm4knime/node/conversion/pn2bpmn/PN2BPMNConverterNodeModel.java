@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -20,11 +19,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
-
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.defaultnode.EmptyNodeSettings;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.BpmnPortObject;
 import org.pm4knime.portobject.BpmnPortObjectSpec;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
@@ -51,7 +49,6 @@ import org.processmining.models.graphbased.directed.petrinet.elements.ResetArc;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.graphbased.directed.petrinet.impl.ResetInhibitorNetImpl;
 import org.processmining.models.semantics.petrinet.Marking;
-import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.converters.BPMNUtils;
 import org.processmining.plugins.converters.PetriNetToBPMNConverter;
 import org.processmining.plugins.graphalgorithms.DFS;
@@ -65,7 +62,7 @@ import org.processmining.plugins.graphalgorithms.DFS;
 @SuppressWarnings("restriction")
 public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	// Define class-level variables
-    protected PortObject bpmnPO; // Store the BPMN PortObject
+    protected AbstractJSONPortObject bpmnPO; // Store the BPMN PortObject
     protected PetriNetPortObject pnPO; // Store the Petri net PortObject
     private Place initialPlace;
 	private Transition initialTransition;
@@ -113,15 +110,9 @@ public class PN2BPMNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
     	// Create a BpmnPortObject from the AcceptingBPMN
     	bpmnPO = new BpmnPortObject(bpmnDiagram);
     	
-    	String dotstr;
-        JSGraphVizViewRepresentation representation = getViewRepresentation(); // Get the view representation
-        // Synchronize access to prevent concurrent modification
-        synchronized (getLock()) {
-            AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) bpmnPO;
-            Dot dot = port_obj.getDotPanel().getDot(); // Get DOT representation of the BPMN
-            dotstr = dot.toString(); // Convert DOT to a string
-        }
-        representation.setDotstr(dotstr); // Set the DOT string in the view representation
+    	JSGraphVizViewRepresentation representation = getViewRepresentation(); // Get the view representation
+        
+        representation.setJSONString(bpmnPO.getJSON());
     }
     
     public BPMNDiagram convert(AcceptingPetriNet petrinet) {

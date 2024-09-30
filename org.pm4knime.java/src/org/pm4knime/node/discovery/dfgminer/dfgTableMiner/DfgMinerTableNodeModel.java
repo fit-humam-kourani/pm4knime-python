@@ -10,6 +10,7 @@ import org.knime.core.node.port.PortType;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings;
 import org.pm4knime.node.discovery.dfgminer.dfgTableMiner.helper.BufferedTableIMLog;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.DfgMsdPortObject;
 import org.pm4knime.portobject.DfgMsdPortObjectSpec;
 import org.processmining.plugins.inductiveminer2.withoutlog.dfgmsd.DfgMsd;
@@ -28,7 +29,7 @@ public class DfgMinerTableNodeModel extends DefaultTableMinerNodeModel<DefaultTa
     }
 
 	@Override
-	protected PortObject mine(BufferedDataTable log, final ExecutionContext exec) throws Exception {
+	protected AbstractJSONPortObject mine(BufferedDataTable log, final ExecutionContext exec) throws Exception {
 		logger.info("Begin:  DFM Miner");			
 		BufferedTableIMLog imLog = new BufferedTableIMLog(logPO, m_settings.e_classifier, m_settings.t_classifier);	
 		DfgMsd dfgmsd = Log2DfgMsd.convert(imLog);

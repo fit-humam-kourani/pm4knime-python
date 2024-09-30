@@ -1,10 +1,6 @@
 package org.pm4knime.node.discovery.ilpminer.Table;
 
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeFactory;
@@ -23,7 +19,7 @@ public class ILPMinerTableNodeFactory extends WebUINodeFactory<ILPMinerTableNode
 			.icon("../../category-discovery.png")
 			.shortDescription("This node implements the ILP Miner to discover a Petri net from an event table.")
 			.fullDescription("This node implements the ILP Miner to discover a Petri net from an event table.\r\n"
-					+ "        Multiple algorithms based on transition theory and ILP are provided. ") 
+					+ PetriNetPortObject.PETRI_NET_TEXT) 
 			.modelSettingsClass(ILPMinerTableNodeSettings.class)//
 			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
 			.addOutputPort("Petri Net", PetriNetPortObject.TYPE, "a Petri net")//

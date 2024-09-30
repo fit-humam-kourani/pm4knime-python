@@ -21,7 +21,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObjectSpec;
 import org.pm4knime.portobject.PetriNetPortObject;
@@ -133,15 +132,10 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
                 setWarningMessage("Found missing Hybrid Petri net cell, skipping it...");
             }
         }
-        String dotstr;
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
 
-		AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) pnPO;
-		Dot dot =  port_obj.getDotPanel().getDot();
-		dotstr = dot.toString();
-		representation.setDotstr(dotstr);
-//        throw new IllegalArgumentException(
-//                "Input table contains only missing cells.");
+		representation.setJSONString(pnPO.getJSON());
+
         		
 	}    
 

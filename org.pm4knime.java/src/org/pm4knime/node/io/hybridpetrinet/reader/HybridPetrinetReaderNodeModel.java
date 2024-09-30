@@ -26,14 +26,12 @@ import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.Mess
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObjectSpec;
 import org.processmining.contexts.uitopia.UIContext;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
 import org.processmining.extendedhybridminer.models.pnml.utils;
-import org.processmining.plugins.graphviz.dot.Dot;
 
 
 public class HybridPetrinetReaderNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
@@ -95,15 +93,9 @@ public class HybridPetrinetReaderNodeModel extends AbstractSVGWizardNodeModel<JS
         
         exec.checkCanceled();
 		
-		final String dotstr;
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
 
-		synchronized (getLock()) {
-			AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) m_netPort;
-			Dot dot =  port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
-		}
-		representation.setDotstr(dotstr);
+		representation.setJSONString(m_netPort.getJSON());
 
 	}
 
