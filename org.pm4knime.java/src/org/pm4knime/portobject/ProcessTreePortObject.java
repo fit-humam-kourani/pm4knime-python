@@ -260,7 +260,7 @@ public class ProcessTreePortObject extends AbstractJSONPortObject {
 			else if (node instanceof AbstractBlock) {
 
 				if (node instanceof AbstractBlock.XorLoop) {
-					nodes.add(new Node(node.getID().toString(), "operator", "xor loop"));
+					nodes.add(new Node(node.getID().toString(), "operator", "xlp")); //xor loop
 				}
 
 				else if (node instanceof AbstractBlock.And) {

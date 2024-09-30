@@ -398,13 +398,30 @@ function createPaper(nodes, edges) {
 			const transitionWidth = Math.max(textWidth + 10, 20);
 			node.width = transitionWidth;
 			node.height = 50;
+			var operatorSymbol = "";
+
+			if (node.label === "xlp") {
+				operatorSymbol = "⭯";
+			}
+
+			else if (node.label === "xor") {
+				operatorSymbol = "✖";
+			}
+
+			else if (node.label === "and") {
+				operatorSymbol = "✙";
+			}
+
+			else if (node.label === "seq") {
+				operatorSymbol = "➜";
+			}
 
 			var element = new pn.Transition({
 				position: node.position,
 				size: { width: transitionWidth, height: 50 },
 				attrs: {
 					".label": {
-						text: node.label || "",
+						text: operatorSymbol,
 						"fill": "black",
 						"ref-x": 0.5,
 						"ref-y": 0.5,
@@ -460,7 +477,7 @@ function createPaper(nodes, edges) {
 				link.attr('.marker-target', { fill: '#000f80', stroke: '#000f80' });
 			tb_flag = 1;
 		}
-		else if (edge.frequency === 0) {
+		else if (edge.frequency === 0 || edge.frequency < -1) { // xor, and, redo
 			link.attr('.connection', { stroke: '#000f80' });
 			link.attr('.marker-target', { fill: 'none', stroke: 'none' });
 			link.label(0, { attrs: { text: { text: '' } } });
@@ -470,12 +487,6 @@ function createPaper(nodes, edges) {
 			link.attr('.connection', { stroke: '#000f80' });
 			link.attr('.marker-target', { fill: 'none', stroke: 'none' });
 			link.label(0, { attrs: { text: { text: 'do' } } });
-			tb_flag = 1;
-		}
-		else if (edge.frequency < -1) {
-			link.attr('.connection', { stroke: '#000f80' });
-			link.attr('.marker-target', { fill: 'none', stroke: 'none' });
-			link.label(0, { attrs: { text: { text: 'redo' } } });
 			tb_flag = 1;
 		}
 
