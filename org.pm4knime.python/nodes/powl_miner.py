@@ -18,7 +18,7 @@ path_to_icon = os.path.abspath(os.path.join(script_dir, "..", "icon", "category-
 
 
 @knext.node(name="POWL Miner",
-            node_type=knext.NodeType.OTHER,
+            node_type=knext.NodeType.LEARNER,
             icon_path=path_to_icon,
             category="/community/processmining/discovery")
 @knime_util.create_node_description(
@@ -61,7 +61,6 @@ class POWL_Miner:
         pn_df = petri_net_to_df(pn_1, init_1, final_1)
 
         powl_vis = visualize_powl(powl, parameters={"format": "svg"})
-        svg_string = powl_vis.pipe(encoding='utf-8')
 
-        return knext.Table.from_pandas(pn_df), svg_string, knext.view_svg(svg_string)
+        return knext.Table.from_pandas(pn_df), powl_vis, knext.view_svg(powl_vis)
 
