@@ -30,9 +30,11 @@ let process_tree_flag = 0;
 
 
 	view.getComponentValue = () => {
-		_value.dot = document.getElementById("dot").value;
-
 		return _value;
+	};
+	
+	view.validate = function() {
+		return true;
 	};
 
 	view.getSVG = () => {
