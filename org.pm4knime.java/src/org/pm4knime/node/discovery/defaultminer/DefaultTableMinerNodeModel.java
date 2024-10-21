@@ -3,6 +3,7 @@ package org.pm4knime.node.discovery.defaultminer;
 import java.util.List;
 import java.util.Map;
 
+import org.knime.base.node.preproc.sorter.SorterNodeFactory;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
