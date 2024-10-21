@@ -2,6 +2,7 @@ package org.pm4knime.node.visualizations.logviews.tracevariant;
 
 import org.knime.base.data.xml.SvgCell;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -19,6 +20,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.util.defaultnode.TraceVariantRepresentation;
+import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 
 
 @SuppressWarnings("restriction")
@@ -99,6 +101,12 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 	@Override
 	protected void performExecuteCreateView(PortObject[] inObjects, ExecutionContext exec) throws Exception {
 		table = (BufferedDataTable)inObjects[0];
+		final var dts = table.getDataTableSpec();
+		String[] sorting_columns = {m_settings.t_classifier, m_settings.time_classifier};
+        final var sorter = new BufferedDataTableSorter(table, DefaultTableMinerNodeModel.toRowComparator(dts, sorting_columns));
+        sorter.setSortInMemory(false);
+        final BufferedDataTable sortedTable = sorter.sort(exec); 
+        table = sortedTable;
 		TraceVariantVisViewRepresentation representation = getViewRepresentation();
 		
 		String[] columns = table.getDataTableSpec().getColumnNames();
