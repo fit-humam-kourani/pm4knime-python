@@ -34,9 +34,6 @@
 
 <repository location="https://update.knime.com/analytics-platform/5.3/"/>
 </location>
-	<location id="org.knime.features.base.views" path="C:\Users\kourani\Downloads\KNIME-knime-base-views-46f6df2385c1 (1)\KNIME-knime-base-views-46f6df2385c1" type="Feature"/>
-	<location path="C:\Users\kourani\Downloads\KNIME-knime-base-views-46f6df2385c1 (1)\KNIME-knime-base-views-46f6df2385c1" type="Directory"/>
-	<location path="C:\Users\kourani\Downloads\KNIME-knime-base-views-46f6df2385c1 (1)\KNIME-knime-base-views-46f6df2385c1" type="Profile"/>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
 <launcherArgs>
