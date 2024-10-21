@@ -77,17 +77,17 @@ public class DefaultTableNodeSettings implements DefaultNodeSettings {
 	
 	
 	@Layout(DialogLayoutWithTime.EventLogClassifiers.class)
-	@Widget(title = "Trace Classifier", description = "The column to be used as a trace classifier.")
+	@Widget(title = "Case ID", description = "The column that contains the case/trace identifiers.")
     @ChoicesWidget(choices = StringColumnChoices.class)
 	public String t_classifier;
 	
 	@Layout(DialogLayoutWithTime.EventLogClassifiers.class)
-    @Widget(title = "Event Classifier", description = "The column to be used as an event classifier.")
+    @Widget(title = "Activity", description = "The column that contains the activity/event identifiers.")
 	@ChoicesWidget(choices = StringColumnChoices.class)
 	public String e_classifier;
 	
 	@Layout(DialogLayoutWithTime.EventLogClassifiers.class)
-	@Widget(title = "Timestamp Classifier", description = "The column to be used as at timestamp classifier.")
+	@Widget(title = "Timestamp", description = "The column that contains the timestamps.")
     @ChoicesWidget(choices = TimeColumnChoices.class)
 	public String time_classifier;
 

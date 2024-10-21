@@ -24,19 +24,19 @@ public class DefaultTableMinerSettings implements DefaultNodeSettings {
         }
       }
 	
-	@Widget(title = "Trace Classifier", description = "The column to be used as a trace classifier.")
+	@Widget(title = "Case ID", description = "The column that contains the case/trace identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)
     @ChoicesWidget(choices = StringColumnChoices.class)
 	public String t_classifier;
 	
-	@Widget(title = "Event Classifier", description = "The column to be used as an event classifier.")
+	@Widget(title = "Activity", description = "The column that contains the activity/event identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)
     @ChoicesWidget(choices = StringColumnChoices.class)
 	public String e_classifier;
 	
 	@Layout(DialogLayout.MainDropdownSection.class)
-	@Widget(title = "Timestamp Classifier", description = "The column to be used as at timestamp classifier.")
-    @ChoicesWidget(choices = TimeColumnChoices.class)
+	@Widget(title = "Timestamp", description = "The column that contains the timestamps.")
+	@ChoicesWidget(choices = TimeColumnChoices.class)
 	String time_classifier;
 	
 	public static final class StringColumnChoices implements ChoicesProvider {

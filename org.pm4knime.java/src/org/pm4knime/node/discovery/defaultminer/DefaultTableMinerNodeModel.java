@@ -44,7 +44,8 @@ public abstract class DefaultTableMinerNodeModel<S extends DefaultTableMinerSett
 	protected void performExecuteCreateView(PortObject[] inObjects, ExecutionContext exec) throws Exception {
 		logPO = (BufferedDataTable)inObjects[0];
         final var dts = logPO.getDataTableSpec();
-        final var sorter = new BufferedDataTableSorter(logPO, toRowComparator(dts, m_settings));
+        String[] sorting_columns = {m_settings.t_classifier, m_settings.time_classifier};
+        final var sorter = new BufferedDataTableSorter(logPO, toRowComparator(dts, sorting_columns));
         sorter.setSortInMemory(false);
         final BufferedDataTable sortedTable = sorter.sort(exec);
         logPO = sortedTable;               
@@ -55,9 +56,8 @@ public abstract class DefaultTableMinerNodeModel<S extends DefaultTableMinerSett
 
 	}
 	
-	protected static RowComparator toRowComparator(final DataTableSpec spec, final DefaultTableMinerSettings modelSettings) {
+	public static RowComparator toRowComparator(final DataTableSpec spec, String[] sorting_columns) {
         final var rc = RowComparator.on(spec);
-        String[] sorting_columns = {modelSettings.t_classifier, modelSettings.time_classifier};
         Arrays.stream(sorting_columns).forEach(column -> {
             final var ascending = true;
             final var alphaNum = true;

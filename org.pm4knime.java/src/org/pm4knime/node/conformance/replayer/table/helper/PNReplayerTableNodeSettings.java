@@ -41,6 +41,9 @@ import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.TableEventL
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.TransClass2PatternMapTable;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.ReplayerUtil;
+import org.pm4knime.util.defaultnode.DefaultTableNodeSettings.DialogLayoutWithTime;
+import org.pm4knime.util.defaultnode.DefaultTableNodeSettings.StringColumnChoices;
+import org.pm4knime.util.defaultnode.DefaultTableNodeSettings.TimeColumnChoices;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
@@ -139,7 +142,7 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
 	
 	
 	@Layout(DialogLayout.ReplayerSettings.class)
-	@Widget(title = "Trace Classifier", description = "The column to be used as a trace classifier.")
+	@Widget(title = "Case ID", description = "The column that contains the case/trace identifiers.")
     @ChoicesWidget(choices = StringColumnChoices.class)
 	String t_classifier;
 	
@@ -147,17 +150,17 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
     }
 	
 	@Layout(DialogLayout.ReplayerSettings.class)
-    @Widget(title = "Event Classifier", description = "The column to be used as an event classifier.")
+	@Widget(title = "Activity", description = "The column that contains the activity/event identifiers.")
 	@ValueReference(SelectedColumnDependency.class)
 	@ChoicesWidget(choices = StringColumnChoices.class)
 	String e_classifier;
 	
 	@Layout(DialogLayout.ReplayerSettings.class)
-	@Widget(title = "Timestamp Classifier", description = "The column to be used as at timestamp classifier.")
+	@Widget(title = "Timestamp", description = "The column that contains the timestamps.")
     @ChoicesWidget(choices = TimeColumnChoices.class)
 	String time_classifier;
 	
- 
+	
 	public static final String[] strategyList = ReplayerUtil.strategyList;
 		
 		
