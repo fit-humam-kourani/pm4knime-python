@@ -7,32 +7,47 @@ let process_tree_flag = 0;
 	let _value;
 	let _paper;
 
-	let view = {}; 
-	
+	let view = {};
+
 	view.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
-		// console.error('representation.dotstr: ', representation.dotstr);
 
-		let jsonDataFromJava = JSON.parse(representation.json);
-		let nodes = jsonDataFromJava.nodes;
-		let edges = jsonDataFromJava.links;
-		let xml = jsonDataFromJava.xml;
+		if (!document.getElementById('loading')) {
+			const loadingDiv = document.createElement('div');
+			loadingDiv.id = 'loading';
 
-		if (xml) {
-			let xmlString = xml[0];
-			createBpmn(xmlString);
-		} else {
-			createGraphElements();
-			_paper = createPaper(nodes, edges);
+			const spinnerDiv = document.createElement('div');
+			spinnerDiv.className = 'spinner';
+
+			loadingDiv.appendChild(spinnerDiv);
+			document.body.appendChild(loadingDiv);
 		}
-	};
 
+		document.getElementById('loading').style.display = 'block';
+
+		setTimeout(() => {
+			document.getElementById('loading').style.display = 'none';
+
+			let jsonDataFromJava = JSON.parse(representation.json);
+			let nodes = jsonDataFromJava.nodes;
+			let edges = jsonDataFromJava.links;
+			let xml = jsonDataFromJava.xml;
+
+			if (xml) {
+				let xmlString = xml[0];
+				createBpmn(xmlString);
+			} else {
+				createGraphElements();
+				_paper = createPaper(nodes, edges);
+			}
+		}, 200);
+	};
 
 	view.getComponentValue = () => {
 		return _value;
 	};
-	
+
 	view.validate = function() {
 		return true;
 	};
@@ -40,16 +55,10 @@ let process_tree_flag = 0;
 	view.getSVG = () => {
 		if (_paper) {
 			return createSVG(_paper);
-    	} else {
-	        // not supported for BPMN as we don't have a BPMN to image node
-        	return null;  
-	    }
-	    
-		
+		} else {
+			return null;
+		}
 	};
-
-	
-
 
 	return view;
 }());
