@@ -32,6 +32,7 @@
 <unit id="org.knime.features.core.columnar.feature.group" version="0.0.0"/>
 <unit id="org.knime.features.python3.nodes.feature.group" version="0.0.0"/>
 <unit id="org.knime.features.base.views.feature.group" version="0.0.0"/>
+<unit id="org.knime.features.expressions.feature.group" version="0.0.0"/>
 <repository location="https://update.knime.com/analytics-platform/5.3/"/>
 </location>
 </locations>
