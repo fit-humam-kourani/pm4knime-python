@@ -4,7 +4,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.CompatibleColumnsProvider.StringColumnsProvider;
+import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.DialogLayout;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.TimeColumnsProvider;
 
@@ -14,12 +14,12 @@ public final class TraceVariantVisNodeSettings implements DefaultNodeSettings {
 
 	@Widget(title = "Case ID", description = "The column that contains the case/trace identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)
-	@ChoicesProvider(value = StringColumnsProvider.class)
+	@ChoicesProvider(value = StringCellColumnsProvider.class)
 	public String t_classifier;
 	
 	@Widget(title = "Activity", description = "The column that contains the activity/event identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)
-	@ChoicesProvider(value = StringColumnsProvider.class)
+	@ChoicesProvider(value = StringCellColumnsProvider.class)
 	public String e_classifier;
 
 	@Layout(DialogLayout.MainDropdownSection.class)

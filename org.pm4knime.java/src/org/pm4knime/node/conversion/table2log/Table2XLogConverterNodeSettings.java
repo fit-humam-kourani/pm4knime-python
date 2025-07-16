@@ -16,7 +16,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoic
 import org.processmining.log.csvimport.config.CSVConversionConfig.CSVEmptyCellHandlingMode;
 import org.processmining.log.csvimport.config.CSVConversionConfig.CSVErrorHandlingMode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.AllColumnsProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.CompatibleColumnsProvider.StringColumnsProvider;
+import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.column.ColumnFilter;
 
 import java.util.Arrays;
@@ -132,12 +132,12 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 
 	@Widget(title = "Case", description = "Column to be used as a caseID in the event log")
 	@Layout(Table2XLogDialogLayout.StandardOptions.class)
-	@ChoicesProvider(value = StringColumnsProvider.class)
+	@ChoicesProvider(value = StringCellColumnsProvider.class)
 	String case_id;
 
 	@Widget(title = "Event", description = "Column to be used as an eventID in the event log")
 	@Layout(Table2XLogDialogLayout.StandardOptions.class)
-	@ChoicesProvider(value = StringColumnsProvider.class)
+	@ChoicesProvider(value = StringCellColumnsProvider.class)
 	String event_class;
 
 	@Widget(title = "Life Cycle", description = "Column to be used for the life cycle attribute in the event log.")

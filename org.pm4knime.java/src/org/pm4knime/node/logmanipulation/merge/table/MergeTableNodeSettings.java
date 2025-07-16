@@ -7,7 +7,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.CompatibleColumnsProvider.StringColumnsProvider;
+import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
 
 
 @SuppressWarnings("restriction")
@@ -15,11 +15,11 @@ public final class MergeTableNodeSettings implements DefaultNodeSettings {
 		
 	
 	@Widget(title = "Trace Classifier First Table", description = "The column to be used as a trace classifier for the first event table.")
-	@ChoicesProvider(value = StringColumnsProvider.class)
+	@ChoicesProvider(value = StringCellColumnsProvider.class)
 	public String t_classifier_0;
 	
 	@Widget(title = "Trace Classifier Second Table", description = "The column to be used as a trace classifier for the second event table.")
-	@ChoicesProvider(value = StringColumnsProvider.class)
+	@ChoicesProvider(value = StringCellColumnsProvider.class)
 	public String t_classifier_1;
 	
 	public static final List<String> CFG_TRACE_STRATEGY = Arrays.asList("Separate Traces",

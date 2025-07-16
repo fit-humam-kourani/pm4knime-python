@@ -14,7 +14,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.CompatibleColumnsProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.CompatibleColumnsProvider.StringColumnsProvider;
+import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.FilteredInputTableColumnsProvider;
 
 
@@ -31,12 +31,12 @@ public class DefaultTableMinerSettings implements DefaultNodeSettings {
 	
 	@Widget(title = "Case ID", description = "The column that contains the case/trace identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)
-	@ChoicesProvider(value = StringColumnsProvider.class)
+	@ChoicesProvider(value = StringCellColumnsProvider.class)
 	public String t_classifier;
 	
 	@Widget(title = "Activity", description = "The column that contains the activity/event identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)
-	@ChoicesProvider(value = StringColumnsProvider.class)
+	@ChoicesProvider(value = StringCellColumnsProvider.class)
 	public String e_classifier;
 	
 	@Layout(DialogLayout.MainDropdownSection.class)
