@@ -1,21 +1,26 @@
 package org.pm4knime.node.discovery.defaultminer;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.StringValue;
-import org.knime.core.data.time.localdatetime.LocalDateTimeCellFactory;
-import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCellFactory;
+import org.knime.core.data.DataValue;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.data.time.localdatetime.LocalDateTimeValue;
+import org.knime.core.data.time.zoneddatetime.ZonedDateTimeValue;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.CompatibleColumnsProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.CompatibleColumnsProvider.StringColumnsProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.FilteredInputTableColumnsProvider;
 
 
 @SuppressWarnings({"restriction"}) 
-public class DefaultTableMinerSettings implements DefaultNodeSettings {
-
+public class DefaultTableMinerSettings implements DefaultNodeSettings {	
+	
 	
 	public interface DialogLayout {
 		 
@@ -26,73 +31,40 @@ public class DefaultTableMinerSettings implements DefaultNodeSettings {
 	
 	@Widget(title = "Case ID", description = "The column that contains the case/trace identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)
-    @ChoicesWidget(choices = StringColumnChoices.class)
+	@ChoicesProvider(value = StringColumnsProvider.class)
 	public String t_classifier;
 	
 	@Widget(title = "Activity", description = "The column that contains the activity/event identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)
-    @ChoicesWidget(choices = StringColumnChoices.class)
+	@ChoicesProvider(value = StringColumnsProvider.class)
 	public String e_classifier;
 	
 	@Layout(DialogLayout.MainDropdownSection.class)
 	@Widget(title = "Timestamp", description = "The column that contains the timestamps.")
-	@ChoicesWidget(choices = TimeColumnChoices.class)
-	String time_classifier;
-	
-	public static final class StringColumnChoices implements ChoicesProvider {
+	@ChoicesProvider(value = TimeColumnsProvider.class)
+	public String time_classifier;
+		
+		
+    public static class TimeColumnsProvider extends CompatibleColumnsProvider {
+
+    	private static final Collection<Class<? extends DataValue>> TIME_TYPES = Arrays.asList(
+    			ZonedDateTimeValue.class, LocalDateTimeValue.class
+		);
+    	
+    	protected TimeColumnsProvider() {
+			super(TIME_TYPES);
+		}
+
+    }
+    
+    public static class StringCellColumnsProvider implements FilteredInputTableColumnsProvider {
 
         @Override
-        public String[] choices(final DefaultNodeSettingsContext context) {
-
-            final DataTableSpec specs = context.getDataTableSpecs()[0];
-
-            if (specs == null) {
-
-                return new String[0];
-
-            } else {
-
-                return specs.stream() //
-
-                    .filter(s -> s.getType().isCompatible(StringValue.class)) //
-
-                    .map(DataColumnSpec::getName) //
-
-                    .toArray(String[]::new);
-
-            }
-
+        public boolean isIncluded(final DataColumnSpec col) {
+            final var colType = col.getType();
+            final var cellClass = colType.getCellClass();
+            return cellClass.isAssignableFrom(StringCell.class);
         }
-	 }
-	
-	public static final class TimeColumnChoices implements ChoicesProvider {
+    }
 
-        @Override
-        public String[] choices(final DefaultNodeSettingsContext context) {
-
-        	Object specObj = context.getPortObjectSpecs()[0];
-
-        	if (specObj instanceof DataTableSpec) { // Check if the object is an instance of DataTableSpec
-	            DataTableSpec specs = (DataTableSpec) specObj;
-	            return specs.stream() //
-
-	                    .filter(s -> s.getType().equals(ZonedDateTimeCellFactory.TYPE) || s.getType().equals(LocalDateTimeCellFactory.TYPE)) //
-
-	                    .map(DataColumnSpec::getName) //
-
-	                    .toArray(String[]::new);
-	            
-            } else {
-
-            	System.err.println("Expected a DataTableSpec but received a different type: " + specObj.getClass().getSimpleName());
-	            return new String[0];
-
-            }
-
-        }
-	 }
-
-
-
-	
 }

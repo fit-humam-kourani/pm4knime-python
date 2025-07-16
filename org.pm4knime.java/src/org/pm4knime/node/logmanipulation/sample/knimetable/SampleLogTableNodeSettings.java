@@ -5,6 +5,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 import org.pm4knime.util.defaultnode.DefaultTableNodeSettings;
 
 
@@ -33,7 +34,7 @@ public final class SampleLogTableNodeSettings extends DefaultTableNodeSettings {
 	
 	@Widget(title = "Sampling Number", description = "If 'Use Percentage' is checked, the sampling number must be between 0.0 and 1.0 to set the percentage of traces to be kept. Otherwise, the sampling number must be a non-negative integer to set the number of traces to be kept.")
 	@Layout(ExtendedDialogLayout.Settings.class)
-	@NumberInputWidget(min = 0.0)
+	@NumberInputWidget(minValidation=IsNonNegativeValidation.class)
 	double m_samplePercentage = 0.3;
 	
 

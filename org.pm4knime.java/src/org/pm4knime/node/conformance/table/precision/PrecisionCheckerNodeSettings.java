@@ -1,12 +1,15 @@
 package org.pm4knime.node.conformance.table.precision;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
 import org.processmining.plugins.multietc.sett.MultiETCSettings;
 
 @SuppressWarnings("restriction")
@@ -32,12 +35,12 @@ public final class PrecisionCheckerNodeSettings implements DefaultNodeSettings {
 	final static String ALIGN_REPRE = "Representative-Align Precision";
 	final static String ETC = "ETC Precision (no invisible/duplicates allowed)";
 	
-	public static final String[] algorithmList = {MultiETCSettings.ALGORITHM.toString() , ALIGN_1,
-			ALIGN_ALL, ALIGN_REPRE, ETC};
+	public static final List<String> algorithmList = Arrays.asList(MultiETCSettings.ALGORITHM.toString() , ALIGN_1,
+			ALIGN_ALL, ALIGN_REPRE, ETC);
 	 
-	public static class AlgorithmChoicesProvider implements ChoicesProvider {
+	public static class AlgorithmChoicesProvider implements StringChoicesProvider {
         @Override
-        public String[] choices(final DefaultNodeSettingsContext context) {
+        public List<String> choices(final DefaultNodeSettingsContext context) {
             return algorithmList;
         }
     }
@@ -55,7 +58,7 @@ public final class PrecisionCheckerNodeSettings implements DefaultNodeSettings {
     		+ "				<li>ETC Precision (no invisible/duplicates allowed). </li>\r\n"
     		+ "				</ul>")
     @Layout(PrecisionDialogLayout.Algorithm.class)
-    @ChoicesWidget(choices = AlgorithmChoicesProvider.class)
+    @ChoicesProvider(value = AlgorithmChoicesProvider.class)
     String m_variant = ALIGN_1;
 
 }
