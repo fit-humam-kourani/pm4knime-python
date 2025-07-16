@@ -5,18 +5,21 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
+import org.pm4knime.node.discovery.alpha.table.AlphaMinerTableNodeSettings.IsMaxOne;
+import org.pm4knime.node.logmanipulation.filter.knimetable.FilterByLengthTableNodeSettings.IsMinOne;
 
 
 @SuppressWarnings({"restriction"}) 
 public final class HybridMinerNodeSettings implements DefaultNodeSettings {
 
 	 @Widget(title = "Threshold for Cancellation of Place Iterator", description = "Threshold for early cancellation of place iterator: after x consecutive rejected places, the place iterator is canceled.")
-	 @NumberInputWidget(min = 1)
+	 @NumberInputWidget(minValidation=IsMinOne.class)
 	 int t_cancel = 1000;
 	
 	 
 	 @Widget(title = "Fitness Threshold", description = "Fitness threshold for the place evaluation method.")
-	 @NumberInputWidget(min = 0.0, max = 1.0)
+	 @NumberInputWidget(minValidation=IsNonNegativeValidation.class, maxValidation=IsMaxOne.class)
 	 double t_fitness = 0.8;	 
 	 
 	 

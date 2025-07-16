@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.deckfour.xes.model.XLog;
 import org.knime.core.data.DataTableSpec;
@@ -152,24 +154,37 @@ public class Table2XLogConverterNodeModel extends NodeModel {
     			!spec.getColumnSpec(tsName).getType().equals(ZonedDateTimeCellFactory.TYPE))
     		throw new InvalidSettingsException("The time stamp doesn't have the required format in LocalDateTime or ZonedDateTime");
     	    	
-    	if(Arrays.asList(m_settings.m_columnFilterTrace).contains(m_settings.case_id)) 
-    		if(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.event_class))
-    			if(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.life_cycle)
+    	String[] all_columns = spec.getColumnNames();
+		
+		String[] traceColumns = m_settings.m_columnFilterTrace.filterFromFullSpec(spec);
+		List<String> traceList = Arrays.asList(traceColumns);
+		Set<String> traceSet = new HashSet<>(traceList);
+		
+		List<String> eventList = new ArrayList<>();
+		for (String col : all_columns) {
+		    if (!traceSet.contains(col)) {
+		        eventList.add(col);
+		    }
+		}
+    	
+    	if(traceList.contains(m_settings.case_id)) 
+    		if(eventList.contains(m_settings.event_class))
+    			if(eventList.contains(m_settings.life_cycle)
     					|| m_settings.life_cycle.equals(SMTable2XLogConfig.CFG_NO_OPTION))
-    				if(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.time_stamp) 
+    				if(eventList.contains(m_settings.time_stamp) 
     						|| m_settings.time_stamp.equals(SMTable2XLogConfig.CFG_NO_OPTION))
     					return new PortObjectSpec[]{new XLogPortObjectSpec()};
    	
-    	if(!Arrays.asList(m_settings.m_columnFilterTrace).contains(m_settings.case_id)) 
-    		throw new InvalidSettingsException("Please ensure that Case ID is a trace attribute.");
-    	if(!Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.event_class))
-    		throw new InvalidSettingsException("Please ensure that Event Class is an event attribute.");
-    	if(!(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.life_cycle) 
+    	if(!traceList.contains(m_settings.case_id)) 
+    		throw new InvalidSettingsException("Please ensure that Case Identifier is a trace attribute.");
+    	if(!eventList.contains(m_settings.event_class))
+    		throw new InvalidSettingsException("Please ensure that Event Identifier is an event attribute.");
+    	if(!(eventList.contains(m_settings.life_cycle) 
     			|| m_settings.life_cycle.equals(SMTable2XLogConfig.CFG_NO_OPTION)))
-    		throw new InvalidSettingsException("Please ensure that Life Cycle is either set to MISSING or is an event attribute.");
-    	if(!(Arrays.asList(m_settings.m_columnFilterEvent).contains(m_settings.time_stamp) 
+    		throw new InvalidSettingsException("Please ensure that Life Cycle Identifier is either set to MISSING or is an event attribute.");
+    	if(!(eventList.contains(m_settings.time_stamp) 
     			|| m_settings.time_stamp.equals(SMTable2XLogConfig.CFG_NO_OPTION)))
-    		throw new InvalidSettingsException("Please ensure that Time Stamp is either set to MISSING or is an event attribute.");
+    		throw new InvalidSettingsException("Please ensure that Timestamp Identifier is either set to MISSING or is an event attribute.");
     	throw new InvalidSettingsException("Default error message");
     	
     }

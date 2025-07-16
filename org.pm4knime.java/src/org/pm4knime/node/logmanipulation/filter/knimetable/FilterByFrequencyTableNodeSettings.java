@@ -5,6 +5,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 import org.pm4knime.util.defaultnode.DefaultTableNodeSettings;
 
 
@@ -36,7 +37,7 @@ public final class FilterByFrequencyTableNodeSettings extends DefaultTableNodeSe
 	
 	@Widget(title = "Filtering Threshold", description = "The filtering threshold. It accepts both relative and absolute values (relative values between 0 and 1.0 and absolute integers greater than 1).")
 	@Layout(ExtendedDialogLayout.Settings.class)
-	@NumberInputWidget(min = 0.0)
+	@NumberInputWidget(minValidation=IsNonNegativeValidation.class)
 	double m_threshold = 0.2;
 	
 

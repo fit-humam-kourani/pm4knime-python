@@ -76,12 +76,12 @@ public class MergeTableNodeModel extends NodeModel {
 		BufferedDataTable log1 = ((BufferedDataTable) inData[1]);
 		
 		BufferedDataTable mlog = null;
-    	if(m_settings.m_strategy.equals(MergeTableNodeSettings.CFG_TRACE_STRATEGY[0])) {
+    	if(m_settings.m_strategy.equals(MergeTableNodeSettings.CFG_TRACE_STRATEGY.get(0))) {
 			mlog = MergeTableUtil.mergeTablesSeparate(log0, log1, m_settings.t_classifier_0, m_settings.t_classifier_1, exec);
-		} else if(m_settings.m_strategy.equals(MergeTableNodeSettings.CFG_TRACE_STRATEGY[1])) {
+		} else if(m_settings.m_strategy.equals(MergeTableNodeSettings.CFG_TRACE_STRATEGY.get(1))) {
 			mlog = MergeTableUtil.mergeLogsIgnoreTrace(log0, log1, m_settings.t_classifier_0, m_settings.t_classifier_1, exec);
 			
-		} else if(m_settings.m_strategy.equals(MergeTableNodeSettings.CFG_TRACE_STRATEGY[2])) {
+		} else if(m_settings.m_strategy.equals(MergeTableNodeSettings.CFG_TRACE_STRATEGY.get(2))) {
 			mlog = MergeTableUtil.mergeLogsMergeTraces(log0, log1, m_settings.t_classifier_0, m_settings.t_classifier_1, exec);
 		}else {
 			System.out.println("Invalid strategy!");
