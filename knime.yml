@@ -1,3 +1,4 @@
+feature_name: org.pm4knime.feature
 group_id: org.pm4knime
 name: python
 author: Fraunhofer Institute for Applied Information Technology FIT
@@ -10,4 +11,6 @@ license_file: LICENSE.TXT
 extension_module: org.pm4knime.python/extension
 java_bundles:
   - org.pm4knime.java
-feature_name: org.pm4knime.feature
+java_bundle_maven_goals:
+  org.pm4knime.java:
+    - generate-sources
