@@ -11,6 +11,3 @@ license_file: LICENSE.TXT
 extension_module: org.pm4knime.python/extension
 java_bundles:
   - org.pm4knime.java
-java_bundle_maven_goals:
-  org.pm4knime.java:
-    - generate-sources
