@@ -1,13 +1,7 @@
 package org.pm4knime.node.conversion.pt2pn;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
@@ -15,17 +9,17 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.portobject.ProcessTreePortObject;
 import org.pm4knime.portobject.ProcessTreePortObjectSpec;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.acceptingpetrinet.models.impl.AcceptingPetriNetFactory;
-import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.processtree.ProcessTree;
 
 /**
@@ -34,102 +28,116 @@ import org.processmining.processtree.ProcessTree;
  *
  * @author Kefang Ding
  */
+
+@SuppressWarnings("restriction")
 public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	protected PortObject pnPO;
 	protected ProcessTreePortObject ptPO;
-    /**
-     * Constructor for the node model.
-     */
-    protected PT2PNConverterNodeModel() {
-    	super(new PortType[] { ProcessTreePortObject.TYPE },
-				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
-    }
 
-    
-    @Override
-    protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView,
-        final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        return new PortObject[]{pnPO};
-    }
+	/**
+	 * Constructor for the node model.
+	 */
+	//    protected PT2PNConverterNodeModel() {
+	//    	super(new PortType[] { ProcessTreePortObject.TYPE },
+	//				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
+	//    }
+
+	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
+
+	private final Class<EmptyNodeSettings> m_settingsClass;
+
+
+	public PT2PNConverterNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
+		// TODO Auto-generated constructor stub
+		super(new PortType[] { ProcessTreePortObject.TYPE },
+				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
+		m_settingsClass = modelSettingsClass;
+	}
+
+	@Override
+	protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView,
+			final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+		return new PortObject[]{pnPO};
+	}
 	
 	@Override
 	protected void performExecuteCreateView(PortObject[] inObjects, ExecutionContext exec) throws Exception {
-		
-    	ptPO = (ProcessTreePortObject) inObjects[0];
-    	ProcessTree tree = ptPO.getTree();
-    	
-    	ProcessTree2Petrinet converter = new ProcessTree2Petrinet();
 
-    	ProcessTree2Petrinet.PetrinetWithMarkings pn = converter.convert(tree, false);
+		ptPO = (ProcessTreePortObject) inObjects[0];
+		ProcessTree tree = ptPO.getTree();
+
+		ProcessTree2Petrinet converter = new ProcessTree2Petrinet();
+
+		ProcessTree2Petrinet.PetrinetWithMarkings pn = converter.convert(tree, false);
 
 		AcceptingPetriNet anet = AcceptingPetriNetFactory.createAcceptingPetriNet(pn.petrinet, pn.initialMarking,
 				pn.finalMarking);
-
-		pnPO = new PetriNetPortObject(anet);
-        
 		
-		String dotstr;
+		PetriNetPortObject pn_po = new PetriNetPortObject(anet);
+		
+		pnPO = pn_po;
+
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
-
-		synchronized (getLock()) {
-			AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) pnPO;
-			Dot dot =  port_obj.getDotPanel().getDot();
-			dotstr = dot.toString();
-		}
-		representation.setDotstr(dotstr);
-
-	}
-    
-   
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
-            throws InvalidSettingsException {
-    	if(!inSpecs[0].getClass().equals(ProcessTreePortObjectSpec.class)) 
-    		throw new InvalidSettingsException("Input is not a valid process tree!");
-    	
-    	ProcessTreePortObjectSpec logSpec = (ProcessTreePortObjectSpec) inSpecs[0];
 		
+		representation.setJSONString(pn_po.getJSON());
+		
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
+
+		if (m_settings == null) {
+			m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+		}
+
+		if(!inSpecs[0].getClass().equals(ProcessTreePortObjectSpec.class)) 
+			throw new InvalidSettingsException("Input is not a valid process tree!");
+
+		ProcessTreePortObjectSpec logSpec = (ProcessTreePortObjectSpec) inSpecs[0];
+
 		return configureOutSpec(logSpec);
-    }
+	}
 
-    
-    protected PortObjectSpec[] configureOutSpec(ProcessTreePortObjectSpec logSpec) {
 
-        return new PortObjectSpec[]{new PetriNetPortObjectSpec()};
-    }
+	protected PortObjectSpec[] configureOutSpec(ProcessTreePortObjectSpec logSpec) {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) {
-         // TODO: generated method stub
-    }
+		return new PortObjectSpec[]{new PetriNetPortObjectSpec()};
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
-        // TODO: generated method stub
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void saveSettingsTo(final NodeSettingsWO settings) {
+		// TODO: generated method stub
+		if (m_settings != null) {
+			DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void validateSettings(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
-        // TODO: generated method stub
-    }
-    
-        
-    @Override
+
+	@Override
+	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
+		m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
+		// TODO: generated method stub
+	}
+
+
+	@Override
 	protected void performReset() {
 	}
 
@@ -137,13 +145,13 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	protected void useCurrentValueAsDefault() {
 	}
 
-	
+
 	@Override
-    protected boolean generateImage() {
-        return false;
-    }
-	
-	
+	protected boolean generateImage() {
+		return false;
+	}
+
+
 	@Override
 	public JSGraphVizViewRepresentation createEmptyViewRepresentation() {
 		return new JSGraphVizViewRepresentation();
@@ -153,7 +161,7 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	public JSGraphVizViewValue createEmptyViewValue() {
 		return new JSGraphVizViewValue();
 	}
-	
+
 	@Override
 	public boolean isHideInWizard() {
 		return false;
@@ -171,8 +179,8 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	@Override
 	public void saveCurrentValue(NodeSettingsWO content) {
 	}
-	
-	
+
+
 	@Override
 	public String getJavascriptObjectID() {
 		return "org.pm4knime.node.visualizations.jsgraphviz.component";
@@ -189,8 +197,7 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	@Override
 	public void setInternalPortObjects(PortObject[] portObjects) {
 		ptPO = (ProcessTreePortObject) portObjects[0];
-		
-	}
-	
-}
 
+	}
+
+}

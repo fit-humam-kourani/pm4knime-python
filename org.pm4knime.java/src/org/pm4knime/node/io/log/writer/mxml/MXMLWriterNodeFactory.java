@@ -1,64 +1,35 @@
 package org.pm4knime.node.io.log.writer.mxml;
 
-import java.util.Optional;
-
-import org.knime.core.node.ConfigurableNodeFactory;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.context.NodeCreationConfiguration;
-import org.knime.filehandling.core.port.FileSystemPortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.portobject.XLogPortObject;
 
+@SuppressWarnings("restriction")
+public class MXMLWriterNodeFactory extends WebUINodeFactory<MXMLWriterNodeModel> {
 
-public class MXMLWriterNodeFactory 
-        extends ConfigurableNodeFactory<MXMLWriterNodeModel> {
-	
-	
-	public static final String CONNECTION_INPUT_PORT_GRP_NAME = "File System Connection";
-    static final String Log_INPUT_PORT_GRP_NAME = "Event Log";
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder() //
+        .name("MXML Writer") //
+        .icon("../../../write.png") //
+        .shortDescription("This node exports an event log into an MXML file.") //
+        .fullDescription("""
+                <p>
+                This node exports an event log into an MXML file or a compressed MXML file (gz).
+                </p>
+                """) //
+        .modelSettingsClass(MXMLWriterNodeSettings.class) //
+        .addInputPort("Event Log", XLogPortObject.TYPE, "an event log")
+        .nodeType(NodeType.Sink)
+		.build();
 
-	private MXMLWriterNodeModel model;
-
-	@Override
-	protected MXMLWriterNodeModel createNodeModel(NodeCreationConfiguration creationConfig) {
-		// TODO Auto-generated method stub
-		this.model = new MXMLWriterNodeModel(creationConfig);
-		return this.model;
-	}
-
-    
-    @Override
-    public int getNrNodeViews() {
-        return 0;
+    public MXMLWriterNodeFactory() {
+        super(CONFIG);
     }
 
-    
     @Override
-    public NodeView<MXMLWriterNodeModel> createNodeView(final int viewIndex,
-            final MXMLWriterNodeModel nodeModel) {
-        return null;
+    public MXMLWriterNodeModel createNodeModel() {
+        return new MXMLWriterNodeModel(CONFIG);
     }
 
-    
-    @Override
-    public boolean hasDialog() {
-        return true;
-    }
-
-    
-    @Override
-	protected NodeDialogPane createNodeDialogPane(NodeCreationConfiguration creationConfig) {
-		// TODO Auto-generated method stub
-		return new MXMLWriterNodeDialog(creationConfig, this.model);
-	}
-    
-    @Override
-    protected Optional<PortsConfigurationBuilder> createPortsConfigBuilder() {
-        final PortsConfigurationBuilder builder = new PortsConfigurationBuilder();
-        builder.addOptionalInputPortGroup(CONNECTION_INPUT_PORT_GRP_NAME, FileSystemPortObject.TYPE);
-        builder.addFixedInputPortGroup(Log_INPUT_PORT_GRP_NAME, XLogPortObject.TYPE);
-        return Optional.of(builder);
-    }
 
 }
 

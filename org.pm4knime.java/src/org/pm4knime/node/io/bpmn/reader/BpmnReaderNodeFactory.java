@@ -1,62 +1,38 @@
 package org.pm4knime.node.io.bpmn.reader;
 
-import java.util.Optional;
-
-import org.knime.core.node.ConfigurableNodeFactory;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.context.NodeCreationConfiguration;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.filehandling.core.port.FileSystemPortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.HybridPetriNetPortObject;
+import org.pm4knime.portobject.BpmnPortObject;
+import org.pm4knime.util.defaultnode.ReaderNodeSettings;
 
+@SuppressWarnings("restriction")
+public class BpmnReaderNodeFactory extends WebUINodeFactory<BpmnReaderNodeModel> implements
+		WizardNodeFactoryExtension<BpmnReaderNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
 
-public class BpmnReaderNodeFactory extends ConfigurableNodeFactory<BpmnReaderNodeModel> implements WizardNodeFactoryExtension<BpmnReaderNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+	BpmnReaderNodeModel node;
 
-	private static final String VARIABLE_OUTPUT_PORT_GRP_NAME = "Variable Output Port";
-    static final String CONNECTION_INPUT_PORT_GRP_NAME = "File System Connection";
-    
-	@Override
-	public boolean hasDialog() {
-		return true;
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("BPMN Reader").icon("../../read.png")
+			.shortDescription("Import a BPMN model.")
+			.fullDescription("This node imports a BPMN model from a BPMN file. BPMN, or Business Process Model and Notation, encompasses several key elements that collectively define and illustrate a business process.")
+			.modelSettingsClass(ReaderNodeSettings.class)
+			.addOutputPort("BPMN", BpmnPortObject.TYPE, "a BPMN model")
+			.nodeType(NodeType.Source).build();
+
+	public BpmnReaderNodeFactory() {
+		super(CONFIG);
 	}
 
-
-
-	@Override
-	protected int getNrNodeViews() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public NodeView<BpmnReaderNodeModel> createNodeView(int viewIndex, BpmnReaderNodeModel nodeModel) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	protected Optional<PortsConfigurationBuilder> createPortsConfigBuilder() {
-		final PortsConfigurationBuilder builder = new PortsConfigurationBuilder();
-        builder.addOptionalInputPortGroup(CONNECTION_INPUT_PORT_GRP_NAME, FileSystemPortObject.TYPE);
-		builder.addFixedOutputPortGroup(VARIABLE_OUTPUT_PORT_GRP_NAME, new PortType[] { PortTypeRegistry.getInstance().getPortType(HybridPetriNetPortObject.class, false) });
-		return Optional.of(builder);
+	protected BpmnReaderNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
 	}
 
 	@Override
-	protected BpmnReaderNodeModel createNodeModel(NodeCreationConfiguration creationConfig) {
-		// TODO Auto-generated method stub
-		return new BpmnReaderNodeModel((creationConfig.getPortConfig().orElseThrow(IllegalStateException::new)));
+	public BpmnReaderNodeModel createNodeModel() {
+		node = new BpmnReaderNodeModel(ReaderNodeSettings.class);
+		return node;
 	}
-
-	@Override
-	protected NodeDialogPane createNodeDialogPane(NodeCreationConfiguration creationConfig) {
-		// TODO Auto-generated method stub
-		return new BpmnReaderNodeDialog(creationConfig.getPortConfig().orElseThrow(IllegalStateException::new));
-	}
-
 }

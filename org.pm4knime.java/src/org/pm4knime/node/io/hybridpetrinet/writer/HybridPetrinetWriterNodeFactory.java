@@ -1,73 +1,35 @@
 package org.pm4knime.node.io.hybridpetrinet.writer;
 
-import java.util.Optional;
-
-import org.knime.core.node.ConfigurableNodeFactory;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.context.NodeCreationConfiguration;
-import org.knime.filehandling.core.port.FileSystemPortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.portobject.HybridPetriNetPortObject;
 
-/**
- * <code>NodeFactory</code> for the "PetrinetWriter" Node.
- * Write Petri net into file to implement the serialization.
- *
- * @author 
- */
-public class HybridPetrinetWriterNodeFactory 
-        extends ConfigurableNodeFactory<HybridPetrinetWriterNodeModel> {
+@SuppressWarnings("restriction")
+public class HybridPetrinetWriterNodeFactory extends WebUINodeFactory<HybridPetrinetWriterNodeModel> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder() //
+        .name("Hybrid Petri Net Writer") //
+        .icon("../../write.png") //
+        .shortDescription("Export a hybrid Petri net into a PNML file.") //
+        .fullDescription("""
+                <p>
+                This nodes exports a hybrid Petri net into a PMML file.
+                </p>
+                """) //
+        .modelSettingsClass(HybridPetrinetWriterNodeSettings.class) //
+        .addInputPort("Hybrid Petri Net", HybridPetriNetPortObject.TYPE, "a hybrid Petri net")
+        .nodeType(NodeType.Sink)
+		.build();
 
-	    private HybridPetrinetWriterNodeModel model;
-	    public static final String CONNECTION_INPUT_PORT_GRP_NAME = "File System Connection";
-	    static final String INPUT_PORT_GRP_NAME = "Hybrid Petri Net";
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<HybridPetrinetWriterNodeModel> createNodeView(final int viewIndex,
-            final HybridPetrinetWriterNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-        return true;
+    public HybridPetrinetWriterNodeFactory() {
+        super(CONFIG);
     }
 
     @Override
-	protected Optional<PortsConfigurationBuilder> createPortsConfigBuilder() {
-		final PortsConfigurationBuilder builder = new PortsConfigurationBuilder();
-        builder.addOptionalInputPortGroup(CONNECTION_INPUT_PORT_GRP_NAME, FileSystemPortObject.TYPE);
-        builder.addFixedInputPortGroup(INPUT_PORT_GRP_NAME, HybridPetriNetPortObject.TYPE);
-        return Optional.of(builder);
-	}
+    public HybridPetrinetWriterNodeModel createNodeModel() {
+        return new HybridPetrinetWriterNodeModel(CONFIG);
+    }
 
-	@Override
-	protected HybridPetrinetWriterNodeModel createNodeModel(NodeCreationConfiguration creationConfig) {
-		this.model = new HybridPetrinetWriterNodeModel(creationConfig);
-		return this.model;
-	}
-	
-
-	@Override
-	protected NodeDialogPane createNodeDialogPane(NodeCreationConfiguration creationConfig) {
-		return new HybridPetrinetWriterNodeDialog(creationConfig, this.model);
-	}
 
 }
 

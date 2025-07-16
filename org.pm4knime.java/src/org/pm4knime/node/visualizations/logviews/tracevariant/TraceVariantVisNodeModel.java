@@ -2,6 +2,7 @@ package org.pm4knime.node.visualizations.logviews.tracevariant;
 
 import org.knime.base.data.xml.SvgCell;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -15,30 +16,37 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.util.defaultnode.TraceVariantRepresentation;
+import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 
 
+@SuppressWarnings("restriction")
 public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVariantVisViewRepresentation, TraceVariantVisViewValue> implements PortObjectHolder {
 
 	// Input and output port types
 	private static PortType[] IN_TYPES = {BufferedDataTable.TYPE};
 	private static PortType[] OUT_TYPES = {ImagePortObject.TYPE};
-	AbstractDotPanelPortObject port_obj;
+	AbstractJSONPortObject port_obj;
 	
 	public static final String KEY_TRACE_CLASSIFIER = "Trace Classifier";
 	public static final String KEY_EVENT_CLASSIFIER = "Event Classifier";
 	public static final String KEY_CLASSIFIER_SET = "Classifier Set";
 	
-	protected String t_classifier;
-	protected String e_classifier;
-	protected Boolean generate_image = false;
+//	protected String t_classifier;
+//	protected String e_classifier;
+	protected Boolean generate_image = true;
 	
 	protected BufferedDataTable table;
+	
+	protected TraceVariantVisNodeSettings m_settings = new TraceVariantVisNodeSettings();
+	private final Class<TraceVariantVisNodeSettings> m_settingsClass;
 
-	public TraceVariantVisNodeModel() {
+	public TraceVariantVisNodeModel(Class<TraceVariantVisNodeSettings> modelSettingsClass) {
 		super(IN_TYPES, OUT_TYPES, "Trace Variant Explorer");
+		m_settingsClass = modelSettingsClass;
 	}
 
 	@Override
@@ -78,7 +86,7 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 		if (!inSpecs[0].getClass().equals(DataTableSpec.class))
 			throw new InvalidSettingsException("Input is not a valid Table!");
-		if(e_classifier == null || t_classifier == null)
+		if(m_settings.e_classifier == null || m_settings.t_classifier == null)
 			throw new InvalidSettingsException("Classifiers are not set!");
 		PortObjectSpec imageSpec;
 		imageSpec = new ImagePortObjectSpec(SvgCell.TYPE);
@@ -93,6 +101,12 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 	@Override
 	protected void performExecuteCreateView(PortObject[] inObjects, ExecutionContext exec) throws Exception {
 		table = (BufferedDataTable)inObjects[0];
+		final var dts = table.getDataTableSpec();
+		String[] sorting_columns = {m_settings.t_classifier, m_settings.time_classifier};
+        final var sorter = new BufferedDataTableSorter(table, DefaultTableMinerNodeModel.toRowComparator(dts, sorting_columns));
+        sorter.setSortInMemory(false);
+        final BufferedDataTable sortedTable = sorter.sort(exec); 
+        table = sortedTable;
 		TraceVariantVisViewRepresentation representation = getViewRepresentation();
 		
 		String[] columns = table.getDataTableSpec().getColumnNames();
@@ -104,7 +118,7 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 		}
 		representation.setData(data);
 		
-		TraceVariantRepresentation varinats = new TraceVariantRepresentation(table, t_classifier, e_classifier);
+		TraceVariantRepresentation varinats = new TraceVariantRepresentation(table, m_settings.t_classifier, m_settings.e_classifier);
 		representation.setVariants(varinats);
 	}
 	
@@ -131,9 +145,12 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings) {
-		settings.addString(KEY_TRACE_CLASSIFIER, t_classifier);
-		settings.addString(KEY_EVENT_CLASSIFIER, e_classifier);
-		settings.addBoolean("generate_image", generate_image);
+//		settings.addString(KEY_TRACE_CLASSIFIER, m_settings.t_classifier);
+//		settings.addString(KEY_EVENT_CLASSIFIER, m_settings.e_classifier);
+//		settings.addBoolean("generate_image", generate_image);		
+		if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
 	}
 
 	@Override
@@ -142,9 +159,10 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 
 	@Override
 	protected void loadValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
-		t_classifier = settings.getString(KEY_TRACE_CLASSIFIER);
-		e_classifier = settings.getString(KEY_EVENT_CLASSIFIER);
-		generate_image = settings.getBoolean("generate_image", false);
+//		m_settings.t_classifier = settings.getString(KEY_TRACE_CLASSIFIER);
+//		m_settings.e_classifier = settings.getString(KEY_EVENT_CLASSIFIER);
+//		generate_image = settings.getBoolean("generate_image", false);	
+		m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
 	}
 
 	public PortObject[] getInternalPortObjects() {
@@ -158,21 +176,21 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 
 	
 	public String getEventClassifier() {
-		return e_classifier;		
+		return m_settings.e_classifier;		
 	}
 	
 	
 	public String getTraceClassifier() {
-		return t_classifier;		
+		return m_settings.t_classifier;		
 	}
 	
 	public void setTraceClassifier(String c) {
-		t_classifier = c;
+		m_settings.t_classifier = c;
 	}
 
 
 	public void setEventClassifier(String c) {
-		e_classifier = c;
+		m_settings.e_classifier = c;
 	}
 	
 	

@@ -1,113 +1,65 @@
+let tb_flag = 0;
+let process_tree_flag = 0;
+
 (jsgraphviz = function() {
 
-    let _representation;
-    let _value;
-    let _svg;
+	let _representation;
+	let _value;
+	let _paper;
 
-    let view = {};
+	let view = {};
 
+	view.init = function(representation, value) {
+		_representation = representation;
+		_value = value;
 
+		if (!document.getElementById('loading')) {
+			const loadingDiv = document.createElement('div');
+			loadingDiv.id = 'loading';
 
-    view.init = function(representation, value) {
-        _representation = representation;
-        _value = value;
+			const spinnerDiv = document.createElement('div');
+			spinnerDiv.className = 'spinner';
 
-        console.error('representation.dotstr: ', representation.dotstr);
-        vis = visu(representation.dotstr);
-        
-    };
+			loadingDiv.appendChild(spinnerDiv);
+			document.body.appendChild(loadingDiv);
+		}
 
-    view.getComponentValue = () => {
-        _value.dot = document.getElementById("dot").value;
+		document.getElementById('loading').style.display = 'block';
 
-        return _value;
-    };
-    
-    view.getSVG = () => {
-        return (new XMLSerializer()).serializeToString(_svg);;
-    };
-    
-    function addScript( src ) {
-      var s = document.createElement( 'script' );
-      s.setAttribute( 'src', src );
-      document.body.appendChild( s );
-    }
-  
-    function visu( src ) {
+		setTimeout(() => {
+			document.getElementById('loading').style.display = 'none';
 
-        //addScript( '/Users/Ralf/Documents/Git/knime/pm4knime-core/pm4knime-core/plugin/js-lib/viz/full.render.js')
-        //addScript( '/Users/Ralf/Documents/Git/knime/pm4knime-core/pm4knime-core/plugin/js-lib/viz/viz.js' )
+			let jsonDataFromJava = JSON.parse(representation.json);
+			let nodes = jsonDataFromJava.nodes;
+			let edges = jsonDataFromJava.links;
+			let xml = jsonDataFromJava.xml;
+			let layouter = jsonDataFromJava.layouter;
 
+			if (xml) {
+				let xmlString = xml[0];
+				createBpmn(xmlString, layouter[0]);
+			} else {
+				createGraphElements();
+				_paper = createPaper(nodes, edges);
+			}
+		}, 200);
+	};
 
+	view.getComponentValue = () => {
+		return _value;
+	};
 
-        var viz = new Viz();
+	view.validate = function() {
+		return true;
+	};
 
-        viz.renderSVGElement(src)
-          .then(function(element) { 
-               
-           _svg = element;
-           
-           var exportA = document.createElement('a');
-           exportA.innerHTML = `<button type="button">Export</button>`;
-           exportA.href = viz.generate_url(element);
-           exportA.download = "js-view.svg";
-           
-           
+	view.getSVG = () => {
+		if (_paper) {
+			return createSVG(_paper);
+		} else {
+			return null;
+		}
+	};
 
-           var zoomIn = document.createElement('a');
-           zoomIn.innerHTML = `<button type="button">Zoom in</button>`;
-           zoomIn.addEventListener( 'click', function(){
-               element.setAttribute("max-height", "none"); 
-               element.setAttribute("max-width", "none"); 
-               var width = element.clientWidth*1.1; 
-               var height = element.clientHeight*1.1; 
-               element.setAttribute("width", width + "px"); 
-               element.setAttribute("height", height + "px"); 
-               
-           });
-           
-           var zoomOut = document.createElement('a');
-           zoomOut.innerHTML = `<button type="button">Zoom out</button>`;
-           zoomOut.addEventListener( 'click', function(){
-               element.setAttribute("max-height", "none"); 
-               element.setAttribute("max-width", "none"); 
-               var width = element.clientWidth*0.9; 
-               var height = element.clientHeight*0.9; 
-               element.setAttribute("width", width + "px"); 
-               element.setAttribute("height", height + "px"); 
-           });
-           
-           var parent1 = document.createElement("div");
-           parent1.style.top = "0px";
-           parent1.style.left = "0px";
-           parent1.style.position = "fixed";
-           parent1.style.border = "groove #e6e6e6";
-           parent1.appendChild(exportA);
-           parent1.appendChild(zoomIn);
-           parent1.appendChild(zoomOut);
-           document.body.appendChild(parent1);     
-                     
-           var parent2 = document.createElement("div");
-           parent2.style.top = "50px";
-           parent2.style.left = "0px";
-           parent2.style.position = "absolute";
-           parent2.appendChild(element);              
-           document.body.appendChild(parent2); 
-            
-          })
-          .catch(error => {
-            // Create a new Viz instance (@see Caveats page for more info)
-            viz = new Viz();
-
-            // Possibly display the error
-            console.error(error);
-          });     
-          
-          
-
-    }
-    
-    
-
-    return view;
+	return view;
 }());

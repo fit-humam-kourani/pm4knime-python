@@ -1,67 +1,55 @@
 package org.pm4knime.node.discovery.inductiveminer.Table;
 
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
+import org.pm4knime.portobject.PetriNetPortObject;
+import org.pm4knime.portobject.ProcessTreePortObject;
+import org.pm4knime.portobject.ProcessTreePortObjectSpec;
 
-/**
- * This is an example implementation of the node factory of the
- * "InductiveMinerTable" node.
- *
- * @author 
- */
-public class InductiveMinerTableNodeFactory extends NodeFactory<InductiveMinerTableNodeModel> implements WizardNodeFactoryExtension<InductiveMinerTableNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+
+@SuppressWarnings("restriction")
+public class InductiveMinerTableNodeFactory extends WebUINodeFactory<InductiveMinerTableNodeModel> implements WizardNodeFactoryExtension<InductiveMinerTableNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+
 	InductiveMinerTableNodeModel node;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public InductiveMinerTableNodeModel createNodeModel() {
-		// Create and return a new node model.
-        node = new InductiveMinerTableNodeModel();
-        return node;
-    }
+	public static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Inductive Miner (Table)")
+			.icon("../../category-discovery.png")
+			.shortDescription("This node implements the Inductive Miner to discover a process tree from an event table.")
+			.fullDescription("This node is used to discover a process tree from an event table.\r\n"
+					+ "        A process tree is a block-structured process model where the (inner) nodes are operators (such as sequence, choice, parallel, and loop) and the leaves are activities. \r\n"
+					+ "        The inductive miner guarantees the discovery of a sound process model. \r\n"
+					+ "		The discovered process tree can be converted into a Petri net.") 
+			.modelSettingsClass(InductiveMinerTableNodeSettings.class)//
+			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
+			.addOutputPort("Process Tree", ProcessTreePortObject.TYPE, "a process tree")//
+			.nodeType(NodeType.Learner)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<InductiveMinerTableNodeModel> createNodeView(final int viewIndex,
-            final InductiveMinerTableNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
+	public InductiveMinerTableNodeFactory() {
+		super(CONFIG);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return true;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return new InductiveMinerTableNodeDialog(node);
-    }
+	protected InductiveMinerTableNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public InductiveMinerTableNodeModel createNodeModel() {
+		node = new InductiveMinerTableNodeModel(InductiveMinerTableNodeSettings.class);
+		return node;
+	}
 
 }
 

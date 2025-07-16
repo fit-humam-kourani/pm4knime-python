@@ -1,67 +1,53 @@
 package org.pm4knime.node.visualizations.jsgraphviz;
 
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.portobject.ProcessTreePortObject;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.image.ImagePortObject;
+import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 
-/**
- * This is an example implementation of the node factory of the
- * "JSGraphViz" node.
- *
- * @author 
- */
-public class JSGraphVizPTNodeFactory 
-        extends NodeFactory<JSGraphVizAbstractModel> implements WizardNodeFactoryExtension<JSGraphVizAbstractModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+@SuppressWarnings("restriction")
+public class JSGraphVizPTNodeFactory extends WebUINodeFactory<JSGraphVizAbstractModel> implements WizardNodeFactoryExtension<JSGraphVizAbstractModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+	
+	JSGraphVizAbstractModel node;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JSGraphVizAbstractModel createNodeModel() {
-    	
-    	PortType[] IN_TYPES = {ProcessTreePortObject.TYPE};
-        return new JSGraphVizAbstractModel(IN_TYPES, "Process Tree JS View");
-    }
+	private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Process Tree To Image")
+			.icon("./tree.png")
+			.shortDescription("JavaScript Visualizer for Process Trees")
+			.fullDescription("This node implements a JavaScript visualization of Process Trees.\r\n"
+					+ "    <br />\r\n"
+					+ "    A process tree is a block-structured process model where the (inner) nodes are operators (sequence, choice, parallel, and loop) and the leaves are activities. \r\n"
+					+ "    <br /> \r\n"
+					+ "    The \"seq\" operator executes its children from right to left.\r\n"
+					+ "    <br />\r\n"
+					+ "    The \"xor\" operator executes one of its children.\r\n"
+					+ "    <br />\r\n"
+					+ "    The \"and\" operator executes the children in parallel.\r\n"
+					+ "    <br />\r\n"
+					+ "    The \"xor loop\" operator models a do-redo loop. The first child is used as the do part, while an exclusive choice between the other children is used as the redo part.")//
+			.modelSettingsClass(EmptyNodeSettings.class)//
+			.addInputPort("Process Tree", ProcessTreePortObject.TYPE ,"a process tree")//
+			.addOutputPort("Image", ImagePortObject.TYPE, "an SVG image")//
+			.nodeType(NodeType.Visualizer)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
+	public JSGraphVizPTNodeFactory() {
+		super(CONFIG);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<JSGraphVizAbstractModel> createNodeView(final int viewIndex,
-            final JSGraphVizAbstractModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return false;
-    }
+	protected JSGraphVizPTNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return null;
-    }
 
+	@Override
+	public JSGraphVizAbstractModel createNodeModel() {
+		PortType[] IN_TYPES = {ProcessTreePortObject.TYPE};
+		node = new JSGraphVizAbstractModel(IN_TYPES, "Process Tree JS View", EmptyNodeSettings.class);
+		return node;
+	}
 }
-

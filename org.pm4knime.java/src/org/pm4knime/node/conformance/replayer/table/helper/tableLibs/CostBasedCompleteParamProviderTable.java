@@ -61,8 +61,7 @@ public class CostBasedCompleteParamProviderTable implements IPNReplayParamProvid
 			if (ui instanceof CostBasedCompleteUITable) {
 				CostBasedCompleteUITable cbui = (CostBasedCompleteUITable) ui;
 				
-				CostBasedCompleteParamTable paramObj = new CostBasedCompleteParamTable(cbui.getMapEvClassToCost(), cbui.getTransitionWeight());
-				paramObj.setMapSync2Cost(cbui.getSyncCost());
+				CostBasedCompleteParamTable paramObj = new CostBasedCompleteParamTable(cbui.getMapEvClassToCost(), cbui.getTransitionWeight(), cbui.getSyncCost());
 				paramObj.setMaxNumOfStates(cbui.getMaxNumOfStates());
 				paramObj.setInitialMarking(initMarking);
 				paramObj.setFinalMarkings(finalMarkings);

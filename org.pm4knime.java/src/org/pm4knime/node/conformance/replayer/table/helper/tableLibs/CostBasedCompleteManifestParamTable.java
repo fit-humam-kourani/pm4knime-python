@@ -23,15 +23,15 @@ public class CostBasedCompleteManifestParamTable extends CostBasedCompleteParamT
 	 * @param moveModelTrans
 	 * @param restrictedTrans
 	 */
-	public CostBasedCompleteManifestParamTable(Map<String, Integer> mapEvClass2Cost,
-			Map<Transition, Integer> mapTrans2Cost, Marking initMarking, Marking[] finalMarkings, int maxNumOfStates,
-			Set<Transition> restrictedTrans) {
-		super(mapEvClass2Cost, mapTrans2Cost);
-		setInitialMarking(initMarking);
-		setFinalMarkings(finalMarkings);
-		setMaxNumOfStates(maxNumOfStates);
-		this.restrictedTrans = restrictedTrans;
-	}
+//	public CostBasedCompleteManifestParamTable(Map<String, Integer> mapEvClass2Cost,
+//			Map<Transition, Integer> mapTrans2Cost, Marking initMarking, Marking[] finalMarkings, int maxNumOfStates,
+//			Set<Transition> restrictedTrans) {
+//		super(mapEvClass2Cost, mapTrans2Cost);
+//		setInitialMarking(initMarking);
+//		setFinalMarkings(finalMarkings);
+//		setMaxNumOfStates(maxNumOfStates);
+//		this.restrictedTrans = restrictedTrans;
+//	}
 	
 	/**
 	 * Constructor with mapping from sync moves to cost
@@ -47,8 +47,7 @@ public class CostBasedCompleteManifestParamTable extends CostBasedCompleteParamT
 	public CostBasedCompleteManifestParamTable(Map<String, Integer> mapEvClass2Cost,
 			Map<Transition, Integer> mapTrans2Cost, Map<Transition, Integer> mapSync2Cost, Marking initMarking, Marking[] finalMarkings, int maxNumOfStates,
 			Set<Transition> fragmentTrans) {
-		super(mapEvClass2Cost, mapTrans2Cost);
-		setMapSync2Cost(mapSync2Cost);
+		super(mapEvClass2Cost, mapTrans2Cost, mapSync2Cost);
 		setInitialMarking(initMarking);
 		setFinalMarkings(finalMarkings);
 		setMaxNumOfStates(maxNumOfStates);

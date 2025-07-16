@@ -2,7 +2,14 @@ package org.pm4knime.node.conformance.table.performance;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
@@ -20,13 +27,17 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.pm4knime.node.conformance.performance.PerfCheckerInfoAssistant;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestFlattenerTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestReplayerParameterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PerfCounterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ReliablePerfCounterTable;
-import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.SMAlignmentReplayParameterTable;
+import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ReplayerUtilTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.TableEventLog;
+import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.TransClass2PatternMapTable;
+import org.pm4knime.node.conformance.replayer.table.helper.DefaultPNReplayerTableUtil.ParameterGenerator;
+import org.pm4knime.node.conformance.replayer.table.helper.PNReplayerTableNodeSettings;
+import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.EvClassPatternTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ManifestEvClassPatternTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ManifestFactoryTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.ManifestTable;
@@ -39,9 +50,8 @@ import org.pm4knime.util.defaultnode.DefaultNodeModel;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
-//import org.processmining.plugins.manifestanalysis.visualization.performance.PerfCounter;
-//import org.processmining.plugins.manifestanalysis.visualization.performance.ReliablePerfCounter;
-
+import org.processmining.plugins.petrinet.manifestreplayer.transclassifier.TransClass;
+import org.processmining.plugins.petrinet.manifestreplayer.transclassifier.TransClasses;
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
 
@@ -70,11 +80,14 @@ import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
  *            +
  *            https://github.com/rapidprom/rapidprom-source/blob/master/src/main/java/org/rapidprom/operators/conformance/PerformanceConformanceAnalysisOperator.java
  */
+@SuppressWarnings("restriction")
 public class PerformanceCheckerNodeModel extends DefaultNodeModel implements PortObjectHolder {
 	private static final NodeLogger logger = NodeLogger.getLogger(PerformanceCheckerNodeModel.class);
 
 	private static final String CFG_MC_MANIFEST = "Model Content for Manifest";
-
+	
+	protected PerformanceCheckerNodeSettings m_settings = new PerformanceCheckerNodeSettings();
+    private final Class<PerformanceCheckerNodeSettings> m_settingsClass;
 
 	// we create a similar nodeSetting like Conformance Checking?
 	SMPerformanceParameter m_parameter;
@@ -87,13 +100,25 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 
 	private ExecutionMonitor exe;
 
-	protected PerformanceCheckerNodeModel() {
+	
 
+//	protected PerformanceCheckerNodeModel() {
+//
+//		// TODO: Specify the amount of input and output ports needed.
+//		super(new PortType[] { RepResultPortObjectTable.TYPE },
+//				new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE, BufferedDataTable.TYPE });
+//		m_parameter = new SMPerformanceParameter("Performance Parameter");
+//	}
+
+
+	public PerformanceCheckerNodeModel(Class<PerformanceCheckerNodeSettings> modelSettingsClass) {
 		// TODO: Specify the amount of input and output ports needed.
 		super(new PortType[] { RepResultPortObjectTable.TYPE },
 				new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE, BufferedDataTable.TYPE });
 		m_parameter = new SMPerformanceParameter("Performance Parameter");
+		m_settingsClass = modelSettingsClass;
 	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -109,18 +134,11 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 		AcceptingPetriNet anet = repResultPO.getNet();
 
 		PNRepResult repResult = repResultPO.getRepResult();
+		
+		int[] default_costs = repResultPO.getDefaultMoveCosts();
+		Map<String, Integer>[] cost_maps = repResultPO.getMoveCostMaps();
 
-		// pass the values of specParameter to m_parameter
-		// we can do it when it is in configuration state, or here??
-		SMAlignmentReplayParameterTable specParameter = m_rSpec.getMParameter();
-		// for the values specParameter has, we set the needed parameter there
-		m_parameter.setClassifierSet(specParameter.getClassifierSet().getStringArrayValue());
-
-		// we can also get the event classifer by checking the map from rSpec, it takes
-		// more time..
-//		XEventClassifier eventClassifier = XLogUtil.getEventClassifier(log,
-//				specParameter.getMClassifierName().getStringValue());
-		PNManifestReplayerParameterTable manifestParameters = specParameter.getPerfParameter(log, anet);
+		PNManifestReplayerParameterTable manifestParameters = ParameterGenerator.getPerfParameter(log, anet, default_costs, cost_maps);
 		PNManifestFlattenerTable flattener = new PNManifestFlattenerTable(anet.getNet(), manifestParameters);
 		
 // check cancellation of node before sync
@@ -239,7 +257,9 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 	 */
 	@Override
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-
+		if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
 		if (!inSpecs[0].getClass().equals(RepResultPortObjectSpecTable.class))
 			throw new InvalidSettingsException("Input is not a valid replay result!");
 
@@ -253,31 +273,13 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		// TODO: generated method stub
-		m_parameter.saveSettingsTo(settings);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-		// TODO: generated method stub
-		m_parameter.loadSettingsFrom(settings);
-	}
 
 	@Override
 	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 		// TODO deserialize the manifest and other related data for view
 		file = nodeInternDir;
-		exe = exec;
-		
+		exe = exec;	
 	}
 	
 
@@ -297,7 +299,7 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 	@Override
 	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		// TODO Auto-generated method stub
-		m_parameter.validateSettings(settings);
+		//m_parameter.validateSettings(settings);		
 	}
 	
 	public RepResultPortObjectTable getRepResultPO() {
@@ -332,5 +334,24 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 		return new PortObject[] {repResultPO};
 	
 	}
+	
+      
+	@Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+         // TODO: generated method stub
+    	if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
+    }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+    }
+		
 	
 }

@@ -44,11 +44,17 @@ public final class PetriNetCellFactory implements ValueFactory<StringReadAccess,
     	return new PetriNetCell(anet);
     }
 
-
+	
 	@Override
-	public ReadValue createReadValue(StringReadAccess access) {
-		// TODO Auto-generated method stub
-		return new PetriNetReadValue(access);
+	public ReadValue createReadValue(final StringReadAccess access) {
+	    return new ReadValue() {
+	        @Override
+	        public DataCell getDataCell() {
+	            String stringValue = access.getStringValue();
+	            PetriNetCellFactory f = new PetriNetCellFactory();
+	            return f.createCell(stringValue);
+	        }
+	    };
 	}
 
 	@Override
@@ -63,20 +69,20 @@ public final class PetriNetCellFactory implements ValueFactory<StringReadAccess,
 		return DataSpec.stringSpec();
 	}
 	
-	public static class PetriNetReadValue implements ReadValue {
-
-		private String string_value;
-
-		PetriNetReadValue(final StringReadAccess structAccess) {
-			string_value = structAccess.getStringValue();
-		}
-
-        @Override
-		public DataCell getDataCell() {
-			PetriNetCellFactory f = new PetriNetCellFactory();
-			return f.createCell(string_value);
-		}
-	}
+//	public static class PetriNetReadValue implements ReadValue {
+//
+//		private String string_value;
+//
+//		PetriNetReadValue(final StringReadAccess structAccess) {
+//			string_value = structAccess.getStringValue();
+//		}
+//
+//        @Override
+//		public DataCell getDataCell() {
+//			PetriNetCellFactory f = new PetriNetCellFactory();
+//			return f.createCell(string_value);
+//		}
+//	}
 	
 	public static final class PetriNetWriteValue implements WriteValue<PetriNetValue> {
 		private StringWriteAccess string_access;

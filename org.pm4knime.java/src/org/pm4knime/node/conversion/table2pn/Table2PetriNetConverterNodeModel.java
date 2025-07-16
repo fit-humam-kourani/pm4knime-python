@@ -17,33 +17,54 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
-import org.pm4knime.portobject.AbstractDotPanelPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.PetriNetUtil;
+import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
-import org.processmining.plugins.graphviz.dot.Dot;
 
+
+@SuppressWarnings("restriction")
 class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	
 //	private SettingsModelString m_pnColSettingsModel =
 //			Table2PetriNetConverterNodeDialog.getPetriNetColumnSettingsModel();
-
+	
 	PetriNetPortObjectSpec m_spec = new PetriNetPortObjectSpec();
 	protected PetriNetPortObject pnPO;
 	protected BufferedDataTable inTable;
-    public Table2PetriNetConverterNodeModel() {
+	
+	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
+
+    private final Class<EmptyNodeSettings> m_settingsClass;
+
+//    public Table2PetriNetConverterNodeModel() {
+//        super(new PortType[]{BufferedDataTable.TYPE},
+//                new PortType[]{PetriNetPortObject.TYPE},
+//                "Petri Net JS View");
+//    }
+    
+
+    public Table2PetriNetConverterNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
+		// TODO Auto-generated constructor stub
         super(new PortType[]{BufferedDataTable.TYPE},
                 new PortType[]{PetriNetPortObject.TYPE},
                 "Petri Net JS View");
+        m_settingsClass = modelSettingsClass;
     }
 
-    @Override
+
+	@Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
-            throws InvalidSettingsException {
+            throws InvalidSettingsException {		
+    	
+		if (m_settings == null) {
+    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 
         String column = null;
@@ -96,6 +117,8 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
             columnIndex = findPetriNetColumnIndex(inSpec);
         }
 
+        AcceptingPetriNet pn = null; 
+        
         final RowIterator it = inTable.iterator();
         while (it.hasNext()) {
             DataRow row = it.next();
@@ -103,7 +126,7 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
             if (!cell.isMissing()) {
                 String stringPN = ((PetriNetValue)cell).getPetriNetString();
 
-                AcceptingPetriNet pn = PetriNetUtil.stringToPetriNet(stringPN);
+                pn = PetriNetUtil.stringToPetriNet(stringPN);
                 pnPO = new PetriNetPortObject(pn);
         		break;
 
@@ -111,13 +134,13 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
                 setWarningMessage("Found missing Petri net cell, skipping it...");
             }
         }
-        String dotstr;
 		JSGraphVizViewRepresentation representation = getViewRepresentation();
+		
+		PetriNetPortObject pn_po = new PetriNetPortObject(pn);
+		
+		pnPO = pn_po;
 
-		AbstractDotPanelPortObject port_obj = (AbstractDotPanelPortObject) pnPO;
-		Dot dot =  port_obj.getDotPanel().getDot();
-		dotstr = dot.toString();
-		representation.setDotstr(dotstr);
+		representation.setJSONString(pn_po.getJSON());
 //        throw new IllegalArgumentException(
 //                "Input table contains only missing cells.");
         		
@@ -135,13 +158,6 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
         return -1;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) {
-//    	m_pnColSettingsModel.saveSettingsTo(settings);
-    }
 
     /**
      * {@inheritDoc}
@@ -151,14 +167,20 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
             throws InvalidSettingsException {
 //    	m_pnColSettingsModel.validateSettings(settings);
     }
-
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+         // TODO: generated method stub
+    	if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
+    }
+
+    
+	@Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-//    	m_pnColSettingsModel.loadSettingsFrom(settings);
+    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
     }
 
     

@@ -192,13 +192,13 @@ public class ExpertConfigPanel extends JPanel{
 		layout.setHorizontalGroup(horizontalGroup);
 	}
 
-	private Set<XFactory> getAvailableXFactories() {
+	public static Set<XFactory> getAvailableXFactories() {
 		//Try to register XESLite Factories
-		tryRegisterFactory("org.xeslite.lite.factory.XFactoryLiteImpl");
-		tryRegisterFactory("org.xeslite.external.XFactoryExternalStore$MapDBDiskImpl");
-		tryRegisterFactory("org.xeslite.external.XFactoryExternalStore$MapDBDiskWithoutCacheImpl");
-		tryRegisterFactory("org.xeslite.external.XFactoryExternalStore$MapDBDiskSequentialAccessImpl");
-		tryRegisterFactory("org.xeslite.external.XFactoryExternalStore$InMemoryStoreImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.lite.factory.XFactoryLiteImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.external.XFactoryExternalStore$MapDBDiskImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.external.XFactoryExternalStore$MapDBDiskWithoutCacheImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.external.XFactoryExternalStore$MapDBDiskSequentialAccessImpl");
+		tryRegisterFactory(ExpertConfigPanel.class, "org.xeslite.external.XFactoryExternalStore$InMemoryStoreImpl");
 		return XFactoryRegistry.instance().getAvailable();
 	}
 
@@ -207,12 +207,14 @@ public class ExpertConfigPanel extends JPanel{
 	 * 
 	 * @param className
 	 */
-	private void tryRegisterFactory(String className) {
-		try {
-			getClass().getClassLoader().loadClass(className).getDeclaredMethod("register").invoke(null);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-		}
+	public static void tryRegisterFactory(Class<?> className, String classNameParam) {
+	    try {
+	        className.getClassLoader().loadClass(classNameParam).getDeclaredMethod("register").invoke(null);
+	    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
+	            | IllegalArgumentException | InvocationTargetException e) {
+	        // Handle exceptions
+	        e.printStackTrace();
+	    }
 	}
 
 	public SMTable2XLogConfig getConversionConfig() {
@@ -230,4 +232,3 @@ public class ExpertConfigPanel extends JPanel{
 		return eventLabel;
 	}
 }
-

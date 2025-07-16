@@ -1,9 +1,11 @@
 package org.pm4knime.node.conformance.replayer.table.helper;
 
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Map;
+
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.time.localdatetime.LocalDateTimeCellFactory;
-import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCellFactory;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -13,7 +15,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.pm4knime.node.conformance.replayer.DefaultPNReplayerNodeModel;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.pm4knime.node.conformance.replayer.table.helper.DefaultPNReplayerTableUtil.ParameterGenerator;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.CostBasedCompleteManifestParamTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.IPNReplayAlgorithmTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNLogReplayerTable;
@@ -22,7 +25,6 @@ import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestR
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PetrinetReplayerILPRestrictedMoveModelTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PetrinetReplayerWithILPTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PetrinetReplayerWithoutILPTable;
-import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.SMAlignmentReplayParameterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.TableEventLog;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.TransEvClassMappingTable;
 import org.pm4knime.portobject.PetriNetPortObject;
@@ -40,15 +42,23 @@ import org.processmining.plugins.petrinet.replayer.PNLogReplayer;
 import org.processmining.plugins.petrinet.replayer.algorithms.IPNReplayParameter;
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 
-public class DefaultPNReplayerTableModel extends DefaultNodeModel{
+
+@SuppressWarnings({"restriction"}) 
+public class DefaultPNReplayerTableModel extends DefaultNodeModel {
 	private static final NodeLogger logger = NodeLogger.getLogger(DefaultPNReplayerTableModel.class);
-	private static final  String message  = "Replayer In Default";	
+	private static final  String message  = "Replayer With Cost Tables";	
+	
+
 	public static String CFG_PARAMETER_NAME = "Parameter In " + message;
 	
 	protected static final int INPORT_LOG = 0;
 	protected static final int INPORT_PETRINET = 1;
+	private PNReplayerTableNodeSettings m_modelSettings;
+    private final Class<PNReplayerTableNodeSettings> m_modelSettingsClass;
+//    SMAlignmentReplayParameterTable m_parameter;
+
 	
-	SMAlignmentReplayParameterTable m_parameter;
+//	SMAlignmentReplayParameterTable m_parameter;
 	// it can't belong to this class
 	String evClassDummy;
 	
@@ -57,34 +67,35 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel{
     /**
      * Constructor for the node model.
      */
-    protected DefaultPNReplayerTableModel() {
+    protected DefaultPNReplayerTableModel(final Class<PNReplayerTableNodeSettings> modelSettingsClass) {
     
         // TODO: Specify the amount of input and output ports needed.
     	super(new PortType[] { BufferedDataTable.TYPE, PetriNetPortObject.TYPE }, new PortType[] {RepResultPortObjectTable.TYPE });
     	evClassDummy = "dummy";
     	// need to initialize the parameters later, because it has different types there.
-    	initializeParameter();
+//    	initializeParameter();
+    	m_modelSettingsClass = modelSettingsClass;  	
     }
+    
+//    protected void initializeParameter() {
+//    	m_parameter = new SMAlignmentReplayParameterTable(CFG_PARAMETER_NAME);
+//    	
+//    }
 
-    protected void initializeParameter() {
-    	m_parameter = new SMAlignmentReplayParameterTable(CFG_PARAMETER_NAME);
-    	
-    }
-    /**
-     * {@inheritDoc}
-     */
+   
     @Override
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
 
     	logger.info("Start: " + message);
-    	String strategyName = m_parameter.getMStrategy().getStringValue();
+    	String strategyName = m_modelSettings.strategy;
     	
     	executeWithoutLogger(inData, exec, strategyName);
     	// in greed to output the strategy for replay
 		logger.info("End: " + message + " for "+ strategyName);
 		return new PortObject[]{repResultPO};
     }
+    
 
     protected void executeWithoutLogger(final PortObject[] inData,
             final ExecutionContext exec, String strategyName) throws Exception{
@@ -94,9 +105,9 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel{
     	
     	BufferedDataTable logPO = (BufferedDataTable) inData[INPORT_LOG];
     	PetriNetPortObject netPO = (PetriNetPortObject) inData[INPORT_PETRINET];
-    	String eventClassifier = m_parameter.getMClassifierName().getStringValue();
-    	String traceClassifier = m_parameter.getMClassifierTrace().getStringValue();
-    	String timeClassifier = m_parameter.getMClassifierTime().getStringValue();
+    	String eventClassifier = m_modelSettings.e_classifier;
+    	String traceClassifier = m_modelSettings.t_classifier;
+    	String timeClassifier = m_modelSettings.time_classifier;
     	TableEventLog log = new TableEventLog(logPO, eventClassifier, traceClassifier, timeClassifier); 
     	AcceptingPetriNet anet = netPO.getANet();
     	
@@ -104,14 +115,17 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel{
 
     	PNRepResult repResult = null;
     	IPNReplayAlgorithmTable replayAlgorithm = null ;
+    	int[] move_costs = {m_modelSettings.log_move_cost, m_modelSettings.model_move_cost, m_modelSettings.sync_move_cost};
+    	Map<String, Integer>[] move_cost_maps = m_modelSettings.getCostMaps();
     	
     	// for performance only
     	if(strategyName.equals(ReplayerUtil.strategyList[2])) {
     		//change the calculation with ILP from nonILP mining.
     		replayAlgorithm = new PetrinetReplayerILPRestrictedMoveModelTable();
-    		
+//    		m_parameter.setMClassifierTrace(null);
     		// different parameters need different get parameter methods. We need to go back to replayer node
-    		PNManifestReplayerParameterTable manifestParameters = m_parameter.getPerfParameter(log, anet);
+//    		this.m_modelSettings.set_parameters_from_settings(m_parameter);
+    		PNManifestReplayerParameterTable manifestParameters = ParameterGenerator.getPerfParameter(log, anet, move_costs, move_cost_maps);
     		
     		PNManifestFlattenerTable flattener = new PNManifestFlattenerTable(anet.getNet(), manifestParameters);
     		CostBasedCompleteManifestParamTable parameter = new CostBasedCompleteManifestParamTable(flattener.getMapEvClass2Cost(),
@@ -139,7 +153,7 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel{
 	    	}
 	    	
 	    	TransEvClassMappingTable mapping = PetriNetUtil.constructMapping(log, anet.getNet(), eventClassifier, evClassDummy);
-	    	IPNReplayParameter parameters =  m_parameter.getConfParameter(log, anet, eventClassifier, evClassDummy);
+	    	IPNReplayParameter parameters =  ParameterGenerator.getConfParameter(log, anet, evClassDummy, move_costs, move_cost_maps);
 	    	PluginContext pluginContext = PM4KNIMEGlobalContext.instance()
 					.getFutureResultAwarePluginContext(PNLogReplayer.class);
 	    	// check cancellation of node before replaying the result
@@ -155,10 +169,11 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel{
     	checkCanceled(exec);
     	
 		repResultPO = new RepResultPortObjectTable(repResult, log, logPO, anet);
-		m_rSpec.setMParameter(m_parameter);
+		repResultPO.setDefaultMoveCosts(move_costs);
+		repResultPO.setMoveCostMaps(move_cost_maps);
 		repResultPO.setSpec(m_rSpec);
     }
-    
+  
     public RepResultPortObjectTable getRepResultPO() {
 		return repResultPO;
 	}
@@ -170,6 +185,11 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel{
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
+    	
+    	if (m_modelSettings == null) {
+            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass, inSpecs);
+        }
+    	
     	if (!inSpecs[INPORT_LOG].getClass().equals(DataTableSpec.class))
 			throw new InvalidSettingsException("Input is not a valid table log!");
     	
@@ -177,54 +197,47 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel{
 		if (!inSpecs[INPORT_PETRINET].getClass().equals(PetriNetPortObjectSpec.class))
 			throw new InvalidSettingsException("Input is not a valid Petri net!");
 		
-		if(m_parameter.getMClassifierName().getStringValue().isEmpty())
-			throw new InvalidSettingsException("Event classifier is not set!");
-		
-		String timeClass = m_parameter.getMClassifierTime().getStringValue();
-		if(timeClass.isEmpty())
-			throw new InvalidSettingsException("Time attribute is not set!");
-		
-		DataTableSpec spec = (DataTableSpec) inSpecs[INPORT_LOG];
-		if(!spec.getColumnSpec(timeClass).getType().equals(ZonedDateTimeCellFactory.TYPE) && !spec.getColumnSpec(timeClass).getType().equals(LocalDateTimeCellFactory.TYPE))
-    		throw new InvalidSettingsException("The time stamp doesn't have the required format in LocalDateTime or ZonedDateTime!");
+		Field[] fields = m_modelSettings.getClass().getDeclaredFields();
+	    
+	    ArrayList<String> nullFields = new ArrayList<String>();
+	    
+	    for (Field field : fields) {
+	        field.setAccessible(true); 
+	        try {
+	            Object value = field.get(m_modelSettings);
+	            if (value == null) {
+	            	nullFields.add(field.getName());
+	            }
+	        } catch (IllegalAccessException e) {
+	            // Handle potential exception here if needed
+	        }
+	    }
+	    
+	    if (nullFields.size() > 0) {
+//	    	throw new InvalidSettingsException("The following fields are not set: " + nullFields.toString() + ". Please open the dialog and configure the node!");
+	        throw new InvalidSettingsException("No value is selected for " + nullFields.size() + " fields! Please open the dialog and configure the node!");
+	    }
+
 		
 		m_rSpec = new RepResultPortObjectSpecTable();
-		m_rSpec.setMParameter(m_parameter);
+		
 		// one question, how to add the type information here to make them valid at first step??
 		return new PortObjectSpec[]{ m_rSpec};
     }
 
     
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) {
-    	m_parameter.saveSettingsTo(settings);
+    protected final void saveSettingsTo(final NodeSettingsWO settings) {
+        if (m_modelSettings != null) {
+            DefaultNodeSettings.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
-    	m_parameter.loadSettingsFrom(settings);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void validateSettings(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
-        // TODO: generated method stub
+    protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_modelSettings = DefaultNodeSettings.loadSettings(settings, m_modelSettingsClass);
     }
-//    
-//    @Override
-//    protected void reset() {
-//    	initializeParameter();
-//    }
     
 
 }

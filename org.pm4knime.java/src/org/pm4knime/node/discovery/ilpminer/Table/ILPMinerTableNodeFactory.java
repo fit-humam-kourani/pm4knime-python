@@ -1,67 +1,47 @@
 package org.pm4knime.node.discovery.ilpminer.Table;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
+import org.pm4knime.portobject.PetriNetPortObject;
 
-/**
- * This is an example implementation of the node factory of the
- * "ILPMiner" node.
- *
- * @author Kefang Ding
- */
-public class ILPMinerTableNodeFactory extends NodeFactory<ILPMinerTableNodeModel> implements WizardNodeFactoryExtension<ILPMinerTableNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+
+@SuppressWarnings("restriction")
+public class ILPMinerTableNodeFactory extends WebUINodeFactory<ILPMinerTableNodeModel> implements WizardNodeFactoryExtension<ILPMinerTableNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
 
 	ILPMinerTableNodeModel node;
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ILPMinerTableNodeModel createNodeModel() {
-		// Create and return a new node model.
-    	node = new ILPMinerTableNodeModel();
-        return node;
-    }
+	
+	public static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("ILP Miner")
+			.icon("../../category-discovery.png")
+			.shortDescription("This node implements the ILP Miner to discover a Petri net from an event table.")
+			.fullDescription("This node implements the ILP Miner to discover a Petri net from an event table.\r\n"
+					+ PetriNetPortObject.PETRI_NET_TEXT) 
+			.modelSettingsClass(ILPMinerTableNodeSettings.class)//
+			.addInputPort("Table", BufferedDataTable.TYPE ,"an event table")//
+			.addOutputPort("Petri Net", PetriNetPortObject.TYPE, "a Petri net")//
+			.nodeType(NodeType.Learner)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ILPMinerTableNodeModel> createNodeView(final int viewIndex,
-            final ILPMinerTableNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
+	public ILPMinerTableNodeFactory() {
+		super(CONFIG);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return true;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return new ILPMinerTableNodeDialog(node);
-    }
+	protected ILPMinerTableNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public ILPMinerTableNodeModel createNodeModel() {
+		node = new ILPMinerTableNodeModel(ILPMinerTableNodeSettings.class);
+		return node;
+	}
 
 }
 

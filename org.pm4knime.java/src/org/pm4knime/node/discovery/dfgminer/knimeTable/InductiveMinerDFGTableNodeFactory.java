@@ -1,68 +1,50 @@
 package org.pm4knime.node.discovery.dfgminer.knimeTable;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
+import org.pm4knime.portobject.DfgMsdPortObject;
+import org.pm4knime.portobject.ProcessTreePortObject;
 
-/**
- * This is an example implementation of the node factory of the
- * "InductiveMinerDFGTable" node.
- *
- * @author 
- */
-public class InductiveMinerDFGTableNodeFactory extends NodeFactory<InductiveMinerDFGTableNodeModel> implements WizardNodeFactoryExtension<InductiveMinerDFGTableNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
+
+@SuppressWarnings("restriction")
+public final class InductiveMinerDFGTableNodeFactory extends WebUINodeFactory<InductiveMinerDFGTableNodeModel> implements WizardNodeFactoryExtension<InductiveMinerDFGTableNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
 
     private InductiveMinerDFGTableNodeModel node;
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    public InductiveMinerDFGTableNodeModel createNodeModel() {
-		// Create and return a new node model.
-        node = new InductiveMinerDFGTableNodeModel();
-        return node;
-    }
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+			.name("Inductive Miner (DFG)")
+			.icon("../../category-discovery.png")
+			.shortDescription("This node implements the second step of the Inductive Miner to discover a process tree from a directly-follows graph.")
+			.fullDescription("This node  is used to discover a process tree from a directly-follows graph (DFG).\r\n"
+					+ "        A process tree is a block-structured process model where the (inner) nodes are operators (such as sequence, choice, parallel, and loop) and the leaves are activities. \r\n"
+					+ "        The inductive miner guarantees the discovery of a sound process model. \r\n"
+					+ "		The discovered process tree can be converted into a Petri net.")
+			.modelSettingsClass(InductiveMinerDFGTableNodeSettings.class)//
+			.addInputPort("Directly-Follows Graph", DfgMsdPortObject.TYPE ,"a directly-follows graph")//
+			.addOutputPort("Process Tree", ProcessTreePortObject.TYPE, "a process tree")//
+			.nodeType(NodeType.Learner)
+			.build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-		// The number of views the node should have, in this cases there is none.
-        return 0;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<InductiveMinerDFGTableNodeModel> createNodeView(final int viewIndex,
-            final InductiveMinerDFGTableNodeModel nodeModel) {
-		// We return null as this example node does not provide a view. Also see "getNrNodeViews()".
-		return null;
-    }
+	public InductiveMinerDFGTableNodeFactory() {
+		super(CONFIG);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-		// Indication whether the node has a dialog or not.
-        return true;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-		// This example node has a dialog, hence we create and return it here. Also see "hasDialog()".
-        return new InductiveMinerDFGTableNodeDialog(node);
-    }
+	protected InductiveMinerDFGTableNodeFactory(final WebUINodeConfiguration configuration) {
+		super(configuration);
+	}
+
+
+	@Override
+	public InductiveMinerDFGTableNodeModel createNodeModel() {
+		node = new InductiveMinerDFGTableNodeModel(InductiveMinerDFGTableNodeSettings.class);
+		return node;
+	}
+
 
 }
 

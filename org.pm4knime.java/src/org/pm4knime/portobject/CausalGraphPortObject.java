@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 
@@ -29,6 +30,7 @@ import org.processmining.extendedhybridminer.models.causalgraph.HybridDirectedLo
 import org.processmining.extendedhybridminer.models.causalgraph.HybridDirectedSureGraphEdge;
 import org.processmining.extendedhybridminer.models.causalgraph.HybridDirectedUncertainGraphEdge;
 import org.processmining.extendedhybridminer.plugins.HybridCGMinerSettings;
+import org.processmining.models.graphbased.directed.DirectedGraphEdge;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 
 import cern.colt.matrix.DoubleFactory2D;
@@ -37,7 +39,7 @@ import cern.colt.matrix.DoubleMatrix2D;
 import org.knime.core.node.port.AbstractPortObject;
 
 
-public class CausalGraphPortObject extends AbstractDotPanelPortObject {
+public class CausalGraphPortObject extends AbstractJSONPortObject {
 
 	
 	public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(CausalGraphPortObject.class);
@@ -367,6 +369,40 @@ public class CausalGraphPortObject extends AbstractDotPanelPortObject {
 	public static class CausalGraphPortObjectSerializer
 			extends AbstractPortObject.AbstractPortObjectSerializer<CausalGraphPortObject> {
 
+	}
+
+	public Map<String, List<?>> getJSON() {
+		Map<String, List<?>> result = new HashMap<>();
+		
+		
+		List<Node> nodes = new ArrayList<>();
+		
+		for (HybridDirectedGraphNode node : cg.getNodes())
+		{
+			String label = node.getLabel();
+			if (label.equals("start"))
+				nodes.add(new Node(node.getId().toString(), "artificial start", label));
+			else if (label.equals("end"))
+				nodes.add(new Node(node.getId().toString(), "artificial end", label));
+			else
+				nodes.add(new Node(node.getId().toString(), "activity", label));
+		}
+		
+		result.put("nodes", nodes);
+		
+		List<Link> links = new ArrayList<>();
+		
+		for (DirectedGraphEdge<?, ?> edge : cg.getEdges())
+		{
+			String source = edge.getSource().getId().toString();
+			String target = edge.getTarget().getId().toString();
+			links.add(new Link(source, target, edge.getClass().getSimpleName()));
+		}
+
+		result.put("links", links);
+		
+		return result;
+		
 	}
 
 

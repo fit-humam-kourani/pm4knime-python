@@ -1,26 +1,36 @@
 package org.pm4knime.node.discovery.ilpminer.Table;
 
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
-import org.pm4knime.settingsmodel.SMILPMinerParameter;
 import org.pm4knime.util.connectors.prom.PM4KNIMEGlobalContext;
 import org.pm4knime.util.defaultnode.TraceVariantRepresentation;
-import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerModel;
+import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 import org.pm4knime.node.discovery.ilpminer.Table.util.TableHybridILPMinerParametersImpl;
 import org.pm4knime.node.discovery.ilpminer.Table.util.TableHybridILPMinerPlugin;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.acceptingpetrinet.models.impl.AcceptingPetriNetImpl;
 import org.processmining.framework.plugin.PluginContext;
+import org.processmining.hybridilpminer.parameters.DiscoveryStrategy;
+import org.processmining.hybridilpminer.parameters.DiscoveryStrategyType;
+import org.processmining.hybridilpminer.parameters.LPConstraintType;
+import org.processmining.hybridilpminer.parameters.LPFilter;
+import org.processmining.hybridilpminer.parameters.LPFilterType;
+import org.processmining.hybridilpminer.parameters.LPObjectiveType;
+import org.processmining.hybridilpminer.parameters.LPVariableType;
+import org.processmining.hybridilpminer.parameters.NetClass;
+import org.processmining.lpengines.interfaces.LPEngine.EngineType;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
+
+import java.util.List;
+import java.util.Map;
+
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 
@@ -67,26 +77,14 @@ import org.knime.core.node.BufferedDataTable;
  * 1. to replace all the event log to the table(BufferedDataTable)
  * 
  */
-public class ILPMinerTableNodeModel extends DefaultTableMinerModel {
+public class ILPMinerTableNodeModel extends DefaultTableMinerNodeModel<ILPMinerTableNodeSettings> {
 	
 	private static final NodeLogger logger = NodeLogger
             .getLogger(ILPMinerTableNodeModel.class);
-	
-	public static String CFG_KEY_ILP_PARAMETER = "ILP Parameter";
-	// it has its own parameter. Then how to combine it with another settings?? 
-	// like the classifier ?? we can remove the classifier in ILPMiner
-	SMILPMinerParameter m_parameter; 
-	
-	public static final String CFG_KEY_CONFIG = "Table to event log conveter config";
 
 	
-    /**
-     * Constructor for the node model.
-     */
-    protected ILPMinerTableNodeModel() {
-    	super(new PortType[] {BufferedDataTable.TYPE}, new PortType[] {PetriNetPortObject.TYPE}, "Petri Net JS View");
-    	
-    	m_parameter = new SMILPMinerParameter(ILPMinerTableNodeModel.CFG_KEY_ILP_PARAMETER);
+    protected ILPMinerTableNodeModel(Class<ILPMinerTableNodeSettings> class1) {
+    	super(new PortType[] {BufferedDataTable.TYPE}, new PortType[] {PetriNetPortObject.TYPE}, "Petri Net JS View", class1);
     }
     
 
@@ -97,20 +95,20 @@ public class ILPMinerTableNodeModel extends DefaultTableMinerModel {
 	}
 	
 	@Override
-	protected PortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception {
+	protected AbstractJSONPortObject mine(BufferedDataTable table, final ExecutionContext exec) throws Exception {
 		
         logger.info("Start : ILPMiner " );
         
         final String startLabel = "ARTIFICIAL_START";
 		final String endLabel = "ARTIFICIAL_END";
 		
-		TraceVariantRepresentation log = new TraceVariantRepresentation(table, this.getTraceClassifier(), this.getEventClassifier());
+		TraceVariantRepresentation log = new TraceVariantRepresentation(table, m_settings.t_classifier, m_settings.e_classifier);
 		TraceVariantRepresentation artifLog = TraceVariantRepresentation.addArtificialStartAndEnd(log.getNumberOfTraces(), log.getActivities(), log.getVariants(), startLabel, endLabel);
 		PluginContext context = PM4KNIMEGlobalContext.instance().getPluginContext();
         // create the parameter
 		TableHybridILPMinerParametersImpl param = new TableHybridILPMinerParametersImpl(context, artifLog);
 		// here put some values from m_parameter to param
-		m_parameter.updateParameter(param);
+		updateParameter(param);
       
     	Object[] result = TableHybridILPMinerPlugin.discoverWithArtificialStartEnd(context, log, artifLog, param);
         
@@ -123,26 +121,27 @@ public class ILPMinerTableNodeModel extends DefaultTableMinerModel {
 		
 		
 	}
+
+
+	private void updateParameter(TableHybridILPMinerParametersImpl param) {
+		// set default values to param here, others we need to count it later
+		param.setDiscoveryStrategy(new DiscoveryStrategy(DiscoveryStrategyType.valueOf(m_settings.m_ds)));
+		param.setObjectiveType(LPObjectiveType.valueOf(m_settings.m_lpObj));
+		param.setVariableType(LPVariableType.valueOf(m_settings.m_lpVar));
+		// set the filter type
+		LPFilter filter = new LPFilter(LPFilterType.valueOf(m_settings.m_filterType),
+				m_settings.m_filterThreshold);
+		param.setFilter(filter);
+		
+		// in default settings
+		param.setNetClass(NetClass.PT_NET);
+		param.getLPConstraintTypes().add(LPConstraintType.EMPTY_AFTER_COMPLETION);
+		param.setFindSink(true); // add sink to model
+		param.setEngineType(EngineType.LPSOLVE);
+		param.setApplyStructuralRedundantPlaceRemoval(false);
+		
+	}
 	
-
-	@Override
-	protected void saveSpecificSettingsTo(NodeSettingsWO settings) {
-		// TODO Auto-generated method stub
-		m_parameter.saveSettingsTo(settings);
-	}
-
-	@Override
-	protected void validateSpecificSettings(NodeSettingsRO settings) throws InvalidSettingsException {
-		// TODO Auto-generated method stub
-		m_parameter.validateSettings(settings);
-	}
-
-	@Override
-	protected void loadSpecificValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
-		// TODO Auto-generated method stub
-		m_parameter.loadSettingsFrom(settings);
-	}
-
 
 }
 

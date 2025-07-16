@@ -137,8 +137,7 @@
                                         		
         
         
-        
-        
+         
         <node category-path="/community/processmining/io/ioWrite" factory-class="org.pm4knime.node.io.log.writer.xes.XESWriterNodeFactory"/>
                                         		
         
@@ -199,14 +198,11 @@
         
         
         
-        <!-- <node category-path="/community/processmining/io/ioRead" factory-class="org.pm4knime.node.io.bpmn.reader.BpmnReaderNodeFactory"/>
-                                        		
-        
-        
-        
-        
-        <node category-path="/community/processmining/io/ioWrite" factory-class="org.pm4knime.node.io.bpmn.writer.BpmnWriterNodeFactory"/>-->
-                                        		
+         
+        <node category-path="/community/processmining/io/ioRead" factory-class="org.pm4knime.node.io.bpmn.reader.BpmnReaderNodeFactory"/>
+        <!--
+        <node category-path="/community/processmining/io/ioWrite" factory-class="org.pm4knime.node.io.bpmn.writer.BpmnWriterNodeFactory"/>
+        -->                               		
         
         
         
@@ -290,6 +286,8 @@
         
         
         <node category-path="/community/processmining/conversion" factory-class="org.pm4knime.node.conversion.pt2pn.PT2PNConverterNodeFactory"/>
+        
+        <node category-path="/community/processmining/conversion" factory-class="org.pm4knime.node.conversion.pn2bpmn.PN2BPMNConverterNodeFactory" />
                                         		
         
         
@@ -681,9 +679,9 @@
             
             
             
-            
-            
-            
+            <importResource relativePath="js-libs/graph_css_text.js" type="JAVASCRIPT"/>
+            <importResource relativePath="js-libs/graph_visualization.js" type="JAVASCRIPT"/>
+            <importResource relativePath="js-libs/bpmn_visualization.js" type="JAVASCRIPT"/>
             <importResource relativePath="js-libs/form.js" type="JAVASCRIPT"/>
                                                                                                 
             
@@ -697,20 +695,7 @@
             
             
             
-            
-            
-            
-            <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>
-                                                                                                                                    
-            
-            
-            
-            
-            
-            
-            
-            
-            
+            <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>   
             <webDependency webResourceBundleID="Viz"> </webDependency>
                                                                                                                                     
             
@@ -780,20 +765,9 @@
             
             
             <importResource relativePath="js-libs/variantExplorer.css" type="CSS"/>
-                                                                        
-            
-            
-            
-            
-            <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>
-                                                                        
-            
-            
-        
-        
-        
-        
-        
+            <webDependency webResourceBundleID="bootstrap_3.3.6"> </webDependency>                                                       
+
+    
         </webResourceBundle>
                                                                                         
         
@@ -816,13 +790,29 @@
             <webResource relativePathSource="js-libs/" relativePathTarget="js-libs/"> </webResource>
                                                                        
             
+            <importResource relativePath="js-libs/dagre.min.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/dagre-d3.min.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/d3.min.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/smil.user.min.js" type="JAVASCRIPT"> </importResource>
+		    <importResource relativePath="js-libs/jquery.js" type="JAVASCRIPT"> </importResource>
+		    <importResource relativePath="js-libs/lodash.js" type="JAVASCRIPT"> </importResource>
+		    <importResource relativePath="js-libs/backbone.js" type="JAVASCRIPT"> </importResource>
+		    
+		    <importResource relativePath="js-libs/joint.min.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/joint.min.css" type="CSS"/>
             
+            <importResource relativePath="js-libs/diagram-js.css" type="CSS"/>
+            <importResource relativePath="js-libs/bpmn-embedded.css" type="CSS"/>
+            <importResource relativePath="js-libs/bpmn-modeler.development.js" type="JAVASCRIPT"> </importResource>           
+            <importResource relativePath="js-libs/bpmn-layouter.js" type="JAVASCRIPT"> </importResource> 
             
-            
-            
+            <importResource relativePath="js-libs/fontawesome.js" type="JAVASCRIPT"> </importResource>
+            <importResource relativePath="js-libs/solid.js" type="JAVASCRIPT"> </importResource>
+ 
             <importResource relativePath="js-libs/viz.js" type="JAVASCRIPT"> </importResource>
-                                                               
             
+                                                               
+   
             
             
             
@@ -922,43 +912,16 @@
     
     <extension point="org.knime.python3.types.PythonValueFactory">
                                               
-        
-        
-        
-        
+                
         <Module moduleName="utils.petri_net_type" modulePath="python">
-                                                                     
-            
-            
-            
+                                                                                            
             
             <PythonValueFactory PythonClassName="PetriNetPythonFactory" ValueFactory="org.pm4knime.node.conversion.pn2table.PetriNetCellFactory" ValueTypeName="utils.petri_net_type.PetriNetPythonCell">
          </PythonValueFactory>
-                                                                     
-            
-            
-            
-            
-            <FromPandasColumnConverter PythonClassName="FromPetriNetPandasColumnConverter" ValueTypeName="org.pm4knime.node.conversion.pn2table.PetriNetCellFactory">
-         </FromPandasColumnConverter>
-                                                                     
-            
-            
-            
-            
-            <ToPandasColumnConverter PythonClassName="ToPetriNetPandasColumnConverter" ValueFactory="org.pm4knime.node.conversion.pn2table.PetriNetCellFactory">
-         </ToPandasColumnConverter>
-                                                                  
-        
-        
-        
-        
+                                                        
+                                          
         </Module>
-                                            
-    
-    
-    
-    
+     
     </extension>
                                                         
 

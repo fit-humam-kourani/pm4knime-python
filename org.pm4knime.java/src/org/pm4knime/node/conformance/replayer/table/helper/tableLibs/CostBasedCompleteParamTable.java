@@ -28,34 +28,34 @@ public class CostBasedCompleteParamTable extends AbstractDefaultPNReplayParam{
 	 * not exist in log, any transitions that are NOT silent and not mapped to
 	 * any event class in the log is mapped to it), just put null
 	 */
-	public CostBasedCompleteParamTable(Collection<String> evClassCol, String dummyEvClass,
-			Collection<Transition> transCol) {
-		mapEvClass2Cost = new HashMap<String, Integer>();
-		if (evClassCol != null) {
-			for (String evClass : evClassCol) {
-				mapEvClass2Cost.put(evClass, 5);
-			}
-		}
-		if (dummyEvClass != null) {
-			mapEvClass2Cost.put(dummyEvClass, 5);
-		}
-		maxNumOfStates = 200000;
-
-		mapTrans2Cost = new HashMap<Transition, Integer>();
-		if (transCol != null) {
-			for (Transition t : transCol) {
-				if (t.isInvisible()) {
-					mapTrans2Cost.put(t, 0);
-				} else {
-					mapTrans2Cost.put(t, 2);
-				}
-			}
-		}
-
-		mapSync2Cost = new HashMap<Transition, Integer>(0);
-		initialMarking = new Marking();
-		finalMarkings = new Marking[0];
-	}
+//	public CostBasedCompleteParamTable(Collection<String> evClassCol, String dummyEvClass,
+//			Collection<Transition> transCol) {
+//		mapEvClass2Cost = new HashMap<String, Integer>();
+//		if (evClassCol != null) {
+//			for (String evClass : evClassCol) {
+//				mapEvClass2Cost.put(evClass, 5);
+//			}
+//		}
+//		if (dummyEvClass != null) {
+//			mapEvClass2Cost.put(dummyEvClass, 5);
+//		}
+//		maxNumOfStates = 200000;
+//
+//		mapTrans2Cost = new HashMap<Transition, Integer>();
+//		if (transCol != null) {
+//			for (Transition t : transCol) {
+//				if (t.isInvisible()) {
+//					mapTrans2Cost.put(t, 0);
+//				} else {
+//					mapTrans2Cost.put(t, 2);
+//				}
+//			}
+//		}
+//
+//		mapSync2Cost = new HashMap<Transition, Integer>(0);
+//		initialMarking = new Marking();
+//		finalMarkings = new Marking[0];
+//	}
 
 	/**
 	 * Constructor with default initialization. Cost of move on model: move on
@@ -63,46 +63,46 @@ public class CostBasedCompleteParamTable extends AbstractDefaultPNReplayParam{
 	 * that does not exist in log, any transitions that are NOT silent and not
 	 * mapped to any event class in the log is mapped to it), just put null
 	 */
-	public CostBasedCompleteParamTable(Collection<String> evClassCol, String dummyEvClass,
-			Collection<Transition> transCol, int defMoveOnModelCost, int defMoveOnLogCost) {
-		mapEvClass2Cost = new HashMap<String, Integer>();
-		if (evClassCol != null) {
-			for (String evClass : evClassCol) {
-				mapEvClass2Cost.put(evClass, defMoveOnLogCost);
-			}
-		}
-		if (dummyEvClass != null) {
-			mapEvClass2Cost.put(dummyEvClass, defMoveOnLogCost);
-		}
-
-		this.maxNumOfStates = 200000;
-
-		mapTrans2Cost = new HashMap<Transition, Integer>();
-		if (transCol != null) {
-			for (Transition t : transCol) {
-				if (t.isInvisible()) {
-					mapTrans2Cost.put(t, 0);
-				} else {
-					mapTrans2Cost.put(t, defMoveOnModelCost);
-				}
-			}
-		}
-		this.mapSync2Cost = new HashMap<Transition, Integer>(0);
-		this.initialMarking = new Marking();
-		this.finalMarkings = new Marking[0];
-	}
-
-	/**
-	 * Constructor with given cost mapping
-	 */
-	public CostBasedCompleteParamTable(Map<String, Integer> mapEvClass2Cost, Map<Transition, Integer> mapTrans2Cost) {
-		this.mapEvClass2Cost = mapEvClass2Cost;
-		this.maxNumOfStates = 200000;
-		this.mapTrans2Cost = mapTrans2Cost;
-		this.mapSync2Cost = new HashMap<Transition, Integer>(0);
-		this.initialMarking = new Marking();
-		this.finalMarkings = new Marking[0];
-	}
+//	public CostBasedCompleteParamTable(Collection<String> evClassCol, String dummyEvClass,
+//			Collection<Transition> transCol, int defMoveOnModelCost, int defMoveOnLogCost) {
+//		mapEvClass2Cost = new HashMap<String, Integer>();
+//		if (evClassCol != null) {
+//			for (String evClass : evClassCol) {
+//				mapEvClass2Cost.put(evClass, defMoveOnLogCost);
+//			}
+//		}
+//		if (dummyEvClass != null) {
+//			mapEvClass2Cost.put(dummyEvClass, defMoveOnLogCost);
+//		}
+//
+//		this.maxNumOfStates = 200000;
+//
+//		mapTrans2Cost = new HashMap<Transition, Integer>();
+//		if (transCol != null) {
+//			for (Transition t : transCol) {
+//				if (t.isInvisible()) {
+//					mapTrans2Cost.put(t, 0);
+//				} else {
+//					mapTrans2Cost.put(t, defMoveOnModelCost);
+//				}
+//			}
+//		}
+//		this.mapSync2Cost = new HashMap<Transition, Integer>(0);
+//		this.initialMarking = new Marking();
+//		this.finalMarkings = new Marking[0];
+//	}
+//
+//	/**
+//	 * Constructor with given cost mapping
+//	 */
+//	public CostBasedCompleteParamTable(Map<String, Integer> mapEvClass2Cost, Map<Transition, Integer> mapTrans2Cost) {
+//		this.mapEvClass2Cost = mapEvClass2Cost;
+//		this.maxNumOfStates = 200000;
+//		this.mapTrans2Cost = mapTrans2Cost;
+//		this.mapSync2Cost = new HashMap<Transition, Integer>(0);
+//		this.initialMarking = new Marking();
+//		this.finalMarkings = new Marking[0];
+//	}
 
 	/**
 	 * Constructor with given cost mapping (including cost of move sync)

@@ -1,104 +1,110 @@
 package org.pm4knime.util.defaultnode;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.NotImplementedException;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 
-public abstract class DefaultTableNodeModel extends DefaultNodeModel {
+
+@SuppressWarnings({"restriction"}) 
+public abstract class DefaultTableNodeModel<S extends DefaultTableNodeSettings> extends NodeModel {
 	
-	protected DefaultTableNodeModel(PortType[] inPortTypes, PortType[] outPortTypes) {
+	protected S m_settings;
+
+    private final Class<S> m_settingsClass;
+	
+	protected DefaultTableNodeModel(PortType[] inPortTypes, PortType[] outPortTypes, final Class<S> modelSettingsClass) {
 		super(inPortTypes, outPortTypes);
+		m_settingsClass = modelSettingsClass;
 	}
-
-	public static final String CFG_KEY_COLUMN = "Table Column";
-	public static final String CFG_KEY_COLUMN_CASE = "Table Column Case";
-	public static final String CFG_KEY_COLUMN_TIME = "Table Column Time";
-	public static final String CFG_KEY_COLUMN_ACTIVITY = "Table Column Activity";
-	public static final String CFG_KEY_COLUMN_SET = "Table Column Set";
-	
-	// set the classifier here , what if there is no explicit classifier there?? What to do then??
-	// we need to use the default ones!! Let us check it and fill it later??
-
-	protected SettingsModelString m_variantCase =  new SettingsModelString(CFG_KEY_COLUMN_CASE, "");
-	protected SettingsModelString m_variantTime =  new SettingsModelString(CFG_KEY_COLUMN_TIME, "");
-	protected SettingsModelString m_variantActivity =  new SettingsModelString(CFG_KEY_COLUMN_ACTIVITY, "");
-	// we need a list to store the classifierList for each node. Not as static attributes there
-	SettingsModelStringArray classifierSet = new SettingsModelStringArray(CFG_KEY_COLUMN_SET, new String[] {""}) ;
 	
 	
-	
-	protected abstract PortObject[] execute(final PortObject[] inObjects,final ExecutionContext exec) throws Exception; 
-
-	
-	// set the classifierList here to update every time for the new spec 
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+    protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        if (m_settings == null) {
+            m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
+        return configure(inSpecs, m_settings);
+    }
 
+    @Override
+    protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
+        if (m_settings == null) {
+            m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+        }
+        return (DataTableSpec[]) configure(inSpecs, m_settings);
+    }
+    
+    
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs, final S modelSettings) throws InvalidSettingsException {
+
+		m_settings = modelSettings;
 		if (!inSpecs[0].getClass().equals(DataTableSpec.class))
-			throw new InvalidSettingsException("Input is not a valid KNIME Table!");
-		
-		// why m_classifier is empty?? Because NodeDialog is not called without opening the configuration
-		// to change it, we force it to configure the even log here
-		if(m_variantCase.getStringValue().isEmpty())
-			throw new InvalidSettingsException("Case column is not set!");
-		if(m_variantTime.getStringValue().isEmpty())
-			throw new InvalidSettingsException("Time column is not set");
-		if(m_variantActivity.getStringValue().isEmpty())
-			throw new InvalidSettingsException("Activity column is not set");
-		
-		
+			throw new InvalidSettingsException("Input is not a valid Table!");
 		DataTableSpec logSpec = (DataTableSpec) inSpecs[0];
-		
+		if(modelSettings.e_classifier == null || modelSettings.t_classifier == null || modelSettings.time_classifier == null)
+			throw new InvalidSettingsException("Classifiers are not set! Please open the dialog and configure the node!");
 		return configureOutSpec(logSpec);
 	}
-	
-	protected abstract PortObjectSpec[] configureOutSpec(DataTableSpec logSpec) ;
-		
-	
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO settings) {
+        
+    protected abstract PortObjectSpec[] configureOutSpec(DataTableSpec logSpec);	
+        
+    @Override
+    protected final void saveSettingsTo(final NodeSettingsWO settings) {
+        if (m_settings != null) {
+            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        }
+    }
 
-		m_variantCase.saveSettingsTo(settings);
-		m_variantTime.saveSettingsTo(settings);
-		m_variantActivity.saveSettingsTo(settings);
-		classifierSet.saveSettingsTo(settings);
-		// operation for another parameters
-		saveSpecificSettingsTo(settings);
-	}
-	
-	protected abstract void saveSpecificSettingsTo(NodeSettingsWO settings);
+    @Override
+    protected final void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        validateSettings(DefaultNodeSettings.loadSettings(settings, m_settingsClass));
+    }
+
+    protected void validateSettings(final S settings) throws InvalidSettingsException {
+    }
+    
+    protected abstract void validateSpecificSettings(final NodeSettingsRO settings) throws InvalidSettingsException;
+
+    @Override
+    protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+        validateSpecificSettings(settings);
+    }
+
 
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
-
-		m_variantCase.validateSettings(settings);
-		m_variantTime.validateSettings(settings);
-		m_variantActivity.validateSettings(settings);
+	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
+		// TODO Auto-generated method stub
 		
-		validateSpecificSettings(settings);
-	}
-	
-	protected abstract void validateSpecificSettings(NodeSettingsRO settings) throws InvalidSettingsException;
-	
-	@Override
-	protected void loadValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
-		m_variantCase.loadSettingsFrom(settings);
-		m_variantTime.loadSettingsFrom(settings);
-		m_variantActivity.loadSettingsFrom(settings);
-		classifierSet.loadSettingsFrom(settings);
-		
-		loadSpecificValidatedSettingsFrom(settings);
 	}
 
-	protected abstract void loadSpecificValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException;
-	
-	
+
+	@Override
+	protected void saveInternals(File nodeInternDir, ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	protected void reset() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
