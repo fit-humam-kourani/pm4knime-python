@@ -1,7 +1,7 @@
 package org.pm4knime.node.io.log.reader.MXMLImporter;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.internal.file.FileSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 @SuppressWarnings("restriction")
