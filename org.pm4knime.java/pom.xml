@@ -11,9 +11,6 @@
     </parent>
     <artifactId>org.pm4knime.java</artifactId>
     <packaging>eclipse-plugin</packaging>
-    <properties>
-        <revision>3.0.0</revision>
-    </properties>
 
     <dependencies>
         <dependency>
