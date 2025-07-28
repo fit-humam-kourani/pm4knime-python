@@ -1,6 +1,7 @@
 package org.pm4knime.node.io.petrinet.writer;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
+
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.pm4knime.util.NodeSettingsUtils;
 import org.pm4knime.util.defaultnode.WriterNodeSettings;
@@ -15,7 +16,7 @@ public final class PetrinetWriterNodeSettings extends WriterNodeSettings {
                 The folder or workflow group in which the output file shall be written has to exist.
                 """ 
     )
-	@LocalFileWriterWidget(fileExtension = "pnml")
+	@FileWriterWidget(fileExtension = "pnml")
 	String m_outputFile = NodeSettingsUtils.getPathInUserHomeDir("petri_net.pnml");
 
 	public String getExtension() {
