@@ -1,5 +1,6 @@
 package org.pm4knime.node.io.hybridpetrinet.writer;
 
+
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.pm4knime.util.NodeSettingsUtils;
