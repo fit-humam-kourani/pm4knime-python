@@ -16,7 +16,7 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
-import org.knime.node.parameters.NodeParameters;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.portobject.AbstractJSONPortObject;
 import org.pm4knime.util.defaultnode.TraceVariantRepresentation;
@@ -24,6 +24,7 @@ import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerNodeModel;
 
 
 
+@SuppressWarnings("restriction")
 public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVariantVisViewRepresentation, TraceVariantVisViewValue> implements PortObjectHolder {
 
 	// Input and output port types
@@ -149,7 +150,7 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 //		settings.addString(KEY_EVENT_CLASSIFIER, m_settings.e_classifier);
 //		settings.addBoolean("generate_image", generate_image);		
 		if (m_settings != null) {
-			NodeParameters.saveSettings(m_settingsClass, m_settings, settings);
+			NodeParametersUtil.saveSettings(m_settingsClass, m_settings, settings);
         }
 	}
 
@@ -162,7 +163,7 @@ public class TraceVariantVisNodeModel extends AbstractSVGWizardNodeModel<TraceVa
 //		m_settings.t_classifier = settings.getString(KEY_TRACE_CLASSIFIER);
 //		m_settings.e_classifier = settings.getString(KEY_EVENT_CLASSIFIER);
 //		generate_image = settings.getBoolean("generate_image", false);	
-		m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
+		m_settings = NodeParametersUtil.loadSettings(settings, m_settingsClass);
 	}
 
 	public PortObject[] getInternalPortObjects() {

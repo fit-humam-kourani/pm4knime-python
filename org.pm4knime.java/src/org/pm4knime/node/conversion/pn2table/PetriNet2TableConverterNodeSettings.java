@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.layout.After;
 import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.widget.text.TextInputWidget;
 import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.TextInputWidget;
 
 
 public final class PetriNet2TableConverterNodeSettings implements NodeParameters {

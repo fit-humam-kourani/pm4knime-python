@@ -25,13 +25,13 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.node.parameters.NodeParameters;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
 import org.pm4knime.portobject.XLogPortObject;
 import org.pm4knime.portobject.XLogPortObjectSpec;
 import org.pm4knime.settingsmodel.SMTable2XLogConfig;
 
 
-
+@SuppressWarnings("restriction")
 public class Table2XLogConverterNodeModel extends NodeModel {
     
 	private static final NodeLogger logger = NodeLogger.getLogger(Table2XLogConverterNodeModel.class);
@@ -97,8 +97,15 @@ public class Table2XLogConverterNodeModel extends NodeModel {
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
     	
-    	if(!inSpecs[0].getClass().equals(DataTableSpec.class)) 
-    		throw new InvalidSettingsException("Input is not a CSV File!");
+    	
+    	if (inSpecs[0] == null) {
+            return new PortObjectSpec[]{null};
+        }
+
+        if (!(inSpecs[0] instanceof DataTableSpec)) {
+            throw new InvalidSettingsException("Input port must be connected to a data table.");
+        }
+        
     	
     	String tsName = m_settings.time_stamp;
     	DataTableSpec spec  = (DataTableSpec) inSpecs[0];
@@ -145,10 +152,10 @@ public class Table2XLogConverterNodeModel extends NodeModel {
     /**
      * {@inheritDoc}
      */
-    @Override
+	@Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
     	if (m_settings != null) {
-    		NodeParameters.saveSettings .saveSettings(m_settingsClass, m_settings, settings);
+    		NodeParametersUtil.saveSettings(m_settingsClass, m_settings, settings);
         }
     }
 
@@ -158,7 +165,7 @@ public class Table2XLogConverterNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-    	m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
+    	m_settings = NodeParametersUtil.loadSettings(settings, m_settingsClass);
     	
     }
 

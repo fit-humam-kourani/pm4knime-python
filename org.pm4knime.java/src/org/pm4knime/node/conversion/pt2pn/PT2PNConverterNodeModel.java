@@ -9,6 +9,7 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
@@ -30,6 +31,7 @@ import org.processmining.processtree.ProcessTree;
  */
 
 
+@SuppressWarnings("restriction")
 public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	protected PortObject pnPO;
 	protected ProcessTreePortObject ptPO;
@@ -92,7 +94,7 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 			throws InvalidSettingsException {
 
 		if (m_settings == null) {
-			m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
+			m_settings = NodeParametersUtil.createSettings(m_settingsClass, inSpecs);
 		}
 
 		if(!inSpecs[0].getClass().equals(ProcessTreePortObjectSpec.class)) 
@@ -116,7 +118,7 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
 		// TODO: generated method stub
 		if (m_settings != null) {
-			DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+			NodeParametersUtil.saveSettings(m_settingsClass, m_settings, settings);
 		}
 	}
 
@@ -124,7 +126,7 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
+		m_settings = NodeParametersUtil.loadSettings(settings, m_settingsClass);
 	}
 
 	/**

@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-
 public final class Table2XLogConverterNodeSettings implements NodeParameters {
 
 	public static interface Table2XLogDialogLayout {

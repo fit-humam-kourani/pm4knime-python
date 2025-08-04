@@ -22,19 +22,17 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.node.parameters.NodeParameters;
-import org.pm4knime.node.conformance.table.precision.PrecisionCheckerNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
 import org.pm4knime.portobject.RepResultPortObjectSpecTable;
 import org.pm4knime.portobject.RepResultPortObjectTable;
 import org.pm4knime.util.ReplayerUtil;
-import org.pm4knime.util.defaultnode.DefaultNodeModel;
 import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 
 
 
+@SuppressWarnings("restriction")
 public class FitnessCheckerNodeModel extends NodeModel {
 	private static final NodeLogger logger = NodeLogger.getLogger(FitnessCheckerNodeModel.class);
 	
@@ -97,7 +95,7 @@ public class FitnessCheckerNodeModel extends NodeModel {
             throws InvalidSettingsException {
     	
     	if (m_settings == null) {
-    		m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
+    		m_settings = NodeParametersUtil.createSettings(m_settingsClass, inSpecs);
         }
     	
     	if (!inSpecs[0].getClass().equals(RepResultPortObjectSpecTable.class))
@@ -132,9 +130,26 @@ public class FitnessCheckerNodeModel extends NodeModel {
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
     	if (m_settings != null) {
-    		NodeParameters.saveSettings(m_settingsClass, m_settings, settings);
+    		NodeParametersUtil.saveSettings(m_settingsClass, m_settings, settings);
         }
     }
+
+	@Override
+	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void loadValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
+		m_settings = NodeParametersUtil.loadSettings(settings, m_settingsClass);
+	}
+
+	@Override
+	protected void reset() {
+		// TODO Auto-generated method stub
+		
+	}
 
     
 	

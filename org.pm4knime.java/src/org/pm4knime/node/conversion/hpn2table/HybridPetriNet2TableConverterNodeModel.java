@@ -24,12 +24,13 @@ import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.node.parameters.NodeParameters;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
 import org.pm4knime.portobject.HybridPetriNetPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObjectSpec;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
 
 
+@SuppressWarnings("restriction")
 public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
 
 	private static final NodeLogger logger = NodeLogger.getLogger(HybridPetriNet2TableConverterNodeModel.class);
@@ -142,7 +143,7 @@ public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
 		if (m_settings != null) {
-			NodeParameters.saveSettings(m_settingsClass, m_settings, settings);
+			NodeParametersUtil.saveSettings(m_settingsClass, m_settings, settings);
 		}
 	}
 
@@ -151,7 +152,7 @@ public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
 	 */
 	@Override
 	protected final void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-		validateSettings(NodeParameters.loadSettings(settings, m_settingsClass));
+		validateSettings(NodeParametersUtil.loadSettings(settings, m_settingsClass));
 	}
 
 	private void validateSettings(HybridPetriNet2TableConverterNodeSettings settings) {
@@ -165,7 +166,7 @@ public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
+		m_settings = NodeParametersUtil.loadSettings(settings, m_settingsClass);
 	}
 
 	@Override

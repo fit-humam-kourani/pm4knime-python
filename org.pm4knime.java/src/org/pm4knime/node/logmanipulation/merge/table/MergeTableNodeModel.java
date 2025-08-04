@@ -36,7 +36,7 @@ public class MergeTableNodeModel extends NodeModel {
     @Override
     protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         if (m_settings == null) {
-            m_settings = NodeParameters.createSettings(MergeTableNodeSettings.class, inSpecs);
+            m_settings = NodeParametersUtil.createSettings(MergeTableNodeSettings.class, inSpecs);
         }
         return configure(inSpecs, m_settings);
     }
@@ -44,7 +44,7 @@ public class MergeTableNodeModel extends NodeModel {
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
         if (m_settings == null) {
-            m_settings = NodeParameters.createSettings(MergeTableNodeSettings.class, inSpecs);
+            m_settings = NodeParametersUtil.createSettings(MergeTableNodeSettings.class, inSpecs);
         }
         return (DataTableSpec[]) configure(inSpecs, m_settings);
     }
@@ -111,14 +111,14 @@ public class MergeTableNodeModel extends NodeModel {
 	@Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
         if (m_settings != null) {
-        	NodeParameters.saveSettings(MergeTableNodeSettings.class, m_settings, settings);
+        	NodeParametersUtil.saveSettings(MergeTableNodeSettings.class, m_settings, settings);
         }
     }
 
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_settings = NodeParameters.loadSettings(settings, MergeTableNodeSettings.class);
+        m_settings = NodeParametersUtil.loadSettings(settings, MergeTableNodeSettings.class);
     }
 
 

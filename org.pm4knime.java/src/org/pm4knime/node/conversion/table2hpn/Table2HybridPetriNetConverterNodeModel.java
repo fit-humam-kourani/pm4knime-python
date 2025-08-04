@@ -17,20 +17,19 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
-import org.knime.node.parameters.NodeParameters;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.portobject.HybridPetriNetPortObject;
 import org.pm4knime.portobject.HybridPetriNetPortObjectSpec;
-import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.util.HybridPetriNetUtil;
 import org.pm4knime.util.defaultnode.EmptyNodeSettings;
 import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybridPetrinet;
-import org.processmining.plugins.graphviz.dot.Dot;
 
 
 
+@SuppressWarnings("restriction")
 class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	
 //	private SettingsModelString m_pnColSettingsModel =
@@ -63,7 +62,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
     	if (m_settings == null) {
-    		m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
+    		m_settings = NodeParametersUtil.createSettings(m_settingsClass, inSpecs);
         }
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 
@@ -166,7 +165,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
     	if (m_settings != null) {
-            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+    		NodeParametersUtil.saveSettings(m_settingsClass, m_settings, settings);
         }
     }
 
@@ -174,7 +173,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 	@Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-    	m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
+    	m_settings = NodeParametersUtil.loadSettings(settings, m_settingsClass);
     }
     
     
