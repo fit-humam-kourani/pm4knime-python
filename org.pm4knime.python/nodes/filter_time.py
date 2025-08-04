@@ -36,10 +36,9 @@ class TimeFilter:
                                               description="The column that contains the case identifiers.",
                                               port_index=0)
     column_param_time = knext.ColumnParameter(label="Time Column",
-                                              description="The column that contains the timestamps."
-                                                          " This column must have the type 'Local Date Time'.",
+                                              description="The column that contains the timestamps.",
                                               port_index=0,
-                                              column_filter=knime_util.is_local_date)
+                                              column_filter=knime_util.is_date)
 
     logging_verbosity = knext.EnumParameter(
         label="Filtering Mode",
@@ -47,10 +46,10 @@ class TimeFilter:
         default_value=FilteringModes.CONTAINED.name,
         enum=FilteringModes,
     )
-    start_time_field = knext.StringParameter(label="Start Time (in the format YYYY-MM-DD HH:MM:SS)",
-                                             description="Start Timestamp for the filtering time interval.")
-    end_time_field = knext.StringParameter(label="End Time (in the format YYYY-MM-DD HH:MM:SS)",
-                                           description="End Timestamp for the filtering time interval.")
+    start_time_field = knext.DateTimeParameter(label="Start Date",
+                                             description="Start Date for the filtering time interval.")
+    end_time_field = knext.DateTimeParameter(label="End Date",
+                                           description="End Date for the filtering time interval.")
     # param_select_activities.default_value = FilteringModes.CONTAINED.name,
     # param_select_activities.enum = FilteringModes
     start_time = None
