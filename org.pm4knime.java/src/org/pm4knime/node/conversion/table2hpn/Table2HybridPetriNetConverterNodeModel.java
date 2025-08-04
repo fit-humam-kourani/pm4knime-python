@@ -61,8 +61,10 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 	@Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
-    	if (m_settings == null) {
-    		m_settings = NodeParametersUtil.createSettings(m_settingsClass, inSpecs);
+		try {
+			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
         }
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 

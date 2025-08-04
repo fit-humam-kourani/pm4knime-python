@@ -187,8 +187,10 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel {
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
     	
-    	if (m_modelSettings == null) {
-            m_modelSettings = NodeParametersUtil.createSettings(m_modelSettingsClass, inSpecs);
+    	try {
+            m_modelSettings = m_modelSettingsClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + m_modelSettingsClass.getName(), e);
         }
     	
     	if (!inSpecs[INPORT_LOG].getClass().equals(DataTableSpec.class))

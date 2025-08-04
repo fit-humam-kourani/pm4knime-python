@@ -38,7 +38,7 @@ public class InductiveMinerDFGTableNodeModel extends WebUIJSViewNodeModel<Induct
 	protected ProcessTreePortObject ptpo;
 	protected DfgMsdPortObject dfgMsdPO;
 	
-	private InductiveMinerDFGTableNodeSettings m_settings;
+	private InductiveMinerDFGTableNodeSettings m_settings = new InductiveMinerDFGTableNodeSettings();
 
 
 	protected InductiveMinerDFGTableNodeModel(Class<InductiveMinerDFGTableNodeSettings> class1) {

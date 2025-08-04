@@ -13,6 +13,5 @@ public final class InductiveMinerDFGTableNodeSettings implements NodeParameters 
 	 @Widget(title = "Noise Threshold", description = "Threshold for filtering out noise.")
 	 @NumberInputWidget(minValidation=IsNonNegativeValidation.class, maxValidation=IsMaxOne.class)
 	 double m_noiseThreshold = 0.8;	 
-
 }
 

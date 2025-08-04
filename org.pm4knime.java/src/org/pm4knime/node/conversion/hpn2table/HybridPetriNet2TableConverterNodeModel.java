@@ -152,12 +152,6 @@ public class HybridPetriNet2TableConverterNodeModel extends NodeModel {
 	 */
 	@Override
 	protected final void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-		validateSettings(NodeParametersUtil.loadSettings(settings, m_settingsClass));
-	}
-
-	private void validateSettings(HybridPetriNet2TableConverterNodeSettings settings) {
-		// TODO Auto-generated method stub	
-
 	}
 
 	/**

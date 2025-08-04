@@ -16,7 +16,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.node.parameters.NodeParameters;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
 
 
 
@@ -35,16 +35,20 @@ public class MergeTableNodeModel extends NodeModel {
     
     @Override
     protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        if (m_settings == null) {
-            m_settings = NodeParametersUtil.createSettings(MergeTableNodeSettings.class, inSpecs);
+    	try {
+			m_settings = MergeTableNodeSettings.class.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + MergeTableNodeSettings.class.getName(), e);
         }
         return configure(inSpecs, m_settings);
     }
 
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
-        if (m_settings == null) {
-            m_settings = NodeParametersUtil.createSettings(MergeTableNodeSettings.class, inSpecs);
+    	try {
+			m_settings = MergeTableNodeSettings.class.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + MergeTableNodeSettings.class.getName(), e);
         }
         return (DataTableSpec[]) configure(inSpecs, m_settings);
     }

@@ -31,16 +31,20 @@ public abstract class DefaultTableNodeModel<S extends DefaultTableNodeSettings> 
 	
 	@Override
     protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        if (m_settings == null) {
-            m_settings = NodeParametersUtil.createSettings(m_settingsClass, inSpecs);
+		try {
+			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
         }
         return configure(inSpecs, m_settings);
     }
 
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
-        if (m_settings == null) {
-            m_settings = NodeParametersUtil.createSettings(m_settingsClass, inSpecs);
+    	try {
+			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
         }
         return (DataTableSpec[]) configure(inSpecs, m_settings);
     }

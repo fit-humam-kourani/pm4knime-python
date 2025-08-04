@@ -38,6 +38,11 @@ AbstractImageWizardNodeModel<REP, VAL> {
     protected WebUIJSViewNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes, final String viewName, final Class<S> modelSettingsClass) {
         super(inPortTypes, outPortTypes, viewName);
         m_modelSettingsClass = modelSettingsClass;
+        try {
+            m_modelSettings = m_modelSettingsClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + m_modelSettingsClass.getName(), e);
+        }
     }
     
     @Override
@@ -72,17 +77,11 @@ AbstractImageWizardNodeModel<REP, VAL> {
 
     @Override
     protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-//        if (m_modelSettings == null) {
-//            m_modelSettings = NodeParametersUtil.createSettings(m_modelSettingsClass, inSpecs);
-//        }
         return configure(inSpecs, m_modelSettings);
     }
 
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
-//        if (m_modelSettings == null) {
-//            m_modelSettings = NodeParametersUtil.createSettings(m_modelSettingsClass, inSpecs);
-//        }
         return configure(inSpecs, m_modelSettings);
     }
 
@@ -115,15 +114,13 @@ AbstractImageWizardNodeModel<REP, VAL> {
         	NodeParametersUtil.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
         }
     }
+    
 
     @Override
     protected final void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        validateSettings(NodeParametersUtil.loadSettings(settings, m_modelSettingsClass));
+        
     }
 
-    protected void validateSettings(final S settings) throws InvalidSettingsException {
-        // hook that can be overwritten by extending classes
-    }
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {

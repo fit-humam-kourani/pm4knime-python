@@ -192,8 +192,10 @@ public class XLog2TableConverterNodeModel extends NodeModel {
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
 
-    	if (m_settings == null) {
-    		m_settings = NodeParametersUtil.createSettings(m_settingsClass, inSpecs);
+    	try {
+			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
         }
         // TODO: create a new DataTable there
     	XLogPortObjectSpec spec = (XLogPortObjectSpec) inSpecs[0];

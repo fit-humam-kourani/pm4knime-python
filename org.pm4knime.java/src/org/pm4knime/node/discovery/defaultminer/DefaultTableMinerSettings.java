@@ -9,6 +9,7 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.data.time.localdatetime.LocalDateTimeValue;
 import org.knime.core.data.time.zoneddatetime.ZonedDateTimeValue;
 import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.layout.Section;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
@@ -64,5 +65,6 @@ public class DefaultTableMinerSettings implements NodeParameters {
             return cellClass.isAssignableFrom(StringCell.class);
         }
     }
+    
 
 }

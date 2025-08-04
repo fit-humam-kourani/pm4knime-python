@@ -93,10 +93,11 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 
-		if (m_settings == null) {
-			m_settings = NodeParametersUtil.createSettings(m_settingsClass, inSpecs);
-		}
-
+		try {
+			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
+        }
 		if(!inSpecs[0].getClass().equals(ProcessTreePortObjectSpec.class)) 
 			throw new InvalidSettingsException("Input is not a valid process tree!");
 
