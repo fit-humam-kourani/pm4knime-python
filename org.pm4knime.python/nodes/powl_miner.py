@@ -42,7 +42,6 @@ class POWL_Miner:
                                               column_filter=knime_util.is_date)
 
     def configure(self, configure_context: knext.ConfigurationContext, input_schema_1: knext.Schema):
-        configure_context.set_warning(input_schema_1)
         for par in [self.column_param_case, self.column_param_time, self.column_param_activity]:
             if par is None or par == "":
                 raise ValueError("Parameters not set!")

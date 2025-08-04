@@ -5,6 +5,7 @@ import pandas as pd
 import pytz
 import logging
 import os
+import datetime
 
 
 LOGGER = logging.getLogger(__name__)
@@ -60,15 +61,6 @@ class TimeFilter:
             if par is None or par == "":
                 raise ValueError("Parameters not set!")
 
-        try:
-            self.start_time = pd.Timestamp(self.start_time_field).tz_localize(None)
-        except Exception:
-            raise ValueError("Invalid start timestamp!")
-        try:
-            self.end_time = pd.Timestamp(self.end_time_field).tz_localize(None)
-        except Exception:
-            raise ValueError("Invalid end timestamp!")
-
         return input_schema_1
 
     def execute(self, exec_context, input_1):
@@ -88,10 +80,17 @@ class TimeFilter:
             mode = 'events'
         elif self.logging_verbosity != FilteringModes.CONTAINED.name:
             raise ValueError("Unknown filtering mode: " + self.logging_verbosity)
+        
+        start_dt_naive = datetime.datetime.combine(self.start_time_field, datetime.time.min)
+        end_dt_naive = datetime.datetime.combine(self.end_time_field, datetime.time.max)
+
+        # Make the new datetime objects timezone-aware to match the event log
+        start_dt_aware = pytz.utc.localize(start_dt_naive)
+        end_dt_aware = pytz.utc.localize(end_dt_naive)
 
         filtered_log = pm4py.filter_time_range(event_log,
-                                               self.start_time_field,
-                                               self.end_time_field,
+                                               start_dt_naive,
+                                               end_dt_aware,
                                                mode=mode,
                                                case_id_key=self.column_param_case,
                                                timestamp_key=self.column_param_time + "UTC")
