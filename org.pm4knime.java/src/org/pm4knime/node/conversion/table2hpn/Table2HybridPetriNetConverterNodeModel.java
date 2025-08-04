@@ -32,8 +32,6 @@ import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybri
 @SuppressWarnings("restriction")
 class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	
-//	private SettingsModelString m_pnColSettingsModel =
-//			Table2HybridPetriNetConverterNodeDialog.getHybridPetriNetColumnSettingsModel();
 
 	HybridPetriNetPortObjectSpec m_spec = new HybridPetriNetPortObjectSpec();
 	protected HybridPetriNetPortObject pnPO;
@@ -43,12 +41,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 
     private final Class<EmptyNodeSettings> m_settingsClass;
     
-//	public Table2HybridPetriNetConverterNodeModel() {
-//        super(new PortType[]{BufferedDataTable.TYPE},
-//                new PortType[]{HybridPetriNetPortObject.TYPE},
-//                "Hybrid Petri Net JS View");
-//    }
-    
+  
     public Table2HybridPetriNetConverterNodeModel(Class<EmptyNodeSettings> modelSettingsClass) {
 		// TODO Auto-generated constructor stub
     	super(new PortType[]{BufferedDataTable.TYPE},
@@ -61,11 +54,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 	@Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
-		try {
-			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
-        }
+
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 
         String column = null;

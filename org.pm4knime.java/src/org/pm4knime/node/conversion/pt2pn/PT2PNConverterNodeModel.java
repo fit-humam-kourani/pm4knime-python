@@ -23,12 +23,6 @@ import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 import org.processmining.acceptingpetrinet.models.impl.AcceptingPetriNetFactory;
 import org.processmining.processtree.ProcessTree;
 
-/**
- * <code>NodeModel</code> for the "PT2PNConverter" node. It converts a process tree into Petri net.
- * Since the conversion is guaranteed to work, so no need of NodeDialog. 
- *
- * @author Kefang Ding
- */
 
 
 @SuppressWarnings("restriction")
@@ -36,13 +30,7 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	protected PortObject pnPO;
 	protected ProcessTreePortObject ptPO;
 
-	/**
-	 * Constructor for the node model.
-	 */
-	//    protected PT2PNConverterNodeModel() {
-	//    	super(new PortType[] { ProcessTreePortObject.TYPE },
-	//				new PortType[] { PetriNetPortObject.TYPE }, "Petri Net JS View");
-	//    }
+
 
 	protected EmptyNodeSettings m_settings = new EmptyNodeSettings();
 
@@ -93,11 +81,6 @@ public class PT2PNConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphV
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 
-		try {
-			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
-        }
 		if(!inSpecs[0].getClass().equals(ProcessTreePortObjectSpec.class)) 
 			throw new InvalidSettingsException("Input is not a valid process tree!");
 

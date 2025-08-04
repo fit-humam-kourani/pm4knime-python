@@ -504,12 +504,6 @@ public class PN2BPMNConverterNodeModel extends
 	// Configure the node based on input port object specifications
 	@Override
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-		// Check if the input is a valid PetriNetPortObjectSpec
-		try {
-			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
-        }
 
 		PetriNetPortObjectSpec spec = (PetriNetPortObjectSpec) inSpecs[0];
 

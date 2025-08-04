@@ -56,11 +56,8 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel {
 	protected static final int INPORT_PETRINET = 1;
 	private PNReplayerTableNodeSettings m_modelSettings;
     private final Class<PNReplayerTableNodeSettings> m_modelSettingsClass;
-//    SMAlignmentReplayParameterTable m_parameter;
 
-	
-//	SMAlignmentReplayParameterTable m_parameter;
-	// it can't belong to this class
+
 	String evClassDummy;
 	
 	RepResultPortObjectTable repResultPO;
@@ -73,15 +70,15 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel {
         // TODO: Specify the amount of input and output ports needed.
     	super(new PortType[] { BufferedDataTable.TYPE, PetriNetPortObject.TYPE }, new PortType[] {RepResultPortObjectTable.TYPE });
     	evClassDummy = "dummy";
-    	// need to initialize the parameters later, because it has different types there.
-//    	initializeParameter();
-    	m_modelSettingsClass = modelSettingsClass;  	
+    	m_modelSettingsClass = modelSettingsClass;
+    	try {
+            m_modelSettings = m_modelSettingsClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate settings class: " + m_modelSettingsClass.getName(), e);
+        }
+    	  	
     }
-    
-//    protected void initializeParameter() {
-//    	m_parameter = new SMAlignmentReplayParameterTable(CFG_PARAMETER_NAME);
-//    	
-//    }
+
 
    
     @Override
@@ -187,11 +184,7 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel {
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
     	
-    	try {
-            m_modelSettings = m_modelSettingsClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + m_modelSettingsClass.getName(), e);
-        }
+
     	
     	if (!inSpecs[INPORT_LOG].getClass().equals(DataTableSpec.class))
 			throw new InvalidSettingsException("Input is not a valid table log!");

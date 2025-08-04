@@ -25,31 +25,23 @@ public class MergeTableNodeModel extends NodeModel {
 	
 	private static final NodeLogger logger = NodeLogger.getLogger(MergeTableNodeModel.class);
 	
-	protected MergeTableNodeSettings m_settings;
+	protected MergeTableNodeSettings m_settings = new MergeTableNodeSettings();
     
 	
 	protected MergeTableNodeModel() {
-        super(new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE }, new PortType[] { BufferedDataTable.TYPE });         
+        super(new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE }, new PortType[] { BufferedDataTable.TYPE });    
+        
     }
 
     
     @Override
     protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-    	try {
-			m_settings = MergeTableNodeSettings.class.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + MergeTableNodeSettings.class.getName(), e);
-        }
         return configure(inSpecs, m_settings);
     }
 
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
-    	try {
-			m_settings = MergeTableNodeSettings.class.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + MergeTableNodeSettings.class.getName(), e);
-        }
+ 
         return (DataTableSpec[]) configure(inSpecs, m_settings);
     }
     

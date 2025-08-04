@@ -55,11 +55,7 @@ class Table2PetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGrap
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {		
     	
-		try {
-			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
-        }
+
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 
         String column = null;

@@ -26,26 +26,21 @@ public abstract class DefaultTableNodeModel<S extends DefaultTableNodeSettings> 
 	protected DefaultTableNodeModel(PortType[] inPortTypes, PortType[] outPortTypes, final Class<S> modelSettingsClass) {
 		super(inPortTypes, outPortTypes);
 		m_settingsClass = modelSettingsClass;
-	}
-	
-	
-	@Override
-    protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 		try {
 			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
         }
+	}
+	
+	
+	@Override
+    protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {	
         return configure(inSpecs, m_settings);
     }
 
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
-    	try {
-			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
-        }
         return (DataTableSpec[]) configure(inSpecs, m_settings);
     }
     

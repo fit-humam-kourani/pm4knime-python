@@ -220,11 +220,7 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 	 */
 	@Override
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-		try {
-			m_settings = m_settingsClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate settings class: " + m_settingsClass.getName(), e);
-        }
+
 		if (!inSpecs[0].getClass().equals(RepResultPortObjectSpecTable.class))
 			throw new InvalidSettingsException("Input is not a valid replay result!");
 		
