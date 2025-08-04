@@ -17,7 +17,7 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
@@ -30,7 +30,7 @@ import org.processmining.extendedhybridminer.models.hybridpetrinet.ExtendedHybri
 import org.processmining.plugins.graphviz.dot.Dot;
 
 
-@SuppressWarnings("restriction")
+
 class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	
 //	private SettingsModelString m_pnColSettingsModel =
@@ -63,7 +63,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
     	if (m_settings == null) {
-    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+    		m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
         }
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
 
@@ -174,7 +174,7 @@ class Table2HybridPetriNetConverterNodeModel extends AbstractSVGWizardNodeModel<
 	@Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+    	m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
     }
     
     

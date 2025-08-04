@@ -33,7 +33,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelFilterString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.pm4knime.portobject.XLogPortObject;
 import org.pm4knime.portobject.XLogPortObjectSpec;
 import org.pm4knime.util.XLogSpecUtil;
@@ -57,7 +57,7 @@ import org.pm4knime.util.defaultnode.EmptyNodeSettings;
  * They are only DataTable conversion!! Rename the nodes, please!!!
  * @author Kefang
  */
-@SuppressWarnings("restriction")
+
 public class XLog2TableConverterNodeModel extends NodeModel {
 	private static final NodeLogger logger = NodeLogger.getLogger(XLog2TableConverterNodeModel.class);
 	
@@ -192,7 +192,7 @@ public class XLog2TableConverterNodeModel extends NodeModel {
             throws InvalidSettingsException {
 
     	if (m_settings == null) {
-    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+    		m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
         }
         // TODO: create a new DataTable there
     	XLogPortObjectSpec spec = (XLogPortObjectSpec) inSpecs[0];
@@ -249,7 +249,7 @@ public class XLog2TableConverterNodeModel extends NodeModel {
             throws InvalidSettingsException {
 //    	m_traceAttrSet.loadSettingsFrom(settings);
 //    	m_eventAttrSet.loadSettingsFrom(settings);
-    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+    	m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
     	
     }
 

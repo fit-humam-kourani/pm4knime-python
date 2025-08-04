@@ -15,7 +15,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.pm4knime.node.conformance.replayer.table.helper.DefaultPNReplayerTableUtil.ParameterGenerator;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.CostBasedCompleteManifestParamTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.IPNReplayAlgorithmTable;
@@ -43,7 +43,8 @@ import org.processmining.plugins.petrinet.replayer.algorithms.IPNReplayParameter
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 
 
-@SuppressWarnings({"restriction"}) 
+
+@SuppressWarnings("rawtypes")
 public class DefaultPNReplayerTableModel extends DefaultNodeModel {
 	private static final NodeLogger logger = NodeLogger.getLogger(DefaultPNReplayerTableModel.class);
 	private static final  String message  = "Replayer With Cost Tables";	
@@ -187,7 +188,7 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel {
             throws InvalidSettingsException {
     	
     	if (m_modelSettings == null) {
-            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass, inSpecs);
+            m_modelSettings = NodeParameters.createSettings(m_modelSettingsClass, inSpecs);
         }
     	
     	if (!inSpecs[INPORT_LOG].getClass().equals(DataTableSpec.class))
@@ -229,14 +230,14 @@ public class DefaultPNReplayerTableModel extends DefaultNodeModel {
     @Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
         if (m_modelSettings != null) {
-            DefaultNodeSettings.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
+        	NodeParameters.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
         }
     }
 
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_modelSettings = DefaultNodeSettings.loadSettings(settings, m_modelSettingsClass);
+        m_modelSettings = NodeParameters.loadSettings(settings, m_modelSettingsClass);
     }
     
 

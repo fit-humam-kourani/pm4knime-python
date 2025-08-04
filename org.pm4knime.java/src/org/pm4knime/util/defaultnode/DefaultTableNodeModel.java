@@ -14,10 +14,10 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 
 
-@SuppressWarnings({"restriction"}) 
+
 public abstract class DefaultTableNodeModel<S extends DefaultTableNodeSettings> extends NodeModel {
 	
 	protected S m_settings;
@@ -33,7 +33,7 @@ public abstract class DefaultTableNodeModel<S extends DefaultTableNodeSettings> 
 	@Override
     protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         if (m_settings == null) {
-            m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+            m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
         }
         return configure(inSpecs, m_settings);
     }
@@ -41,7 +41,7 @@ public abstract class DefaultTableNodeModel<S extends DefaultTableNodeSettings> 
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
         if (m_settings == null) {
-            m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+            m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
         }
         return (DataTableSpec[]) configure(inSpecs, m_settings);
     }
@@ -63,13 +63,13 @@ public abstract class DefaultTableNodeModel<S extends DefaultTableNodeSettings> 
     @Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
         if (m_settings != null) {
-            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+        	NodeParameters.saveSettings(m_settingsClass, m_settings, settings);
         }
     }
 
     @Override
     protected final void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        validateSettings(DefaultNodeSettings.loadSettings(settings, m_settingsClass));
+        validateSettings(NodeParameters.loadSettings(settings, m_settingsClass));
     }
 
     protected void validateSettings(final S settings) throws InvalidSettingsException {
@@ -79,7 +79,7 @@ public abstract class DefaultTableNodeModel<S extends DefaultTableNodeSettings> 
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+        m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
         validateSpecificSettings(settings);
     }
 

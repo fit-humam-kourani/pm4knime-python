@@ -19,7 +19,7 @@ import org.pm4knime.portobject.ProcessTreePortObject;
 import org.pm4knime.util.NodeSettingsUtils.ExistingOutputFileHandlingMode;
 import org.pm4knime.util.WriterUtil;
 
-@SuppressWarnings("restriction") // uses the restricted WebUI API
+ // uses the restricted WebUI API
 final class ProcessTreeWriterNodeModel extends WebUINodeModel<ProcessTreeWriterNodeSettings> {
 
 	ProcessTreeWriterNodeModel(final WebUINodeConfiguration config) {

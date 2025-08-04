@@ -20,18 +20,18 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.knime.js.core.JSONViewContent;
 import org.knime.js.core.node.AbstractImageWizardNodeModel;
 
 
-@SuppressWarnings({"restriction"}) 
-public abstract class WebUIJSViewNodeModel<S extends DefaultNodeSettings, REP extends JSONViewContent, VAL extends JSONViewContent> extends
+public abstract class WebUIJSViewNodeModel<S extends NodeParameters, REP extends JSONViewContent, VAL extends JSONViewContent> extends
 AbstractImageWizardNodeModel<REP, VAL> {
 
 	private S m_modelSettings;
+	
+	private final Class<S> m_modelSettingsClass;
 
-    private final Class<S> m_modelSettingsClass;
 	
     protected WebUIJSViewNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes, final String viewName, final Class<S> modelSettingsClass) {
         super(inPortTypes, outPortTypes, viewName);
@@ -70,17 +70,17 @@ AbstractImageWizardNodeModel<REP, VAL> {
 
     @Override
     protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        if (m_modelSettings == null) {
-            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass, inSpecs);
-        }
+//        if (m_modelSettings == null) {
+//            m_modelSettings = NodeParameters.createSettings(m_modelSettingsClass, inSpecs);
+//        }
         return configure(inSpecs, m_modelSettings);
     }
 
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
-        if (m_modelSettings == null) {
-            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass, inSpecs);
-        }
+//        if (m_modelSettings == null) {
+//            m_modelSettings = NodeParameters.createSettings(m_modelSettingsClass, inSpecs);
+//        }
         return configure(inSpecs, m_modelSettings);
     }
 
@@ -110,13 +110,13 @@ AbstractImageWizardNodeModel<REP, VAL> {
     @Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
         if (m_modelSettings != null) {
-            DefaultNodeSettings.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
+        	NodeParameters.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
         }
     }
 
     @Override
     protected final void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        validateSettings(DefaultNodeSettings.loadSettings(settings, m_modelSettingsClass));
+        validateSettings(NodeParameters.loadSettings(settings, m_modelSettingsClass));
     }
 
     protected void validateSettings(final S settings) throws InvalidSettingsException {
@@ -125,7 +125,7 @@ AbstractImageWizardNodeModel<REP, VAL> {
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_modelSettings = DefaultNodeSettings.loadSettings(settings, m_modelSettingsClass);
+        m_modelSettings = NodeParameters.loadSettings(settings, m_modelSettingsClass);
     }
 
 }

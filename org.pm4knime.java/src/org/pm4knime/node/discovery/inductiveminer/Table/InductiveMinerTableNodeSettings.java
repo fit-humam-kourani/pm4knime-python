@@ -3,19 +3,20 @@ package org.pm4knime.node.discovery.inductiveminer.Table;
 import java.util.Arrays;
 import java.util.List;
 
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 import org.pm4knime.node.discovery.alpha.table.AlphaMinerTableNodeSettings.IsMaxOne;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings;
 
 
-@SuppressWarnings("restriction")
+
 public final class InductiveMinerTableNodeSettings extends DefaultTableMinerSettings {
 	
 	public static interface InductiveMinerDialogLayout extends DialogLayout{
@@ -39,7 +40,7 @@ public final class InductiveMinerTableNodeSettings extends DefaultTableMinerSett
 	
 	public static class InductiveMinerChoicesProvider implements StringChoicesProvider {
 	    @Override
-	    public List<String> choices(final DefaultNodeSettingsContext context) {
+	    public List<String> choices(final NodeParametersInput context) {
 	        return variantList;
 	    }
 	}

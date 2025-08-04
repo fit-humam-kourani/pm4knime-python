@@ -8,18 +8,16 @@ import org.knime.core.data.DataValue;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.time.localdatetime.LocalDateTimeValue;
 import org.knime.core.data.time.zoneddatetime.ZonedDateTimeValue;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.CompatibleColumnsProvider;
-import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.FilteredInputTableColumnsProvider;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.widget.choices.util.CompatibleColumnsProvider;
+import org.knime.node.parameters.widget.choices.util.FilteredInputTableColumnsProvider;
+import org.knime.node.parameters.Widget;
 
-
-@SuppressWarnings({"restriction"}) 
-public class DefaultTableMinerSettings implements DefaultNodeSettings {	
+ 
+public class DefaultTableMinerSettings implements NodeParameters {	
 	
 	
 	public interface DialogLayout {

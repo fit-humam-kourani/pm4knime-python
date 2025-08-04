@@ -72,7 +72,7 @@ public class ToXLogConverter {
 	
 	private Map<String, DataCell> traceAttrMap = new HashMap<String, DataCell>();
 	
-	@SuppressWarnings("restriction")
+	
 	public void convertDataTable2Log(BufferedDataTable csvData, Table2XLogConverterNodeSettings m_settings2, ExecutionContext exec) throws CanceledExecutionException {
 		
 		this.m_settings = m_settings2;

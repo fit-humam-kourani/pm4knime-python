@@ -19,7 +19,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.pm4knime.portobject.RepResultPortObjectTable;
 import org.pm4knime.node.conformance.precision.PrecCheckerInfoAssistant;
 import org.pm4knime.portobject.RepResultPortObjectSpecTable;
@@ -33,7 +33,7 @@ import org.processmining.plugins.petrinet.replayresult.PNMatchInstancesRepResult
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 
 
-@SuppressWarnings("restriction")
+
 public class PrecisionCheckerNodeModel extends NodeModel {
 	private static final NodeLogger logger = NodeLogger.getLogger(PrecisionCheckerNodeModel.class);
 	
@@ -146,7 +146,7 @@ public class PrecisionCheckerNodeModel extends NodeModel {
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
     	if (m_settings != null) {
-            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+    		NodeParameters.saveSettings(m_settingsClass, m_settings, settings);
         }
     }
 
@@ -157,7 +157,7 @@ public class PrecisionCheckerNodeModel extends NodeModel {
 	@Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+    	m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
     }
 
 	@Override

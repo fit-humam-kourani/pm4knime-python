@@ -15,7 +15,7 @@ import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewRepresentation;
 import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
@@ -59,7 +59,7 @@ import org.pm4knime.node.io.bpmn.writer.BPMNExporter;
  * @author Sanjida Islam Ivy
  */
 
-@SuppressWarnings("restriction")
+
 public class PN2BPMNConverterNodeModel extends
 		AbstractSVGWizardNodeModel<JSGraphVizViewRepresentation, JSGraphVizViewValue> implements PortObjectHolder {
 	protected AbstractJSONPortObject bpmnPO; 
@@ -505,7 +505,7 @@ public class PN2BPMNConverterNodeModel extends
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 		// Check if the input is a valid PetriNetPortObjectSpec
 		if (m_settings == null) {
-			m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+			m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
 		}
 
 		PetriNetPortObjectSpec spec = (PetriNetPortObjectSpec) inSpecs[0];
@@ -538,7 +538,7 @@ public class PN2BPMNConverterNodeModel extends
 
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-		m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+		m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
 	}
 
 	/**

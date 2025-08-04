@@ -25,12 +25,12 @@ import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.pm4knime.portobject.PetriNetPortObject;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
 
-@SuppressWarnings("restriction")
+
 
 public class PetriNet2TableConverterNodeModel extends NodeModel {
 
@@ -175,7 +175,7 @@ public class PetriNet2TableConverterNodeModel extends NodeModel {
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {        
-		m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+		m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
 	}
 
 	@Override

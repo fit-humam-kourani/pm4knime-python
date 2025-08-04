@@ -27,7 +27,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectHolder;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestFlattenerTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PNManifestReplayerParameterTable;
 import org.pm4knime.node.conformance.replayer.table.helper.tableLibs.PerfCounterTable;
@@ -80,7 +80,8 @@ import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
  *            +
  *            https://github.com/rapidprom/rapidprom-source/blob/master/src/main/java/org/rapidprom/operators/conformance/PerformanceConformanceAnalysisOperator.java
  */
-@SuppressWarnings("restriction")
+
+@SuppressWarnings("rawtypes")
 public class PerformanceCheckerNodeModel extends DefaultNodeModel implements PortObjectHolder {
 	private static final NodeLogger logger = NodeLogger.getLogger(PerformanceCheckerNodeModel.class);
 
@@ -258,7 +259,7 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 	@Override
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 		if (m_settings == null) {
-    		m_settings = DefaultNodeSettings.createSettings(m_settingsClass, inSpecs);
+    		m_settings = NodeParameters.createSettings(m_settingsClass, inSpecs);
         }
 		if (!inSpecs[0].getClass().equals(RepResultPortObjectSpecTable.class))
 			throw new InvalidSettingsException("Input is not a valid replay result!");
@@ -340,7 +341,7 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
     	if (m_settings != null) {
-            DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+    		NodeParameters.saveSettings(m_settingsClass, m_settings, settings);
         }
     }
 
@@ -350,7 +351,7 @@ public class PerformanceCheckerNodeModel extends DefaultNodeModel implements Por
 	@Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-    	m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+    	m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
     }
 		
 	

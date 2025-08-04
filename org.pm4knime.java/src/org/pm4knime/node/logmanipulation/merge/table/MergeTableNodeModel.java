@@ -16,7 +16,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 
 
 
@@ -36,7 +36,7 @@ public class MergeTableNodeModel extends NodeModel {
     @Override
     protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         if (m_settings == null) {
-            m_settings = DefaultNodeSettings.createSettings(MergeTableNodeSettings.class, inSpecs);
+            m_settings = NodeParameters.createSettings(MergeTableNodeSettings.class, inSpecs);
         }
         return configure(inSpecs, m_settings);
     }
@@ -44,7 +44,7 @@ public class MergeTableNodeModel extends NodeModel {
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
         if (m_settings == null) {
-            m_settings = DefaultNodeSettings.createSettings(MergeTableNodeSettings.class, inSpecs);
+            m_settings = NodeParameters.createSettings(MergeTableNodeSettings.class, inSpecs);
         }
         return (DataTableSpec[]) configure(inSpecs, m_settings);
     }
@@ -111,14 +111,14 @@ public class MergeTableNodeModel extends NodeModel {
 	@Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
         if (m_settings != null) {
-            DefaultNodeSettings.saveSettings(MergeTableNodeSettings.class, m_settings, settings);
+        	NodeParameters.saveSettings(MergeTableNodeSettings.class, m_settings, settings);
         }
     }
 
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_settings = DefaultNodeSettings.loadSettings(settings, MergeTableNodeSettings.class);
+        m_settings = NodeParameters.loadSettings(settings, MergeTableNodeSettings.class);
     }
 
 

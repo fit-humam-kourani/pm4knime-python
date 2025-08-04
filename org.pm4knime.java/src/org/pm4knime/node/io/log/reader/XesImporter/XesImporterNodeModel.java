@@ -20,7 +20,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.node.parameters.NodeParameters;
 import org.knime.filehandling.core.connections.FSConnection;
 import org.knime.filehandling.core.connections.FSFileSystem;
 import org.knime.filehandling.core.connections.FSFiles;
@@ -34,7 +34,7 @@ import org.processmining.plugins.log.OpenNaiveLogFilePlugin;
 import org.xesstandard.model.XesLog;
 import org.xesstandard.xml.XesXmlParserLenient;
 
-@SuppressWarnings("restriction")
+
 public class XesImporterNodeModel extends NodeModel {
 
 	PortObjectSpec m_spec;
@@ -151,7 +151,7 @@ public class XesImporterNodeModel extends NodeModel {
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings) {
 		if (m_settings != null) {
-			DefaultNodeSettings.saveSettings(m_settingsClass, m_settings, settings);
+			NodeParameters.saveSettings(m_settingsClass, m_settings, settings);
 		}
 	}
 
@@ -162,7 +162,7 @@ public class XesImporterNodeModel extends NodeModel {
 
 	@Override
 	protected void loadValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
-		m_settings = DefaultNodeSettings.loadSettings(settings, m_settingsClass);
+		m_settings = NodeParameters.loadSettings(settings, m_settingsClass);
 
 	}
 
