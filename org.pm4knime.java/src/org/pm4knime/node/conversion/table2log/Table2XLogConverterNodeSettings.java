@@ -68,11 +68,17 @@ public final class Table2XLogConverterNodeSettings implements NodeParameters {
 	
 	
 	public static final class TimeColumnChoicesWithMissing implements StringChoicesProvider {
-
+		
+		
+		
 		@Override
 		public List<String> choices(final NodeParametersInput context) {
 
 			Object specObj = context.getInPortSpecs()[0];
+			
+			if (specObj == null) {
+	            return Collections.emptyList(); 
+	        }
 
 			if (specObj instanceof DataTableSpec) {
 				DataTableSpec specs = (DataTableSpec) specObj;

@@ -1,6 +1,7 @@
 package org.pm4knime.node.conformance.replayer.table.helper;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -223,6 +224,10 @@ public final class PNReplayerTableNodeSettings implements NodeParameters {
 	    public List<String> choices(final NodeParametersInput context) {
 	
 	        Object specObj = context.getInPortSpecs()[1];
+	        
+	        if (specObj == null) {
+	            return Collections.emptyList(); 
+	        }
 
 	        if (specObj instanceof PetriNetPortObjectSpec) { // Check if the object is an instance of DataTableSpec
 	        	PetriNetPortObjectSpec specs = (PetriNetPortObjectSpec) specObj;
@@ -233,7 +238,7 @@ public final class PNReplayerTableNodeSettings implements NodeParameters {
 	                    .collect(Collectors.toList());
 	        } else {
 	            System.err.println("Expected a PetriNetPortObjectSpec but received a different type: " + specObj.getClass().getSimpleName());
-	            return List.of();
+	            return Collections.emptyList(); 
 	        }
 	    }
 	}
