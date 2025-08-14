@@ -3,17 +3,18 @@ package org.pm4knime.node.conformance.table.precision;
 import java.util.Arrays;
 import java.util.List;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.processmining.plugins.multietc.sett.MultiETCSettings;
 
-@SuppressWarnings("restriction")
-public final class PrecisionCheckerNodeSettings implements DefaultNodeSettings {
+
+public final class PrecisionCheckerNodeSettings implements NodeParameters {
 	
 	public static interface PrecisionDialogLayout {
 	    
@@ -40,7 +41,7 @@ public final class PrecisionCheckerNodeSettings implements DefaultNodeSettings {
 	 
 	public static class AlgorithmChoicesProvider implements StringChoicesProvider {
         @Override
-        public List<String> choices(final DefaultNodeSettingsContext context) {
+        public List<String> choices(final NodeParametersInput context) {
             return algorithmList;
         }
     }

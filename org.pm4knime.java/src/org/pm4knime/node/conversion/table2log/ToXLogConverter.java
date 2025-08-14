@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.deckfour.xes.extension.XExtension;
 import org.deckfour.xes.extension.std.XConceptExtension;
@@ -72,7 +71,7 @@ public class ToXLogConverter {
 	
 	private Map<String, DataCell> traceAttrMap = new HashMap<String, DataCell>();
 	
-	@SuppressWarnings("restriction")
+	
 	public void convertDataTable2Log(BufferedDataTable csvData, Table2XLogConverterNodeSettings m_settings2, ExecutionContext exec) throws CanceledExecutionException {
 		
 		this.m_settings = m_settings2;

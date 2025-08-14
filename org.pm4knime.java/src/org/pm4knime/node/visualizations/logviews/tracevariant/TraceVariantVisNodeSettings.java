@@ -1,16 +1,16 @@
 package org.pm4knime.node.visualizations.logviews.tracevariant;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.DialogLayout;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.TimeColumnsProvider;
 
 
-@SuppressWarnings("restriction")
-public final class TraceVariantVisNodeSettings implements DefaultNodeSettings {
+
+public final class TraceVariantVisNodeSettings implements NodeParameters {
 
 	@Widget(title = "Case ID", description = "The column that contains the case/trace identifiers.")
 	@Layout(DialogLayout.MainDropdownSection.class)

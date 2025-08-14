@@ -9,7 +9,7 @@ import org.pm4knime.node.visualizations.jsgraphviz.JSGraphVizViewValue;
 import org.pm4knime.portobject.CausalGraphPortObject;
 
 
-@SuppressWarnings("restriction")
+
 public class TableCGMinerNodeFactory extends WebUINodeFactory<TableCGMinerNodeModel> implements WizardNodeFactoryExtension<TableCGMinerNodeModel, JSGraphVizViewRepresentation, JSGraphVizViewValue> {
 	TableCGMinerNodeModel node;
 

@@ -1,64 +1,68 @@
 package org.pm4knime.node.conformance.replayer.table.helper;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DomainValuesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.HorizontalLayout;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.array.ArrayWidget;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
+import org.knime.node.parameters.updates.Effect;
+import org.knime.node.parameters.updates.Effect.EffectType;
+import org.knime.node.parameters.updates.EffectPredicate;
+import org.knime.node.parameters.updates.EffectPredicateProvider;
+import org.knime.node.parameters.updates.EffectPredicateProvider.PredicateInitializer;
+import org.knime.node.parameters.updates.ParameterReference;
+import org.knime.node.parameters.updates.ValueReference;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.TimeColumnsProvider;
 import org.pm4knime.portobject.PetriNetPortObjectSpec;
 import org.pm4knime.util.ReplayerUtil;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
 
 
-@SuppressWarnings({"restriction"}) 
-public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
+
+@SuppressWarnings("restriction")
+public final class PNReplayerTableNodeSettings implements NodeParameters {
 	
 
 	//  For enabling custom activity costs
-	static final class CustomLogMoveCostsRef implements Reference<Boolean> {}
-    static final class CustomModelMoveCostsRef implements Reference<Boolean> {}
-    static final class CustomSynchronousMoveCostsRef implements Reference<Boolean> {}
+	static final class CustomLogMoveCostsRef implements ParameterReference<Boolean> {}
+    static final class CustomModelMoveCostsRef implements ParameterReference<Boolean> {}
+    static final class CustomSynchronousMoveCostsRef implements ParameterReference<Boolean> {}
     
     
     // Predicate providers to control visibility based on the new References
-    static final class IsCustomLogCostsEnabled implements PredicateProvider {
+    static final class IsCustomLogCostsEnabled implements EffectPredicateProvider {
         @Override
-        public Predicate init(final PredicateInitializer i) {
+        public EffectPredicate init(final PredicateInitializer i) {
             return i.getBoolean(CustomLogMoveCostsRef.class).isTrue();
         }
     }
 
-    static final class IsCustomModelCostsEnabled implements PredicateProvider {
+    static final class IsCustomModelCostsEnabled implements EffectPredicateProvider {
         @Override
-        public Predicate init(final PredicateInitializer i) {
+        public EffectPredicate init(final PredicateInitializer i) {
             return i.getBoolean(CustomModelMoveCostsRef.class).isTrue();
         }
     }
 
-    static final class IsCustomSyncCostsEnabled implements PredicateProvider {
+    static final class IsCustomSyncCostsEnabled implements EffectPredicateProvider {
         @Override
-        public Predicate init(final PredicateInitializer i) {
+        public EffectPredicate init(final PredicateInitializer i) {
             return i.getBoolean(CustomSynchronousMoveCostsRef.class).isTrue();
         }
     }
@@ -96,7 +100,7 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
     @ChoicesProvider(value = StringCellColumnsProvider.class)
 	String t_classifier;
 	
-	static final class SelectedColumnDependency implements Reference<String> {
+	static final class SelectedColumnDependency implements ParameterReference<String> {
     }
 	
 	@Layout(DialogLayout.ReplayerSettings.class)
@@ -116,7 +120,7 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
 		
 	public static class StrategyListChoicesProvider implements StringChoicesProvider {
 		@Override
-		public List<String> choices(final DefaultNodeSettingsContext context) {
+		public List<String> choices(final NodeParametersInput context) {
 		    return strategyList;
 		}
 	}	
@@ -160,7 +164,7 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
 	    private Supplier<List<String>> m_domainValues;
 	
 	    @Override
-	    public List<String> choices(final DefaultNodeSettingsContext context) {
+	    public List<String> choices(final NodeParametersInput context) {
 	        return m_domainValues.get();
 	    }
 	
@@ -194,7 +198,7 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
     @Effect(predicate = IsCustomLogCostsEnabled.class, type = EffectType.SHOW)
     public LogMoveCosts[] log_move_costs = new LogMoveCosts[0];
     
-    static final class LogMoveCosts implements DefaultNodeSettings {
+    static final class LogMoveCosts implements NodeParameters {
 
         @HorizontalLayout
         interface LogMoveCostsLayout {
@@ -217,9 +221,13 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
     public static final class ModelMoveChoices implements StringChoicesProvider {
 
 	    @Override
-	    public List<String> choices(final DefaultNodeSettingsContext context) {
+	    public List<String> choices(final NodeParametersInput context) {
 	
-	        Object specObj = context.getPortObjectSpecs()[1];
+	        Object specObj = context.getInPortSpecs()[1];
+	        
+	        if (specObj == null) {
+	            return Collections.emptyList(); 
+	        }
 
 	        if (specObj instanceof PetriNetPortObjectSpec) { // Check if the object is an instance of DataTableSpec
 	        	PetriNetPortObjectSpec specs = (PetriNetPortObjectSpec) specObj;
@@ -230,7 +238,7 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
 	                    .collect(Collectors.toList());
 	        } else {
 	            System.err.println("Expected a PetriNetPortObjectSpec but received a different type: " + specObj.getClass().getSimpleName());
-	            return List.of();
+	            return Collections.emptyList(); 
 	        }
 	    }
 	}
@@ -255,7 +263,7 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
     @Effect(predicate = IsCustomModelCostsEnabled.class, type = EffectType.SHOW)
     public ModelMoveCosts[] model_move_costs = new ModelMoveCosts[0];
     
-    static final class ModelMoveCosts implements DefaultNodeSettings {
+    static final class ModelMoveCosts implements NodeParameters {
 
         @HorizontalLayout
         interface ModelMoveCostsLayout {
@@ -295,7 +303,7 @@ public final class PNReplayerTableNodeSettings implements DefaultNodeSettings {
     public SynchronousMoveCosts[] sync_move_costs = new SynchronousMoveCosts[0];
     
     
-    static final class SynchronousMoveCosts implements DefaultNodeSettings {
+    static final class SynchronousMoveCosts implements NodeParameters {
 
         @HorizontalLayout
         interface SynchronousMoveCostsLayout {

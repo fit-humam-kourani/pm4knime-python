@@ -24,7 +24,7 @@ import org.pm4knime.util.WriterUtil;
 import org.deckfour.xes.out.XMxmlGZIPSerializer;
 import org.deckfour.xes.out.XMxmlSerializer;
 
-@SuppressWarnings("restriction") // uses the restricted WebUI API
+ // uses the restricted WebUI API
 final class MXMLWriterNodeModel extends WebUINodeModel<MXMLWriterNodeSettings> {
 
 	protected final String[] FILE_SUFFIXES = new String[] { ".mxml", ".mxml.gz" };

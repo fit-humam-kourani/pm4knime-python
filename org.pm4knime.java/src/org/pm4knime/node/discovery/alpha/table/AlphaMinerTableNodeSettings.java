@@ -3,20 +3,21 @@ package org.pm4knime.node.discovery.alpha.table;
 import java.util.Arrays;
 import java.util.List;
 
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MaxValidation;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MaxValidation;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.Widget;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings;
 import org.processmining.alphaminer.parameters.AlphaVersion;
 
 
-@SuppressWarnings("restriction")
+
 public final class AlphaMinerTableNodeSettings extends DefaultTableMinerSettings {
 
 
@@ -50,7 +51,7 @@ public final class AlphaMinerTableNodeSettings extends DefaultTableMinerSettings
 	    
 	    public static class AlphaVersionChoicesProvider implements StringChoicesProvider {
 	        @Override
-	        public List<String> choices(final DefaultNodeSettingsContext context) {
+	        public List<String> choices(final NodeParametersInput context) {
 	            return variantList;
 	        }
 	    }

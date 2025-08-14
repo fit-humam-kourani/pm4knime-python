@@ -2,20 +2,21 @@ package org.pm4knime.node.discovery.ilpminer.Table;
 
 import java.util.List;
 
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 import org.pm4knime.node.discovery.alpha.table.AlphaMinerTableNodeSettings.IsMaxOne;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings;
 import org.pm4knime.settingsmodel.SMILPMinerParameter;
 
 
-@SuppressWarnings("restriction")
+
 public final class ILPMinerTableNodeSettings extends DefaultTableMinerSettings {
 	
 	public static interface ILPMinerDialogLayout extends DialogLayout{
@@ -33,7 +34,7 @@ public final class ILPMinerTableNodeSettings extends DefaultTableMinerSettings {
 	
 	public static class ILPMinerChoicesProvider implements StringChoicesProvider {
 	    @Override
-	    public List<String> choices(final DefaultNodeSettingsContext context) {
+	    public List<String> choices(final NodeParametersInput context) {
 	        return SMILPMinerParameter.CFG_FILTER_TYPES;
 	    }
 	}
@@ -57,7 +58,7 @@ public final class ILPMinerTableNodeSettings extends DefaultTableMinerSettings {
 	
 	public static class ObjectiveFunctionChoicesProvider implements StringChoicesProvider {
 	    @Override
-	    public List<String> choices(final DefaultNodeSettingsContext context) {
+	    public List<String> choices(final NodeParametersInput context) {
 	        return SMILPMinerParameter.CFG_LPOBJ_TYPES;
 	    }
 	}
@@ -76,7 +77,7 @@ public final class ILPMinerTableNodeSettings extends DefaultTableMinerSettings {
 	
 	public static class VTChoicesProvider implements StringChoicesProvider {
 	    @Override
-	    public List<String> choices(final DefaultNodeSettingsContext context) {
+	    public List<String> choices(final NodeParametersInput context) {
 	        return SMILPMinerParameter.CFG_LPVAR_TYPES;
 	    }
 	}
@@ -93,7 +94,7 @@ public final class ILPMinerTableNodeSettings extends DefaultTableMinerSettings {
 	
 	public static class DSChoicesProvider implements StringChoicesProvider {
 	    @Override
-	    public List<String> choices(final DefaultNodeSettingsContext context) {
+	    public List<String> choices(final NodeParametersInput context) {
 	        return SMILPMinerParameter.CFG_DS_TYPES;
 	    }
 	}

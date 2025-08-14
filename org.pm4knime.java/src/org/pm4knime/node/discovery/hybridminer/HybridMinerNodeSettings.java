@@ -1,17 +1,17 @@
 package org.pm4knime.node.discovery.hybridminer;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.widget.choices.Label;
+import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 import org.pm4knime.node.discovery.alpha.table.AlphaMinerTableNodeSettings.IsMaxOne;
 import org.pm4knime.node.logmanipulation.filter.knimetable.FilterByLengthTableNodeSettings.IsMinOne;
 
 
-@SuppressWarnings({"restriction"}) 
-public final class HybridMinerNodeSettings implements DefaultNodeSettings {
+
+public final class HybridMinerNodeSettings implements NodeParameters {
 
 	 @Widget(title = "Threshold for Cancellation of Place Iterator", description = "Threshold for early cancellation of place iterator: after x consecutive rejected places, the place iterator is canceled.")
 	 @NumberInputWidget(minValidation=IsMinOne.class)

@@ -5,20 +5,20 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.time.localdatetime.LocalDateTimeCellFactory;
 import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCellFactory;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.TwinlistWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.widget.choices.filter.ColumnFilter;
+import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
+import org.knime.node.parameters.widget.choices.util.AllColumnsProvider;
 import org.processmining.log.csvimport.config.CSVConversionConfig.CSVEmptyCellHandlingMode;
 import org.processmining.log.csvimport.config.CSVConversionConfig.CSVErrorHandlingMode;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.column.AllColumnsProvider;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.column.ColumnFilter;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-@SuppressWarnings("restriction")
-public final class Table2XLogConverterNodeSettings implements DefaultNodeSettings {
+public final class Table2XLogConverterNodeSettings implements NodeParameters {
 
 	public static interface Table2XLogDialogLayout {
 
@@ -54,9 +53,9 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 	public static final class StringColumnChoicesWithMissing implements StringChoicesProvider {
 
 		@Override
-		public List<String> choices(final DefaultNodeSettingsContext context) {
+		public List<String> choices(final NodeParametersInput context) {
 
-			final DataTableSpec specs = context.getDataTableSpecs()[0];
+			final DataTableSpec specs = context.getInTableSpecs()[0];
 
 			if (specs == null) {
 				return Collections.emptyList();
@@ -69,11 +68,17 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 	
 	
 	public static final class TimeColumnChoicesWithMissing implements StringChoicesProvider {
-
+		
+		
+		
 		@Override
-		public List<String> choices(final DefaultNodeSettingsContext context) {
+		public List<String> choices(final NodeParametersInput context) {
 
-			Object specObj = context.getPortObjectSpecs()[0];
+			Object specObj = context.getInPortSpecs()[0];
+			
+			if (specObj == null) {
+	            return Collections.emptyList(); 
+	        }
 
 			if (specObj instanceof DataTableSpec) {
 				DataTableSpec specs = (DataTableSpec) specObj;
@@ -103,7 +108,7 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 
 	public static class XFactoryChoicesProvider implements StringChoicesProvider {
 		@Override
-		public List<String> choices(final DefaultNodeSettingsContext context) {
+		public List<String> choices(final NodeParametersInput context) {
 			return xFactoryVariantList;
 		}
 	}
@@ -114,7 +119,7 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 
 	public static class ErrorHandlingChoicesProvider implements StringChoicesProvider {
 		@Override
-		public List<String> choices(final DefaultNodeSettingsContext context) {
+		public List<String> choices(final NodeParametersInput context) {
 			return errorHandlingVariantList;
 		}
 	}
@@ -125,7 +130,7 @@ public final class Table2XLogConverterNodeSettings implements DefaultNodeSetting
 
 	public static class SparseLogChoicesProvider implements StringChoicesProvider {
 		@Override
-		public List<String> choices(final DefaultNodeSettingsContext context) {
+		public List<String> choices(final NodeParametersInput context) {
 			return sparseLogVariantList;
 		}
 	}

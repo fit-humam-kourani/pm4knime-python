@@ -1,16 +1,16 @@
 package org.pm4knime.util.defaultnode;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.widget.choices.ChoicesProvider;
+import org.knime.node.parameters.Widget;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.StringCellColumnsProvider;
 import org.pm4knime.node.discovery.defaultminer.DefaultTableMinerSettings.TimeColumnsProvider;
 
 
-@SuppressWarnings({"restriction"}) 
-public class DefaultTableNodeSettings implements DefaultNodeSettings {
+
+public class DefaultTableNodeSettings implements NodeParameters {
 
 	
 	public interface DialogLayoutWithTime {

@@ -1,9 +1,10 @@
 package org.pm4knime.node.io.log.writer.mxml;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.file.FileWriterWidget;
+import org.knime.node.parameters.Widget;
 import org.pm4knime.util.NodeSettingsUtils;
 import org.pm4knime.util.defaultnode.WriterNodeSettings;
+
 
 @SuppressWarnings("restriction")
 public final class MXMLWriterNodeSettings extends WriterNodeSettings {

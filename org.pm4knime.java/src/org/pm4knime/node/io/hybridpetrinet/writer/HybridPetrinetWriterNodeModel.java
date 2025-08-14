@@ -22,7 +22,7 @@ import org.pm4knime.util.NodeSettingsUtils.ExistingOutputFileHandlingMode;
 import org.pm4knime.util.WriterUtil;
 
 
-@SuppressWarnings("restriction") // uses the restricted WebUI API
+ // uses the restricted WebUI API
 final class HybridPetrinetWriterNodeModel extends WebUINodeModel<HybridPetrinetWriterNodeSettings> {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(HybridPetrinetWriterNodeModel.class);
